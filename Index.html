@@ -241,7 +241,7 @@ const firebaseConfig = {
     <form id="formulario" onsubmit="event.preventDefault(); agregarCancion();">
       <input type="text" id="titulo" placeholder="Título de la canción" required />
       <textarea id="acordes" placeholder="Acordes..."></textarea>
-      <input type="file" id="imagenFile" accept="image/*" />
+<input type="file" id="imagenFile" accept="image/*" multiple />
       <input type="file" id="audioFile" accept="audio/*" />
       <input type="text" id="youtube" placeholder="Link de YouTube (opcional)" />
       <button type="submit">Guardar canción</button>
