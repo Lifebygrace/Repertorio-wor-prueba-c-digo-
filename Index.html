@@ -125,21 +125,27 @@
   </style>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDahT6IuQwSYdpAMcPpAERpqVuobmqmVSQ",
-  authDomain: "repertorioworship.firebaseapp.com",
-  projectId: "repertorioworship",
-  storageBucket: "repertorioworship.appspot.com",
-  messagingSenderId: "493050453266",
-  appId: "1:493050453266:web:cf07ce9fbb471122f167cb"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyDahT6IuQwSYdpAMcPpAERpqVuobmqmVSQ",
+      authDomain: "repertorioworship.firebaseapp.com",
+      projectId: "repertorioworship",
+      storageBucket: "repertorioworship.appspot.com",
+      messagingSenderId: "493050453266",
+      appId: "1:493050453266:web:cf07ce9fbb471122f167cb"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
+
+    async function cargarLogo() {
+      const logoRef = ref(storage, 'imagenes/logo.jpeg');
+      const logoURL = await getDownloadURL(logoRef);
+      document.getElementById("logo").src = logoURL;
+    }
 
     async function cargarCanciones() {
       const contenedor = document.getElementById("lista-canciones");
@@ -158,6 +164,7 @@ const firebaseConfig = {
           ${data.audio ? `<p><a href="${data.audio}" target="_blank">🎧 Escuchar Audio</a></p>` : ""}
           ${data.youtube ? `<p><a href="${data.youtube}" target="_blank">▶ Ver en YouTube</a></p>` : ""}
           <details><summary>Opciones</summary>
+            <button onclick="editarCancion('${docSnap.id}')">✏️ Editar</button>
             <button onclick="eliminarCancion('${docSnap.id}')">🗑️ Eliminar</button>
           </details>
         `;
@@ -169,34 +176,63 @@ const firebaseConfig = {
       const titulo = document.getElementById("titulo").value;
       const acordes = document.getElementById("acordes").value;
       const youtube = document.getElementById("youtube").value;
-      const imagenFile = document.getElementById("imagenFile").files;
+      const imagenFile = document.getElementById("imagenFile").files[0];
       const audioFile = document.getElementById("audioFile").files[0];
+      const editandoId = document.getElementById("formulario").dataset.editando;
 
       if (titulo.trim() === "") return;
-const imagenes = [];
-if (imagenFile) {
-  const imgRef = ref(storage, 'imagenes/' + imagenFile.name);
-  await uploadBytes(imgRef, imagenFile);
-  const url = await getDownloadURL(imgRef);
-  imagenes.push(url);
-}
 
+      let imagenes = [];
       let audio = null;
+
+      if (editandoId) {
+        const cancionRef = doc(db, "canciones", editandoId);
+        const cancionSnap = await getDoc(cancionRef);
+        const datosPrevios = cancionSnap.data();
+        imagenes = datosPrevios.imagenes || [];
+        audio = datosPrevios.audio || null;
+      }
+
+      if (imagenFile) {
+        const imgRef = ref(storage, 'imagenes/' + imagenFile.name);
+        await uploadBytes(imgRef, imagenFile);
+        const url = await getDownloadURL(imgRef);
+        imagenes = [url];
+      }
+
       if (audioFile) {
         const audioRef = ref(storage, 'audios/' + audioFile.name);
         await uploadBytes(audioRef, audioFile);
         audio = await getDownloadURL(audioRef);
       }
 
-      await addDoc(collection(db, "canciones"), {
+      const nuevaData = {
         titulo, acordes, youtube,
         imagenes,
         audio
-      });
+      };
+
+      if (editandoId) {
+        await setDoc(doc(db, "canciones", editandoId), nuevaData, { merge: true });
+        delete document.getElementById("formulario").dataset.editando;
+      } else {
+        await addDoc(collection(db, "canciones"), nuevaData);
+      }
 
       document.getElementById("formulario").reset();
       document.getElementById("formulario").style.display = "none";
       cargarCanciones();
+    }
+
+    async function editarCancion(id) {
+      const docSnap = await getDoc(doc(db, "canciones", id));
+      if (!docSnap.exists()) return;
+      const data = docSnap.data();
+      document.getElementById("titulo").value = data.titulo;
+      document.getElementById("acordes").value = data.acordes;
+      document.getElementById("youtube").value = data.youtube || "";
+      document.getElementById("formulario").dataset.editando = id;
+      document.getElementById("formulario").style.display = "block";
     }
 
     async function eliminarCancion(id) {
@@ -214,6 +250,7 @@ if (imagenFile) {
     }
 
     window.onload = () => {
+      cargarLogo();
       cargarCanciones();
       document.getElementById("search").addEventListener("input", cargarCanciones);
     };
@@ -222,12 +259,13 @@ if (imagenFile) {
     window.eliminarCancion = eliminarCancion;
     window.toggleForm = toggleForm;
     window.toggleDark = toggleDark;
+    window.editarCancion = editarCancion;
   </script>
 </head>
 <body>
   <header>
     <button id="metronomo" onclick="window.open('https://www.metronomeonline.com', '_blank')">🎵</button>
-    <img id="logo" src="logo.jpeg" alt="Logo del grupo" />
+    <img id="logo" src="" alt="Logo del grupo" />
     <button class="toggle-btn" onclick="toggleDark()">🌙/☀️</button>
   </header>
   <main>
@@ -240,7 +278,7 @@ if (imagenFile) {
     <form id="formulario" onsubmit="event.preventDefault(); agregarCancion();">
       <input type="text" id="titulo" placeholder="Título de la canción" required />
       <textarea id="acordes" placeholder="Acordes..."></textarea>
-<input type="file" id="imagenFile" accept="image/*" multiple />
+      <input type="file" id="imagenFile" accept="image/*" />
       <input type="file" id="audioFile" accept="audio/*" />
       <input type="text" id="youtube" placeholder="Link de YouTube (opcional)" />
       <button type="submit">Guardar canción</button>
