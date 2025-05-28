@@ -169,18 +169,17 @@ const firebaseConfig = {
       const titulo = document.getElementById("titulo").value;
       const acordes = document.getElementById("acordes").value;
       const youtube = document.getElementById("youtube").value;
-      const imagenFile = document.getElementById("imagenFile").files[0];
+      const imagenFile = document.getElementById("imagenFile").files;
       const audioFile = document.getElementById("audioFile").files[0];
 
       if (titulo.trim() === "") return;
-
-      const imagenes = [];
-      if (imagenFile) {
-        const imgRef = ref(storage, 'imagenes/' + imagenFile.name);
-        await uploadBytes(imgRef, imagenFile);
-        const url = await getDownloadURL(imgRef);
-        imagenes.push(url);
-      }
+const imagenes = [];
+if (imagenFile) {
+  const imgRef = ref(storage, 'imagenes/' + imagenFile.name);
+  await uploadBytes(imgRef, imagenFile);
+  const url = await getDownloadURL(imgRef);
+  imagenes.push(url);
+}
 
       let audio = null;
       if (audioFile) {
