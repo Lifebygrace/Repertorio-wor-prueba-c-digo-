@@ -5,82 +5,127 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Repertorio Worship</title>
   <style>
+    :root {
+      --primary: #002244;
+      --accent: #FF6F00;
+      --bg: #f0f4f8;
+      --text: #002244;
+      --ensayo-bg: #e3f2fd;
+      --servicio-bg: #fff3e0;
+    }
+    body.dark {
+      --bg: #121212;
+      --text: #f0f4f8;
+      --ensayo-bg: #1a237e;
+      --servicio-bg: #e65100;
+    }
     body {
-      font-family: sans-serif;
       margin: 0;
-      padding: 1rem;
-      background: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
     }
     header {
+      background: var(--primary);
+      color: white;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 10px 20px;
     }
     #logo {
-      height: 60px;
+      width: 200px;
     }
-    button {
-      margin: 0.5rem;
-    }
-    .dark {
-      background: #111;
+    #metronomo {
+      background: #2196f3;
       color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    main {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+    .toggle-btn {
+      float: right;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .search {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
     }
     .card {
-      border: 1px solid #ccc;
-      padding: 1rem;
-      margin: 1rem 0;
       background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
-    .dark .card {
-      background: #222;
-      border-color: #444;
+    body.dark .card {
+      background: #1e1e1e;
     }
-    img {
+    .card img {
       max-width: 100%;
-      height: auto;
+      border-radius: 8px;
+      margin-top: 10px;
     }
-    #formulario {
+    form {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       display: none;
-      margin: 1rem 0;
-      padding: 1rem;
-      border: 1px solid #ccc;
-      background: #eee;
     }
-    .dark #formulario {
-      background: #333;
-      border-color: #555;
+    body.dark form {
+      background: #1e1e1e;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+    }
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 1em;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .notas {
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .ensayo {
+      background: var(--ensayo-bg);
+    }
+    .servicio {
+      background: var(--servicio-bg);
     }
   </style>
-</head>
-<body>
-  <header>
-    <img id="logo" src="logo.jpeg" alt="Logo del grupo"/>
-    <div>
-      <button onclick="toggleForm()">➕ Añadir/Editar Canción</button>
-      <button onclick="toggleDark()">🌓</button>
-    </div>
-  </header>
-
-  <input type="text" id="search" placeholder="Buscar canción..." />
-
-  <div id="contador"></div>
-
-  <form id="formulario">
-    <input type="text" id="titulo" placeholder="Título" required /><br/>
-    <textarea id="acordes" placeholder="Acordes..."></textarea><br/>
-    <input type="text" id="youtube" placeholder="Enlace YouTube (opcional)" /><br/>
-    <input type="file" id="imagenFile" accept="image/*" multiple /><br/>
-    <input type="file" id="audioFile" accept="audio/*" /><br/>
-    <button type="button" onclick="agregarCancion()">Guardar</button>
-  </form>
-
-  <div id="lista-canciones"></div>
-
-  <!-- Firebase scripts -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, getDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
     import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
     const firebaseConfig = {
@@ -96,19 +141,20 @@
     const db = getFirestore(app);
     const storage = getStorage(app);
 
-    let editandoId = null;
+    async function cargarLogo() {
+      const logoRef = ref(storage, 'imagenes/logo.jpeg');
+      const logoURL = await getDownloadURL(logoRef);
+      document.getElementById("logo").src = logoURL;
+    }
 
     async function cargarCanciones() {
       const contenedor = document.getElementById("lista-canciones");
       contenedor.innerHTML = "";
       const search = document.getElementById("search").value.toLowerCase();
       const querySnapshot = await getDocs(collection(db, "canciones"));
-      let contador = 0;
-
       querySnapshot.forEach((docSnap) => {
         const data = docSnap.data();
         if (!data.titulo.toLowerCase().includes(search)) return;
-        contador++;
         const div = document.createElement("div");
         div.className = "card";
         div.innerHTML = `
@@ -124,76 +170,77 @@
         `;
         contenedor.appendChild(div);
       });
-
-      document.getElementById("contador").textContent = `Total: ${contador} canción(es)`;
     }
 
     async function agregarCancion() {
       const titulo = document.getElementById("titulo").value;
       const acordes = document.getElementById("acordes").value;
       const youtube = document.getElementById("youtube").value;
-      const imagenFiles = document.getElementById("imagenFile").files;
+      const imagenFile = document.getElementById("imagenFile").files[0];
       const audioFile = document.getElementById("audioFile").files[0];
+      const editandoId = document.getElementById("formulario").dataset.editando;
 
-      if (!titulo.trim()) return alert("El título es obligatorio.");
+      if (titulo.trim() === "") return;
 
-      try {
-        const imagenes = [];
-        for (const file of imagenFiles) {
-          const imgRef = ref(storage, 'imagenes/' + file.name);
-          await uploadBytes(imgRef, file);
-          const url = await getDownloadURL(imgRef);
-          imagenes.push(url);
-        }
+      let imagenes = [];
+      let audio = null;
 
-        let audio = null;
-        if (audioFile) {
-          const audioRef = ref(storage, 'audios/' + audioFile.name);
-          await uploadBytes(audioRef, audioFile);
-          audio = await getDownloadURL(audioRef);
-        }
-
-        const data = { titulo, acordes, youtube, imagenes, audio };
-
-        if (editandoId) {
-          await updateDoc(doc(db, "canciones", editandoId), data);
-          editandoId = null;
-        } else {
-          await addDoc(collection(db, "canciones"), data);
-        }
-
-        document.getElementById("formulario").reset();
-        document.getElementById("formulario").style.display = "none";
-        cargarCanciones();
-      } catch (e) {
-        console.error("Error al guardar:", e);
-        alert("Error al guardar la canción.");
+      if (editandoId) {
+        const cancionRef = doc(db, "canciones", editandoId);
+        const cancionSnap = await getDoc(cancionRef);
+        const datosPrevios = cancionSnap.data();
+        imagenes = datosPrevios.imagenes || [];
+        audio = datosPrevios.audio || null;
       }
+
+      if (imagenFile) {
+        const imgRef = ref(storage, 'imagenes/' + imagenFile.name);
+        await uploadBytes(imgRef, imagenFile);
+        const url = await getDownloadURL(imgRef);
+        imagenes = [url];
+      }
+
+      if (audioFile) {
+        const audioRef = ref(storage, 'audios/' + audioFile.name);
+        await uploadBytes(audioRef, audioFile);
+        audio = await getDownloadURL(audioRef);
+      }
+
+      const nuevaData = {
+        titulo, acordes, youtube,
+        imagenes,
+        audio
+      };
+
+      if (editandoId) {
+        await setDoc(doc(db, "canciones", editandoId), nuevaData, { merge: true });
+        delete document.getElementById("formulario").dataset.editando;
+      } else {
+        await addDoc(collection(db, "canciones"), nuevaData);
+      }
+
+      document.getElementById("formulario").reset();
+      document.getElementById("formulario").style.display = "none";
+      cargarCanciones();
     }
 
     async function editarCancion(id) {
-      const docRef = doc(db, "canciones", id);
-      const snap = await getDoc(docRef);
-      if (!snap.exists()) return;
-
-      const data = snap.data();
-      document.getElementById("titulo").value = data.titulo || "";
-      document.getElementById("acordes").value = data.acordes || "";
+      const docSnap = await getDoc(doc(db, "canciones", id));
+      if (!docSnap.exists()) return;
+      const data = docSnap.data();
+      document.getElementById("titulo").value = data.titulo;
+      document.getElementById("acordes").value = data.acordes;
       document.getElementById("youtube").value = data.youtube || "";
-      editandoId = id;
+      document.getElementById("formulario").dataset.editando = id;
       document.getElementById("formulario").style.display = "block";
     }
 
     async function eliminarCancion(id) {
-      if (confirm("¿Eliminar esta canción?")) {
-        await deleteDoc(doc(db, "canciones", id));
-        cargarCanciones();
-      }
+      await deleteDoc(doc(db, "canciones", id));
+      cargarCanciones();
     }
 
     function toggleForm() {
-      editandoId = null;
-      document.getElementById("formulario").reset();
       const form = document.getElementById("formulario");
       form.style.display = form.style.display === "none" ? "block" : "none";
     }
@@ -203,6 +250,7 @@
     }
 
     window.onload = () => {
+      cargarLogo();
       cargarCanciones();
       document.getElementById("search").addEventListener("input", cargarCanciones);
     };
@@ -213,5 +261,30 @@
     window.toggleDark = toggleDark;
     window.editarCancion = editarCancion;
   </script>
+</head>
+<body>
+  <header>
+    <button id="metronomo" onclick="window.open('https://www.metronomeonline.com', '_blank')">🎵</button>
+    <img id="logo" src="" alt="Logo del grupo" />
+    <button class="toggle-btn" onclick="toggleDark()">🌙/☀️</button>
+  </header>
+  <main>
+    <div class="notas ensayo" contenteditable="true"><h2>🎶 Canciones para ensayar</h2><p>Haz clic para editar...</p></div>
+    <div class="notas servicio" contenteditable="true"><h2>⛪ Canciones para el servicio</h2><p>Haz clic para editar...</p></div>
+
+    <input type="text" id="search" class="search" placeholder="Buscar canciones..."/>
+    <button onclick="toggleForm()">➕ Agregar canción</button>
+
+    <form id="formulario" onsubmit="event.preventDefault(); agregarCancion();">
+      <input type="text" id="titulo" placeholder="Título de la canción" required />
+      <textarea id="acordes" placeholder="Acordes..."></textarea>
+      <input type="file" id="imagenFile" accept="image/*" />
+      <input type="file" id="audioFile" accept="audio/*" />
+      <input type="text" id="youtube" placeholder="Link de YouTube (opcional)" />
+      <button type="submit">Guardar canción</button>
+    </form>
+
+    <div id="lista-canciones"></div>
+  </main>
 </body>
 </html>
