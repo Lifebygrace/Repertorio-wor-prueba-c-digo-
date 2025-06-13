@@ -2,135 +2,63 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Repertorio Worship</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f9f9f9;
-      color: #333;
       padding: 20px;
-      transition: background 0.3s, color 0.3s;
+      background: #f7f7f7;
     }
-
-    body.dark {
-      background: #121212;
-      color: #f0f0f0;
-    }
-
-    body.dark input,
-    body.dark textarea {
-      background: #2c2c2c;
-      color: #f0f0f0;
-      border-color: #555;
-    }
-
-    .dark-toggle {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-    }
-
-    h1, h2 {
+    h1 {
       text-align: center;
     }
-
     form {
-      margin: 20px auto;
-      max-width: 600px;
-      background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
     }
-
-    body.dark form {
-      background: #1e1e1e;
-    }
-
     input, textarea {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      padding: 10px 20px;
-      border: none;
-      background: #4caf50;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .cancion {
-      border-bottom: 1px solid #ccc;
-      padding: 10px 0;
-    }
-
-    .cancion img {
-      max-width: 100%;
-      margin: 5px 0;
-    }
-
-    .volver-arriba {
       display: block;
-      margin: 30px auto 0;
-      padding: 8px 16px;
-      background-color: #333;
-      color: #fff;
-      border-radius: 6px;
-      cursor: pointer;
-      text-align: center;
+      margin-bottom: 10px;
+      width: 100%;
     }
-
-    #contador-canciones {
-      text-align: center;
-      margin-top: 20px;
-      font-weight: bold;
+    .cancion {
+      background: white;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    img {
+      max-width: 100%;
+      margin-top: 5px;
+    }
+    audio {
+      width: 100%;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <button class="dark-toggle" onclick="toggleDarkMode()">🌓</button>
-  <h1>🎶 Repertorio Worship</h1>
+  <h1>Repertorio Worship</h1>
 
-  <form onsubmit="event.preventDefault(); agregarCancion();">
+  <form id="formulario">
     <input type="text" id="titulo" placeholder="Título de la canción" required />
-    <textarea id="acordes" placeholder="Acordes (puedes copiar y pegar)" required></textarea>
+    <textarea id="acordes" placeholder="Acordes" required></textarea>
+    <label>Subir imágenes (hasta 2):</label>
     <input type="file" id="imagenes" accept="image/*" multiple />
+    <label>Subir audio (opcional):</label>
     <input type="file" id="audio" accept="audio/*" />
-    <button type="submit">Agregar Canción</button>
+    <button type="submit">Agregar canción</button>
   </form>
 
-  <h2>🔍 Buscar canción</h2>
-  <input type="text" id="busqueda" oninput="cargarCanciones()" placeholder="Filtrar por título..."/>
+  <div id="lista-canciones"></div>
 
-  <main id="lista-canciones"></main>
-  <p id="contador-canciones"></p>
-  <div class="volver-arriba" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">⬆ Volver arriba</div>
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      deleteDoc,
-      updateDoc,
-      getDocs,
-      doc
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    import {
-      getStorage,
-      ref,
-      uploadBytes,
-      getDownloadURL
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-
+  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDahT6IuQwSYdpAMcPpAERpqVuobmqmVSQ",
       authDomain: "repertorioworship.firebaseapp.com",
@@ -141,16 +69,15 @@
       measurementId: "G-RB3G81DQQ1"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
-
-    const cancionesRef = collection(db, "canciones");
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+    const cancionesRef = db.collection("canciones");
 
     async function subirArchivo(archivo, ruta) {
-      const archivoRef = ref(storage, `${ruta}/${archivo.name}`);
-      await uploadBytes(archivoRef, archivo);
-      return await getDownloadURL(archivoRef);
+      const ref = storage.ref().child(`${ruta}/${archivo.name}`);
+      await ref.put(archivo);
+      return await ref.getDownloadURL();
     }
 
     async function agregarCancion() {
@@ -159,83 +86,57 @@
       const imagenes = document.getElementById("imagenes").files;
       const audio = document.getElementById("audio").files[0];
 
-      if (!titulo) {
-        alert("El título es obligatorio.");
-        return;
-      }
-      if (!acordes) {
-        alert("Los acordes son obligatorios.");
-        return;
-      }
+      if (!titulo) return alert("El título es obligatorio.");
+      if (!acordes) return alert("Los acordes son obligatorios.");
+
+      const safeTitulo = titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase();
 
       const urlsImagenes = [];
       for (const img of imagenes) {
-        const url = await subirArchivo(img, `imagenes/${titulo}`);
+        const url = await subirArchivo(img, `imagenes/${safeTitulo}`);
         urlsImagenes.push(url);
       }
 
       let urlAudio = "";
       if (audio) {
-        urlAudio = await subirArchivo(audio, `audios/${titulo}`);
+        urlAudio = await subirArchivo(audio, `audios/${safeTitulo}`);
       }
 
-      await addDoc(cancionesRef, {
+      await cancionesRef.add({
         titulo,
         acordes,
         imagenes: urlsImagenes,
         audio: urlAudio
       });
 
-      document.getElementById("titulo").value = "";
-      document.getElementById("acordes").value = "";
-      document.getElementById("imagenes").value = "";
-      document.getElementById("audio").value = "";
-
+      document.getElementById("formulario").reset();
       cargarCanciones();
     }
 
     async function cargarCanciones() {
-      const lista = document.getElementById("lista-canciones");
-      lista.innerHTML = "";
-      const busqueda = document.getElementById("busqueda").value.toLowerCase();
-      const querySnapshot = await getDocs(cancionesRef);
-
-      let total = 0;
-
-      querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        if (!data.titulo.toLowerCase().includes(busqueda)) return;
-        total++;
-
+      const contenedor = document.getElementById("lista-canciones");
+      contenedor.innerHTML = "";
+      const snapshot = await cancionesRef.orderBy("titulo").get();
+      snapshot.forEach(doc => {
+        const data = doc.data();
         const div = document.createElement("div");
         div.className = "cancion";
         div.innerHTML = `
           <h3>${data.titulo}</h3>
           <pre>${data.acordes}</pre>
-          ${data.imagenes?.map(url => `<img src="${url}" alt="Acordes de ${data.titulo}">`).join('') || ""}
+          ${data.imagenes.map(url => `<img src="${url}">`).join("")}
           ${data.audio ? `<audio controls src="${data.audio}"></audio>` : ""}
-          <button onclick="eliminarCancion('${docSnap.id}')">🗑 Eliminar</button>
         `;
-        lista.appendChild(div);
+        contenedor.appendChild(div);
       });
-
-      document.getElementById("contador-canciones").textContent = `Total: ${total} canciones`;
     }
 
-    async function eliminarCancion(id) {
-      if (confirm("¿Eliminar esta canción?")) {
-        await deleteDoc(doc(db, "canciones", id));
-        cargarCanciones();
-      }
-    }
+    document.getElementById("formulario").addEventListener("submit", e => {
+      e.preventDefault();
+      agregarCancion();
+    });
 
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark");
-    }
-
-    window.eliminarCancion = eliminarCancion;
-
-    window.addEventListener("DOMContentLoaded", cargarCanciones);
+    cargarCanciones();
   </script>
 </body>
 </html>
