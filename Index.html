@@ -2,139 +2,98 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Repertorio Worship</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Subir Canciones</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f7f7f7;
-    }
-    h1 {
-      text-align: center;
-    }
-    form {
-      margin-bottom: 20px;
-    }
-    input, textarea {
-      display: block;
-      margin-bottom: 10px;
-      width: 100%;
-    }
-    .cancion {
-      background: white;
-      padding: 15px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-    }
-    img {
-      max-width: 100%;
-      margin-top: 5px;
-    }
-    audio {
-      width: 100%;
-      margin-top: 10px;
-    }
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f4f4f4; }
+    input, textarea, button { display: block; width: 100%; margin-bottom: 12px; padding: 10px; font-size: 1em; }
+    .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    audio, img { max-width: 100%; margin-top: 10px; }
   </style>
 </head>
 <body>
-  <h1>Repertorio Worship</h1>
-
-  <form id="formulario">
-    <input type="text" id="titulo" placeholder="Título de la canción" required />
-    <textarea id="acordes" placeholder="Acordes" required></textarea>
-    <label>Subir imágenes (hasta 2):</label>
-    <input type="file" id="imagenes" accept="image/*" multiple />
-    <label>Subir audio (opcional):</label>
+  <h1>Subir Canción</h1>
+  <form id="song-form">
+    <input type="text" id="titulo" placeholder="Título" required />
+    <textarea id="acordes" placeholder="Acordes o letras"></textarea>
+    <input type="file" id="imagen" accept="image/*" />
     <input type="file" id="audio" accept="audio/*" />
-    <button type="submit">Agregar canción</button>
+    <button type="submit">Subir Canción</button>
   </form>
 
+  <h2>Canciones guardadas</h2>
   <div id="lista-canciones"></div>
 
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.11.1/firebase-storage-compat.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
 
-  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyDahT6IuQwSYdpAMcPpAERpqVuobmqmVSQ",
       authDomain: "repertorioworship.firebaseapp.com",
       projectId: "repertorioworship",
       storageBucket: "repertorioworship.appspot.com",
       messagingSenderId: "493050453266",
-      appId: "1:493050453266:web:cf07ce9fbb471122f167cb",
-      measurementId: "G-RB3G81DQQ1"
+      appId: "1:493050453266:web:cf07ce9fbb471122f167cb"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    const storage = firebase.storage();
-    const cancionesRef = db.collection("canciones");
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
 
-    async function subirArchivo(archivo, ruta) {
-      const ref = storage.ref().child(`${ruta}/${archivo.name}`);
-      await ref.put(archivo);
-      return await ref.getDownloadURL();
-    }
+    const form = document.getElementById("song-form");
+    const lista = document.getElementById("lista-canciones");
 
-    async function agregarCancion() {
-      const titulo = document.getElementById("titulo").value.trim();
-      const acordes = document.getElementById("acordes").value.trim();
-      const imagenes = document.getElementById("imagenes").files;
-      const audio = document.getElementById("audio").files[0];
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const titulo = document.getElementById("titulo").value;
+      const acordes = document.getElementById("acordes").value;
+      const imagenFile = document.getElementById("imagen").files[0];
+      const audioFile = document.getElementById("audio").files[0];
 
-      if (!titulo) return alert("El título es obligatorio.");
-      if (!acordes) return alert("Los acordes son obligatorios.");
+      let imagenURL = "";
+      let audioURL = "";
 
-      const safeTitulo = titulo.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-
-      const urlsImagenes = [];
-      for (const img of imagenes) {
-        const url = await subirArchivo(img, `imagenes/${safeTitulo}`);
-        urlsImagenes.push(url);
+      if (imagenFile) {
+        const imagenRef = ref(storage, `imagenes/${Date.now()}_${imagenFile.name}`);
+        await uploadBytes(imagenRef, imagenFile);
+        imagenURL = await getDownloadURL(imagenRef);
       }
 
-      let urlAudio = "";
-      if (audio) {
-        urlAudio = await subirArchivo(audio, `audios/${safeTitulo}`);
+      if (audioFile) {
+        const audioRef = ref(storage, `audios/${Date.now()}_${audioFile.name}`);
+        await uploadBytes(audioRef, audioFile);
+        audioURL = await getDownloadURL(audioRef);
       }
 
-      await cancionesRef.add({
+      await addDoc(collection(db, "canciones"), {
         titulo,
         acordes,
-        imagenes: urlsImagenes,
-        audio: urlAudio
+        imagenes: imagenURL ? [imagenURL] : [],
+        audio: audioURL || null,
       });
 
-      document.getElementById("formulario").reset();
+      form.reset();
       cargarCanciones();
-    }
+    };
 
     async function cargarCanciones() {
-      const contenedor = document.getElementById("lista-canciones");
-      contenedor.innerHTML = "";
-      const snapshot = await cancionesRef.orderBy("titulo").get();
-      snapshot.forEach(doc => {
+      lista.innerHTML = "";
+      const query = await getDocs(collection(db, "canciones"));
+      query.forEach(doc => {
         const data = doc.data();
         const div = document.createElement("div");
-        div.className = "cancion";
+        div.className = "card";
         div.innerHTML = `
           <h3>${data.titulo}</h3>
-          <pre>${data.acordes}</pre>
-          ${data.imagenes.map(url => `<img src="${url}">`).join("")}
-          ${data.audio ? `<audio controls src="${data.audio}"></audio>` : ""}
+          <p>${data.acordes}</p>
+          ${data.imagenes?.map(url => `<img src="${url}" alt="Imagen">`).join('') || ''}
+          ${data.audio ? `<audio controls src="${data.audio}"></audio>` : ''}
         `;
-        contenedor.appendChild(div);
+        lista.appendChild(div);
       });
     }
-
-    document.getElementById("formulario").addEventListener("submit", e => {
-      e.preventDefault();
-      agregarCancion();
-    });
 
     cargarCanciones();
   </script>
