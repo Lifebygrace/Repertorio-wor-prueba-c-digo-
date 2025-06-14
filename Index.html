@@ -1,101 +1,102 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Subir Canciones</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; background: #f4f4f4; }
-    input, textarea, button { display: block; width: 100%; margin-bottom: 12px; padding: 10px; font-size: 1em; }
-    .card { background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    audio, img { max-width: 100%; margin-top: 10px; }
-  </style>
+  <meta charset="UTF-8">
+  <title>Subir Canción</title>
 </head>
 <body>
-  <h1>Subir Canción</h1>
-  <form id="song-form">
-    <input type="text" id="titulo" placeholder="Título" required />
-    <textarea id="acordes" placeholder="Acordes o letras"></textarea>
-    <input type="file" id="imagen" accept="image/*" />
-    <input type="file" id="audio" accept="audio/*" />
-    <button type="submit">Subir Canción</button>
+  <h2>Subir nueva canción</h2>
+  <form id="songForm">
+    <label>Nombre de la canción:</label><br>
+    <input type="text" id="songName" required><br><br>
+
+    <label>Imágenes de acordes (máximo 2):</label><br>
+    <input type="file" id="imageFiles" accept="image/*" multiple><br><br>
+
+    <label>Archivo de audio:</label><br>
+    <input type="file" id="audioFile" accept="audio/*"><br><br>
+
+    <button type="submit">Subir canción</button>
   </form>
 
-  <h2>Canciones guardadas</h2>
-  <div id="lista-canciones"></div>
+  <p id="status" style="color: green;"></p>
+  <p id="error-msg" style="color: red;"></p>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
-    import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-storage.js";
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
 
+  <script>
+    // ✅ Reemplaza esto con tu propia configuración de Firebase
     const firebaseConfig = {
-      apiKey: "AIzaSyDahT6IuQwSYdpAMcPpAERpqVuobmqmVSQ",
-      authDomain: "repertorioworship.firebaseapp.com",
-      projectId: "repertorioworship",
-      storageBucket: "repertorioworship.appspot.com",
-      messagingSenderId: "493050453266",
-      appId: "1:493050453266:web:cf07ce9fbb471122f167cb"
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_AUTH_DOMAIN",
+      projectId: "TU_PROJECT_ID",
+      storageBucket: "TU_STORAGE_BUCKET",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const storage = getStorage(app);
+    // 🔧 Inicializar Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
 
-    const form = document.getElementById("song-form");
-    const lista = document.getElementById("lista-canciones");
+    const form = document.getElementById('songForm');
+    const status = document.getElementById('status');
+    const errorMsg = document.getElementById('error-msg');
 
-    form.onsubmit = async (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const titulo = document.getElementById("titulo").value;
-      const acordes = document.getElementById("acordes").value;
-      const imagenFile = document.getElementById("imagen").files[0];
-      const audioFile = document.getElementById("audio").files[0];
+      status.textContent = '';
+      errorMsg.textContent = '';
 
-      let imagenURL = "";
-      let audioURL = "";
+      const name = document.getElementById('songName').value;
+      const imageFiles = document.getElementById('imageFiles').files;
+      const audioFile = document.getElementById('audioFile').files[0];
 
-      if (imagenFile) {
-        const imagenRef = ref(storage, `imagenes/${Date.now()}_${imagenFile.name}`);
-        await uploadBytes(imagenRef, imagenFile);
-        imagenURL = await getDownloadURL(imagenRef);
+      if (!name) {
+        errorMsg.textContent = "Debes ingresar el nombre de la canción.";
+        return;
       }
 
-      if (audioFile) {
-        const audioRef = ref(storage, `audios/${Date.now()}_${audioFile.name}`);
-        await uploadBytes(audioRef, audioFile);
-        audioURL = await getDownloadURL(audioRef);
+      if (imageFiles.length > 2) {
+        errorMsg.textContent = "Solo puedes subir hasta 2 imágenes.";
+        return;
       }
 
-      await addDoc(collection(db, "canciones"), {
-        titulo,
-        acordes,
-        imagenes: imagenURL ? [imagenURL] : [],
-        audio: audioURL || null,
-      });
+      try {
+        const imageUrls = [];
+        for (let i = 0; i < imageFiles.length; i++) {
+          const file = imageFiles[i];
+          const ref = storage.ref().child(`songs/${name}/image${i + 1}_${file.name}`);
+          await ref.put(file);
+          const url = await ref.getDownloadURL();
+          imageUrls.push(url);
+        }
 
-      form.reset();
-      cargarCanciones();
-    };
+        let audioUrl = '';
+        if (audioFile) {
+          const audioRef = storage.ref().child(`songs/${name}/audio_${audioFile.name}`);
+          await audioRef.put(audioFile);
+          audioUrl = await audioRef.getDownloadURL();
+        }
 
-    async function cargarCanciones() {
-      lista.innerHTML = "";
-      const query = await getDocs(collection(db, "canciones"));
-      query.forEach(doc => {
-        const data = doc.data();
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML = `
-          <h3>${data.titulo}</h3>
-          <p>${data.acordes}</p>
-          ${data.imagenes?.map(url => `<img src="${url}" alt="Imagen">`).join('') || ''}
-          ${data.audio ? `<audio controls src="${data.audio}"></audio>` : ''}
-        `;
-        lista.appendChild(div);
-      });
-    }
+        await db.collection('songs').add({
+          name: name,
+          images: imageUrls,
+          audio: audioUrl,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
-    cargarCanciones();
+        status.textContent = "✅ Canción guardada correctamente.";
+        form.reset();
+      } catch (error) {
+        console.error(error);
+        errorMsg.textContent = "❌ Error: " + error.message;
+      }
+    });
   </script>
 </body>
 </html>
