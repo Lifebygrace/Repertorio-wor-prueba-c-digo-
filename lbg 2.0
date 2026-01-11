@@ -28,10 +28,60 @@
   .logo{display:flex;align-items:center;gap:12px}
   .logo img{height:56px;border-radius:8px}
   .controls{display:flex;gap:8px;align-items:center}
-  button{background:var(--accent);color:#fff;border:0;padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:700}
+button{
+  background:var(--accent);
+  color:#fff;
+  border:0;
+  padding:6px 10px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:700;
+
+  transition:
+    transform 0.15s ease-out,
+    box-shadow 0.15s ease-out;
+
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active{
+  transform: scale(0.94);
+}
   button:hover{transform:scale(1.03)}
   main{max-width:900px;margin:18px auto;padding:12px}
-  .card{background:var(--card-bg);padding:14px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.08);margin-bottom:16px}
+.card{
+  background:var(--card-bg);
+  padding:14px;
+  border-radius:14px;
+  margin-bottom:16px;
+
+  box-shadow:
+    0 1px 2px rgba(0,0,0,.04),
+    0 4px 12px rgba(0,0,0,.06);
+
+  transition:
+    transform 0.25s cubic-bezier(.2,.8,.2,1),
+    box-shadow 0.25s cubic-bezier(.2,.8,.2,1);
+
+  will-change: transform, box-shadow;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Feedback táctil móvil */
+.card:active{
+  transform: scale(0.97);
+  box-shadow:
+    0 1px 1px rgba(0,0,0,.04),
+    0 2px 6px rgba(0,0,0,.08);
+}
+
+/* Hover solo escritorio */
+@media (hover: hover){
+  .card:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.10);
+  }
+}
   .section{background:var(--section-bg);padding:14px;border-radius:10px;margin-bottom:16px}
   input[type="text"],textarea,input[type="date"]{width:100%;padding:10px;margin-bottom:10px;border-radius:8px;border:1px solid #ccc;background:transparent;color:inherit}
   .search-container{position:relative;margin-bottom:16px}
@@ -61,6 +111,133 @@
   .delete-btn{background-color:#e74c3c;color:white;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-weight:bold;transition:background-color 0.2s ease,transform 0.1s ease;}
   .delete-btn:hover{background-color:#c0392b;transform:scale(1.05);}
   .delete-btn:active{transform:scale(0.95);}
+ .notas-card {
+  background: #fff8e1; /* fondo cálido */
+  border-left: 5px solid var(--accent);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-top: 12px; /* espacio sobre notas */
+  margin-bottom: 12px; /* espacio debajo de notas */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-wrap; /* respeta saltos de línea */
+  transition: background 0.25s, color 0.25s;
+}
+.notas-card h3 {
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+  color: var(--primary); /* modo claro */
+}
+.notas-card ul {
+  padding-left: 20px;
+  margin: 0;
+}
+.notas-card li {
+  margin-bottom: 6px;
+}
+body.dark .notas-card {
+  background: #2a2a2a;
+  color: #f0f4f8;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+body.dark .notas-card h3 {
+  color: #ffca28; /* título visible en modo oscuro */
+}
+
+.fade-apple{
+  animation: fadeApple 0.42s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes fadeApple{
+  from{
+    opacity:0;
+    transform:translateY(10px) scale(0.98);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
+
+details > summary {
+  cursor: pointer;
+  list-style: none;
+  font-weight: 600;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+details[open] > *:not(summary){
+  animation: expandApple 0.26s cubic-bezier(.16,1,.3,1);
+}
+
+@keyframes expandApple{
+  from{
+    opacity:0;
+    transform:translateY(-4px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* =========================
+   Details Apple – animación más lenta
+   (Resumen mensual / Observaciones)
+========================= */
+
+.details-slow[open] > *:not(summary){
+  animation: expandAppleSlow 0.42s cubic-bezier(.2,.8,.2,1);
+}
+
+
+/* =========================
+   Ver notas – animación lenta estilo Apple Notes
+========================= */
+
+.notas-toggle.show{
+  animation: notasFadeIn 0.55s cubic-bezier(.2,.8,.2,1) both;
+}
+
+@keyframes notasFadeIn{
+  from{
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to{
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes expandAppleSlow{
+  from{
+    opacity:0;
+    transform:translateY(-6px);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.card,
+.fade-apple,
+details > *{
+  will-change: transform, opacity;
+}
   </style>
 </head>
 <body>
@@ -88,25 +265,47 @@
 <div class="section">
   <h2>🎶 Canciones para la semana</h2>
   <div id="mostrar-semana" style="margin-top:8px"></div>
+
+  <button onclick="toggleNotas('semana')">🗒️ Ver notas</button>
+  <div id="notas-semana" class="notas-toggle" style="display:none; margin-top:8px;"></div>
+
   <button onclick="mostrarWorshipPack('semana')">🎁 Worship Pack</button>
   <div id="worshippack-semana" style="display:none; margin-top:8px;"></div>
 
   <div id="contenedor-semana" style="display:none; margin-top:10px;">
-    <input id="titulo-semana" placeholder="Título (ej. Semana del 7 al 13 de octubre)" />
-    <textarea id="canciones-semana" placeholder="Canciones (una por línea)"></textarea>
-    <button onclick="guardarSeccion('semana')">Guardar sección</button>
-  </div>
+  <input id="titulo-semana" placeholder="Título (ej. Semana del 7 al 13)" />
+  <textarea id="canciones-semana" placeholder="Canciones (una por línea)"></textarea>
+  <textarea id="notas-edit-semana" placeholder="Notas de esta semana..."></textarea>
+  <label style="font-weight:600">🎤 Cantante de la semana</label>
+<select id="cantante-semana" class="edit-input">
+  <option value="">— Seleccionar —</option>
+  <option value="Carolina">Carolina</option>
+  <option value="Jason">Jason</option>
+  <option value="Milly">Milly</option>
+</select>
+  <button onclick="guardarSeccion('semana')">Guardar sección</button>
+</div>
 </div>
 
 <div class="section">
   <h2>🆕 Canciones nuevas del mes</h2>
+
+  <!-- Contenedor donde se mostrarán las canciones del mes -->
   <div id="mostrar-mes" style="margin-top:8px"></div>
+
+  <!-- Botón para mostrar/ocultar notas -->
+  <button onclick="toggleNotas('mes')">🗒️ Ver notas</button>
+  <div id="notas-mes" class="notas-toggle" style="display:none; margin-top:8px;"></div>
+
+  <!-- Botón para mostrar/ocultar Worship Pack -->
   <button onclick="mostrarWorshipPack('mes')">🎁 Worship Pack</button>
   <div id="worshippack-mes" style="display:none; margin-top:8px;"></div>
 
+  <!-- Contenedor de edición (solo visible en modo edición) -->
   <div id="contenedor-mes" style="display:none; margin-top:10px;">
     <input id="titulo-mes" placeholder="Título (ej. Octubre 2025)" />
     <textarea id="canciones-mes" placeholder="Canciones (una por línea)"></textarea>
+    <textarea id="notas-edit-mes" placeholder="Notas de este mes..."></textarea>
     <button onclick="guardarSeccion('mes')">Guardar sección</button>
   </div>
 </div>
@@ -129,6 +328,10 @@
 
   <div id="registro-canciones-container" style="margin-top:12px;">
     <button style="background:var(--accent);" onclick="toggleRegistro()">📊 Registro de canciones</button>
+    <button onclick="toggleAnalisis()">📊 Análisis mensual</button>
+    <div id="analisis-mensual" class="section" style="display:none;"></div>
+    <button onclick="toggleCantantes()">📊 por cantante</button>
+    <div id="analisis-cantantes" class="section" style="display:none;"></div>
     <div id="registro-canciones" class="section" style="display:none;">
       <h2>📋 Registro de canciones</h2>
       <table id="tabla-registro">
@@ -212,7 +415,7 @@ function actualizarContador(){
 /* Construcción de tarjeta — meta debajo del título + edición completa + preview imágenes en edición */
 function construirCard(d){
   const div = document.createElement("div");
-  div.className = "card";
+  div.className = "card fade-apple";
 
   // título (editable en modo edición)
   const q = document.getElementById("search").value || "";
@@ -384,21 +587,105 @@ async function borrarCancion(id){
 }
 
 /* SECCIONES (semana / mes) */
+
+// Función para renderizar notas en lista con emojis
+function renderNotas(texto){
+  if(!texto) return "(No hay notas para esta sección)";
+
+  // Agregar emojis según palabras clave
+  texto = texto.replace(/importante/gi, "⚠️ importante")
+               .replace(/ensayar/gi, "🎵 ensayar")
+               .replace(/recordar/gi, "🔔 recordar")
+               .replace(/audio/gi, "🎧 audio");
+
+  // Separar en líneas y convertir en <ul>
+  const lineas = texto.split("\n").filter(l => l.trim());
+  return `<ul>${lineas.map(l => `<li>${l}</li>`).join("")}</ul>`;
+}
+
+// Función principal
 async function cargarSeccion(tipo){
   try{
     const snap = await getDoc(doc(db,"secciones",tipo));
     const cont = document.getElementById(`mostrar-${tipo}`);
+    const notasBox = document.getElementById(`notas-${tipo}`);
+    const notasEdit = document.getElementById(`notas-edit-${tipo}`);
+
+    if(!cont){
+      console.warn(`Contenedor mostrar-${tipo} no existe en DOM`);
+      return;
+    }
+
     if(snap.exists()){
       const data = snap.data();
-      cont.innerHTML = `<h3>${data.titulo||""}</h3><ul>${(data.canciones||[]).map(c=>`<li>${c}</li>`).join("")}</ul>`;
-    } else cont.innerHTML = "<p>Aún no hay información guardada.</p>";
-    document.getElementById(`contenedor-${tipo}`).style.display = modoEdicion ? "block" : "none";
-  } catch(e){ console.error("Error cargarSeccion:", e); }
+      // Sección principal con título y canciones
+      cont.innerHTML = `
+        <h3>${data.titulo || ""}</h3>
+        <ul>${(data.canciones || []).map(c => `<li>${c}</li>`).join("")}</ul>
+      `;
+      if(data.cantante){
+  cont.innerHTML += `<p>🎤 <strong>Cantante:</strong> ${data.cantante}</p>`;
 }
+      
+      // Renderizar notas si existe el contenedor
+      if(notasBox){
+        notasBox.innerHTML = `<div class="notas-card"><h3>📝 Notas</h3>${renderNotas(data.notas)}</div>`;
+      }
+
+      // Actualizar textarea de edición si estamos en modo edición
+      if(modoEdicion && notasEdit){
+        notasEdit.value = data.notas || "";
+      }
+
+    } else {
+      cont.innerHTML = "<p>Aún no hay información guardada.</p>";
+      if(notasBox) notasBox.innerHTML = "<p>(No hay notas)</p>";
+      if(modoEdicion && notasEdit) notasEdit.value = "";
+    }
+
+    const contenedor = document.getElementById(`contenedor-${tipo}`);
+    if(contenedor) contenedor.style.display = modoEdicion ? "block" : "none";
+
+  } catch(e){
+    console.error("Error en cargarSeccion:", e);
+  }
+}
+
+// Toggle notas
+function toggleNotas(tipo){
+  const box = document.getElementById(`notas-${tipo}`);
+  if(!box) return;
+
+  const visible = box.style.display === "block";
+
+  if(visible){
+    box.style.display = "none";
+    box.classList.remove("show");
+  } else {
+    box.style.display = "block";
+    // fuerza reflow para que la animación siempre se ejecute
+    box.offsetHeight;
+    box.classList.add("show");
+  }
+}
+
 async function guardarSeccion(tipo){
   const titulo = document.getElementById(`titulo-${tipo}`).value.trim();
-  const canciones = document.getElementById(`canciones-${tipo}`).value.trim().split("\n").map(s=>s.trim()).filter(Boolean);
-  await setDoc(doc(db,"secciones",tipo), { titulo, canciones });
+  const canciones = document.getElementById(`canciones-${tipo}`).value
+    .split("\n").map(s=>s.trim()).filter(Boolean);
+  const notas = document.getElementById(`notas-edit-${tipo}`).value.trim();
+
+  const data = { titulo, canciones, notas };
+
+  if(tipo === "semana"){
+    data.cantante = document.getElementById("cantante-semana").value;
+    data.fecha = isoToday();
+
+    // 🔒 Guardar histórico semanal
+    await addDoc(collection(db,"secciones_historico"), data);
+  }
+
+  await setDoc(doc(db,"secciones", tipo), data);
   alert("✅ Sección guardada");
   cargarSeccion(tipo);
 }
@@ -432,6 +719,199 @@ function toggleDark(){ document.body.classList.toggle("dark"); localStorage.setI
 function toggleFormulario(){ const f = document.getElementById("formulario"); f.style.display = f.style.display === "none" ? "block" : "none"; }
 function toggleCanciones(){ cancionesVisible = !cancionesVisible; document.getElementById("toggleCancionesBtn").textContent = cancionesVisible ? "🎵 Ocultar lista" : "🎵 Mostrar lista"; cargarCanciones(); }
 function toggleRegistro(){ const el = document.getElementById("registro-canciones"); el.style.display = el.style.display === "block" ? "none" : "block"; if(el.style.display==="block") cargarRegistro(); }
+/* =========================
+   ANÁLISIS MENSUAL
+========================= */
+
+/* Mostrar / ocultar análisis mensual */
+function toggleAnalisis() {
+  const el = document.getElementById("analisis-mensual");
+  if(!el) return;
+
+  // Alterna visibilidad
+  el.style.display = el.style.display === "block" ? "none" : "block";
+
+  // Solo cargar datos si se muestra
+  if(el.style.display === "block") cargarAnalisisMensual();
+}
+
+/* Carga y renderiza el análisis mensual */
+async function cargarAnalisisMensual() {
+  const cont = document.getElementById("analisis-mensual");
+  cont.innerHTML = "<h2>📊 Análisis mensual</h2>";
+  
+  const toggleBtn = document.createElement("button");
+  toggleBtn.textContent = "📂 Ver meses anteriores";
+  toggleBtn.style.margin = "8px 0";
+  toggleBtn.style.display = "block";
+  
+  const mesesAnterioresCont = document.createElement("div");
+  mesesAnterioresCont.style.display = "none";
+  
+  toggleBtn.addEventListener("click", () => {
+  const visible = mesesAnterioresCont.style.display === "block";
+  mesesAnterioresCont.style.display = visible ? "none" : "block";
+  toggleBtn.textContent = visible
+    ? "📂 Ver meses anteriores"
+    : "📂 Ocultar meses anteriores";
+});
+
+
+
+  const snapRegistro = await getDocs(collection(db,"registro"));
+  const analisisSnap = await getDocs(collection(db,"analisis_mensual"));
+
+  const analisisGuardado = {};
+  analisisSnap.forEach(d => analisisGuardado[d.id] = d.data());
+
+// Agrupar por mes y por cantante (desde semanas)
+const semanasSnap = await getDocs(collection(db,"secciones_historico"));
+const mapaMeses = {};
+
+semanasSnap.forEach(docu=>{
+  const s = docu.data();
+  if(!s.fecha || !s.cantante) return;
+
+  const mes = s.fecha.slice(0,7);
+
+  if(!mapaMeses[mes]) mapaMeses[mes] = {};
+  if(!mapaMeses[mes][s.cantante]) mapaMeses[mes][s.cantante] = {};
+
+  s.canciones.forEach(nombre=>{
+    const c = cancionesCache.find(x =>
+      normalizar(x.titulo) === normalizar(nombre)
+    );
+    if(!c) return;
+
+    mapaMeses[mes][s.cantante][c.id] =
+      (mapaMeses[mes][s.cantante][c.id] || 0) + 1;
+  });
+});
+
+  let meses = Object.keys(mapaMeses).sort().reverse(); // Mes más reciente primero
+  if(!meses.length){
+    cont.innerHTML += "<p>No hay datos aún.</p>";
+    return;
+  }
+
+  const ultimoMes = meses[0];
+
+meses.forEach((mes, index) => {
+    const fecha = new Date(mes+"-01");
+    const nombreMes = fecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+    const datosMes = analisisGuardado[mes] || { canciones:{}, cantante:"", evaluaciones:{}, observaciones:"" };
+    const cancionesMes = {};
+Object.values(mapaMeses[mes]).forEach(bloque=>{
+  Object.entries(bloque).forEach(([id, veces])=>{
+    cancionesMes[id] = (cancionesMes[id] || 0) + veces;
+  });
+});
+
+    const listaCanciones = Object.keys(cancionesMes).map(id => {
+      const c = cancionesCache.find(x=>x.id===id);
+      return { id, titulo: c?.titulo || "—", veces: cancionesMes[id] };
+    });
+
+// Ordenar TODAS las canciones por popularidad 🔥
+const resumen = [...listaCanciones].sort((a,b)=>b.veces - a.veces);
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.marginTop = "12px";
+
+    // Cantante
+    const cantanteHtml = modoEdicion 
+      ? `<label>🎤 Cantante: <select class="cantante-select" data-mes="${mes}">
+           <option value="Carolina" ${datosMes.cantante==="Carolina"?"selected":""}>Carolina</option>
+           <option value="Jason" ${datosMes.cantante==="Jason"?"selected":""}>Jason</option>
+           <option value="Milly" ${datosMes.cantante==="Milly"?"selected":""}>Milly</option>
+         </select></label>`
+      : `<p>🎤 Cantante: ${datosMes.cantante || "-"}</p>`;
+
+  
+    // Top 3 canciones con veces tocadas y emoji de valoración
+    const resumenHtml = resumen.map(c=>{
+      const val = datosMes.evaluaciones?.[c.id] || "";
+      const emoji = val === "A mejorar" ? "‼️" : val === "Bien" ? "👍" : val === "Excelente" ? "🚀" : "";
+      if(modoEdicion){
+        return `<li>${c.titulo} (${c.veces}) - 
+          <select class="eval-select" data-id="${c.id}" data-mes="${mes}">
+            <option value="" ${val===""?"selected":""}></option>
+            <option value="A mejorar" ${val==="A mejorar"?"selected":""}>‼️</option>
+            <option value="Bien" ${val==="Bien"?"selected":""}>👍</option>
+            <option value="Excelente" ${val==="Excelente"?"selected":""}>🚀</option>
+          </select>
+        </li>`;
+      } else {
+        return `<li>${c.titulo} (${c.veces}) ${emoji}</li>`;
+      }
+    }).join("");
+
+    // Observaciones con mismo estilo de top 3
+    const obsHtml = modoEdicion 
+      ? `<ul><li><textarea class="obs-textarea" data-mes="${mes}" placeholder="Escribe observaciones o consejos aquí..." style="width:100%;height:60px;margin-top:4px;">${datosMes.observaciones||""}</textarea></li></ul>`
+      : `<ul><li>${datosMes.observaciones||""}</li></ul>`;
+
+    const abierto = mes === ultimoMes ? "open" : "";
+
+    card.innerHTML = `
+      <details ${abierto}>
+        <summary>📅 ${nombreMes}</summary>
+        <div style="margin-top:8px;">${cantanteHtml}</div>
+        <label>Filtrar por cantante:</label>
+<select class="cantante-mes-select" data-mes="${mes}">
+  <option value="todos">Todos</option>
+  ${Object.keys(mapaMeses[mes]).map(c =>
+    `<option value="${c}">${c}</option>`
+  ).join("")}
+</select>
+        <details class="details-slow" style="margin-top:6px;">
+        <summary>📌 resumen musical 🔥</summary>
+          <div class="notas-card" style="margin-top:4px;"><ul>${resumenHtml}</ul></div>
+        </details>
+        <details class="details-slow" style="margin-top:6px;">
+        <summary>📝 Observaciones / Consejos</summary>
+          <div class="notas-card" style="margin-top:4px;">${obsHtml}</div>
+        </details>
+        ${modoEdicion ? `<button class="guardar-analisis-btn" data-mes="${mes}" style="margin-top:8px;">💾 Guardar análisis</button>` : ""}
+      </details>
+    `;
+
+if (index === 0) {
+  // 🟢 Mes más reciente
+  cont.appendChild(card);
+
+  // ⬇️ Botón JUSTO debajo del contenido del mes actual
+  cont.appendChild(toggleBtn);
+  cont.appendChild(mesesAnterioresCont);
+} else {
+  // 📂 Meses anteriores (orden correcto)
+  mesesAnterioresCont.appendChild(card);
+}
+  });
+
+  if(modoEdicion){
+    document.querySelectorAll(".guardar-analisis-btn").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const mes = btn.dataset.mes;
+        const evaluaciones = {};
+        document.querySelectorAll(`.eval-select[data-mes="${mes}"]`).forEach(sel=>{
+          const id = sel.dataset.id;
+          evaluaciones[id] = sel.value;
+        });
+        const cantante = document.querySelector(`.cantante-select[data-mes="${mes}"]`).value;
+        const observaciones = document.querySelector(`.obs-textarea[data-mes="${mes}"]`).value;
+        await setDoc(doc(db,"analisis_mensual",mes),{
+          canciones: mapaMeses[mes].canciones,
+          evaluaciones,
+          cantante,
+          observaciones
+        });
+        alert("✅ Análisis mensual guardado");
+      });
+    });
+  }
+}
 
 /* Registro (cargar/ordenar/editar fechas) */
 async function cargarRegistro(){
@@ -512,6 +992,179 @@ function setOrden(campo){
   else { ordenActual.campo = campo; ordenActual.sentido = "desc"; }
   cargarRegistro();
 }
+function generarResumenMes(mes, mapaMeses, datosMes){
+  const canciones = Object.entries(mapaMeses[mes] || {});
+  if(!canciones.length) return "";
+
+  const total = canciones.length;
+  const top = canciones.sort((a,b)=>b[1]-a[1])[0];
+  const topSong = cancionesCache.find(c=>c.id===top[0])?.titulo || "—";
+
+  const evals = { excelente:0, bien:0, mejorar:0 };
+  Object.values(datosMes.canciones || {}).forEach(c=>{
+    if(c.eval) evals[c.eval]++;
+  });
+
+  return `
+    <div class="notas-card">
+      <h3>📈 Resumen del mes</h3>
+      <ul>
+        <li>🎵 Canciones distintas: <strong>${total}</strong></li>
+        <li>🔥 Más tocada: <strong>${topSong}</strong> (${top[1]} veces)</li>
+        <li>⭐ Excelente: ${evals.excelente} | 👍 Bien: ${evals.bien} | ⚠️ A mejorar: ${evals.mejorar}</li>
+      </ul>
+    </div>
+  `;
+}
+async function guardarAnalisisMes(mes){
+  const canciones = {};
+  document.querySelectorAll(`.cantante-input[data-mes="${mes}"]`).forEach(i=>{
+    const id = i.dataset.id;
+    canciones[id] = canciones[id] || {};
+    canciones[id].cantante = i.value.trim();
+  });
+
+  document.querySelectorAll(`.nota-input[data-mes="${mes}"]`).forEach(i=>{
+    const id = i.dataset.id;
+    canciones[id] = canciones[id] || {};
+    canciones[id].notas = i.value.trim();
+  });
+
+  const notasGenerales = document.querySelector(`.notas-generales[data-mes="${mes}"]`).value.trim();
+document.querySelectorAll(`.eval-input[data-mes="${mes}"]`).forEach(i=>{
+  const id = i.dataset.id;
+  canciones[id] = canciones[id] || {};
+  canciones[id].eval = i.value;
+});
+await setDoc(
+  doc(db,"analisis_mensual", mes),
+  {
+    evaluaciones,
+    observaciones
+  },
+  { merge: true }
+);
+
+  alert("✅ Análisis mensual guardado");
+}
+
+function toggleCantantes(){
+  const el = document.getElementById("analisis-cantantes");
+  if(!el) return;
+
+  el.style.display = el.style.display === "block" ? "none" : "block";
+  if(el.style.display === "block") cargarAnalisisCantantes();
+}
+
+
+async function cargarAnalisisCantantes(){
+  const cont = document.getElementById("analisis-cantantes");
+  cont.innerHTML = "<h2>🎤 Análisis por cantante</h2>";
+
+  const snap = await getDocs(collection(db,"secciones_historico"));
+
+  const porCantante = {};
+
+  snap.forEach(docu=>{
+    const s = docu.data();
+    if(!s.cantante || !s.fecha) return;
+
+    const mes = s.fecha.slice(0,7);
+    const cantante = s.cantante;
+
+    if(!porCantante[cantante]) porCantante[cantante] = {};
+
+    if(!porCantante[cantante][mes]){
+      porCantante[cantante][mes] = {
+        canciones:{},
+        observaciones:""
+      };
+    }
+
+    s.canciones.forEach(nombre=>{
+      const c = cancionesCache.find(x =>
+        normalizar(x.titulo) === normalizar(nombre)
+      );
+      if(!c) return;
+
+      porCantante[cantante][mes].canciones[c.id] =
+        (porCantante[cantante][mes].canciones[c.id] || 0) + 1;
+    });
+  });
+
+  Object.keys(porCantante).forEach(nombre=>{
+    cont.appendChild(renderCantante(nombre, porCantante[nombre]));
+  });
+}
+
+
+
+function renderCantante(nombre, meses){
+  const card = document.createElement("div");
+  card.className = "card";
+
+  const mesesOrdenados = Object.keys(meses).sort().reverse();
+
+  card.innerHTML = `
+    <details>
+      <summary>🎤 ${nombre}</summary>
+      ${mesesOrdenados.map(mes=>{
+        const fecha = new Date(mes+"-01")
+          .toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+
+        const canciones = meses[mes].canciones;
+        const lista = Object.keys(canciones).map(id=>{
+          const c = cancionesCache.find(x=>x.id===id);
+          return `<li>${c?.titulo || "—"} (${canciones[id]})</li>`;
+        }).join("");
+
+        return `
+          <div class="notas-card" style="margin-top:10px;">
+            <h3>📅 ${fecha}</h3>
+            <ul>${lista}</ul>
+          </div>
+        `;
+      }).join("")}
+    </details>
+  `;
+
+  return card;
+}
+
+
+function renderMesCantante(m){
+  const fecha = new Date(m.mes+"-01")
+    .toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+
+  let ex = 0, bien = 0, mal = 0;
+
+  const cancionesHtml = Object.keys(m.canciones).map(id=>{
+    const c = cancionesCache.find(x=>x.id===id);
+    const titulo = c?.titulo || "—";
+    const veces = m.canciones[id];
+    const ev = m.evaluaciones?.[id] || "";
+
+    if(ev === "Excelente") ex++;
+    else if(ev === "Bien") bien++;
+    else if(ev === "A mejorar") mal++;
+
+    const emoji =
+      ev === "Excelente" ? "🚀" :
+      ev === "Bien" ? "👍" :
+      ev === "A mejorar" ? "‼️" : "";
+
+    return `<li>${titulo} (${veces}) ${emoji}</li>`;
+  }).join("");
+
+  return `
+    <div class="notas-card" style="margin-top:10px;">
+      <h3>📅 ${fecha}</h3>
+      <p><strong>Resumen:</strong> 🚀 ${ex} 👍 ${bien} ‼️ ${mal}</p>
+      <ul>${cancionesHtml}</ul>
+      ${m.observaciones ? `<p><strong>📝 Observaciones:</strong><br>${m.observaciones}</p>` : ""}
+    </div>
+  `;
+}
 
 /* BOOT */
 
@@ -579,12 +1232,16 @@ window.addEventListener('load', ()=>{
   window.borrarFecha = borrarFecha;
   window.modificarFecha = modificarFecha;
   window.setOrden = setOrden;
+  window.guardarAnalisisMes = guardarAnalisisMes;
   window.marcarTocada = marcarTocada;
   window.actualizarRegistroCard = actualizarRegistroCard;
   window.mostrarWorshipPack = mostrarWorshipPack;
+  window.toggleNotas = toggleNotas;
   inicializarCanciones();
   cargarSeccion("semana");
   cargarSeccion("mes");
+  window.toggleAnalisis = toggleAnalisis;
+  window.toggleCantantes = toggleCantantes;
 });
 </script>
 </body>
