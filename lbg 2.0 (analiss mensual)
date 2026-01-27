@@ -274,6 +274,12 @@ details > *{
 
   <div id="contenedor-semana" style="display:none; margin-top:10px;">
   <input id="titulo-semana" placeholder="Título (ej. Semana del 7 al 13)" />
+  <select id="cantante-semana" style="margin-bottom:10px">
+  <option value="">🎤 Cantante</option>
+  <option value="Milly">Milly</option>
+  <option value="Carolina">Carolina</option>
+  <option value="Jason">Jason</option>
+</select>
   <textarea id="canciones-semana" placeholder="Canciones (una por línea)"></textarea>
   <textarea id="notas-edit-semana" placeholder="Notas de esta semana..."></textarea>
   <button onclick="guardarSeccion('semana')">Guardar sección</button>
@@ -384,6 +390,23 @@ function resaltar(t,q){ if(!q) return t; try{ const r=new RegExp(`(${q})`,"gi");
 function pad(n){ return String(n).padStart(2,'0'); }
 function isoToday(){ const d=new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
 function isoToDisplay(iso){ if(!iso) return '—'; if(/^\d{4}-\d{2}-\d{2}$/.test(iso)){ const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; } const dt=new Date(iso); if(isNaN(dt.getTime())) return iso; return `${pad(dt.getDate())}/${pad(dt.getMonth()+1)}/${dt.getFullYear()}`; }
+
+/* =========================
+   Fechas – análisis mensual
+========================= */
+function obtenerDomingosDelMes(mes) {
+  const [y, m] = mes.split("-").map(Number);
+  const fechas = [];
+  const d = new Date(y, m - 1, 1);
+
+  while (d.getMonth() === m - 1) {
+    if (d.getDay() === 0) { // Domingo
+      fechas.push(d.toISOString().slice(0,10));
+    }
+    d.setDate(d.getDate() + 1);
+  }
+  return fechas;
+}
 
 /* Inicialización: escucha realtime de canciones */
 async function inicializarCanciones(){
@@ -608,12 +631,22 @@ async function cargarSeccion(tipo){
     }
 
     if(snap.exists()){
+
       const data = snap.data();
+            if (modoEdicion && tipo === "semana") {
+  const sel = document.getElementById("cantante-semana");
+  if (sel) sel.value = data.cantante || "";
+}
+      
       // Sección principal con título y canciones
-      cont.innerHTML = `
-        <h3>${data.titulo || ""}</h3>
-        <ul>${(data.canciones || []).map(c => `<li>${c}</li>`).join("")}</ul>
-      `;
+     cont.innerHTML = `
+  <h3>${data.titulo || ""}</h3>
+  ${tipo === "semana"
+    ? `<p>🎤 Cantante: <strong>${data.cantante || "-"}</strong></p>`
+    : ""
+  }
+  <ul>${(data.canciones || []).map(c => `<li>${c}</li>`).join("")}</ul>
+`;
 
       // Renderizar notas si existe el contenedor
       if(notasBox){
@@ -660,13 +693,18 @@ function toggleNotas(tipo){
 async function guardarSeccion(tipo){
   const titulo = document.getElementById(`titulo-${tipo}`).value.trim();
   const canciones = document.getElementById(`canciones-${tipo}`).value.trim().split("\n").map(s=>s.trim()).filter(Boolean);
+  const cantante =
+  tipo === "semana"
+    ? document.getElementById("cantante-semana")?.value || ""
+    : undefined;
   const notas = document.getElementById(`notas-edit-${tipo}`).value.trim();
 
-  await setDoc(doc(db, "secciones", tipo), { 
-    titulo, 
-    canciones, 
-    notas 
-  });
+ await setDoc(doc(db, "secciones", tipo), { 
+  titulo, 
+  canciones, 
+  ...(tipo === "semana" && { cantante }),
+  notas 
+});
 
   alert("✅ Sección guardada");
   cargarSeccion(tipo);
@@ -691,6 +729,9 @@ function activarEdicion(){
     alert("🔒 Modo edición desactivado");
   }
   cargarSeccion("semana"); cargarSeccion("mes"); cargarCanciones(); cargarRegistro();
+  if (document.getElementById("analisis-mensual").style.display === "block") {
+  cargarAnalisisMensual();
+  }
 }
 
 /* Búsqueda */
@@ -756,7 +797,7 @@ async function cargarAnalisisMensual() {
 
     fechas.forEach(f => {
       const mes = f.slice(0,7);
-      if(!mapaMeses[mes]) mapaMeses[mes] = { canciones:{}, cantante: "", evaluaciones:{}, observaciones:"" };
+      if(!mapaMeses[mes]) mapaMeses[mes] = { canciones:{}, cantantes: "", evaluaciones:{}, observaciones:"" };
       mapaMeses[mes].canciones[cancion.id] = (mapaMeses[mes].canciones[cancion.id] || 0) + 1;
     });
   });
@@ -772,7 +813,7 @@ async function cargarAnalisisMensual() {
 meses.forEach((mes, index) => {
     const fecha = new Date(mes+"-01");
     const nombreMes = fecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
-    const datosMes = analisisGuardado[mes] || { canciones:{}, cantante:"", evaluaciones:{}, observaciones:"" };
+    const datosMes = analisisGuardado[mes] || { canciones:{}, cantantes:{}, evaluaciones:{}, observaciones:"" };
     const cancionesMes = mapaMeses[mes].canciones;
 
     const listaCanciones = Object.keys(cancionesMes).map(id => {
@@ -787,15 +828,31 @@ const resumen = [...listaCanciones].sort((a,b)=>b.veces - a.veces);
     card.className = "card";
     card.style.marginTop = "12px";
 
-    // Cantante
-    const cantanteHtml = modoEdicion 
-      ? `<label>🎤 Cantante: <select class="cantante-select" data-mes="${mes}">
-           <option value="Carolina" ${datosMes.cantante==="Carolina"?"selected":""}>Carolina</option>
-           <option value="Jason" ${datosMes.cantante==="Jason"?"selected":""}>Jason</option>
-           <option value="Milly" ${datosMes.cantante==="Milly"?"selected":""}>Milly</option>
-         </select></label>`
-      : `<p>🎤 Cantante: ${datosMes.cantante || "-"}</p>`;
+// Cantantes
+const domingos = obtenerDomingosDelMes(mes);
 
+const cantanteHtml = `
+  <details class="details-slow" style="margin-top:6px;">
+    <summary>🎤 Cantantes del mes</summary>
+
+    ${domingos.map(fecha => `
+      <div style="margin-top:6px">
+        ${isoToDisplay(fecha)} →
+        ${
+          modoEdicion
+            ? `<select class="cantante-select" data-mes="${mes}" data-fecha="${fecha}">
+                <option value=""></option>
+                <option value="Milly" ${datosMes.cantantes?.[fecha]==="Milly"?"selected":""}>Milly</option>
+                <option value="Carolina" ${datosMes.cantantes?.[fecha]==="Carolina"?"selected":""}>Carolina</option>
+                <option value="Jason" ${datosMes.cantantes?.[fecha]==="Jason"?"selected":""}>Jason</option>
+              </select>`
+            : `<strong>${datosMes.cantantes?.[fecha] || "-"}</strong>`
+        }
+      </div>
+    `).join("")}
+
+  </details>
+`;
   
     // Top 3 canciones con veces tocadas y emoji de valoración
     const resumenHtml = resumen.map(c=>{
@@ -860,14 +917,17 @@ if (index === 0) {
           const id = sel.dataset.id;
           evaluaciones[id] = sel.value;
         });
-        const cantante = document.querySelector(`.cantante-select[data-mes="${mes}"]`).value;
+        const cantantes = {};
+document.querySelectorAll(`.cantante-select[data-mes="${mes}"]`).forEach(sel => {
+  cantantes[sel.dataset.fecha] = sel.value;
+});
         const observaciones = document.querySelector(`.obs-textarea[data-mes="${mes}"]`).value;
         await setDoc(doc(db,"analisis_mensual",mes),{
-          canciones: mapaMeses[mes].canciones,
-          evaluaciones,
-          cantante,
-          observaciones
-        });
+  canciones: mapaMeses[mes].canciones,
+  evaluaciones,
+  cantantes,
+  observaciones
+});
         alert("✅ Análisis mensual guardado");
       });
     });
@@ -1020,7 +1080,7 @@ async function mostrarWorshipPack(tipo) {
     return;
   }
 
-  // Mostrar el pack
+  // Mostrar el pack//
   const snap = await getDoc(doc(db, "secciones", tipo));
   if (!snap.exists()) {
     cont.innerHTML = "<p>No hay canciones guardadas para esta sección.</p>";
