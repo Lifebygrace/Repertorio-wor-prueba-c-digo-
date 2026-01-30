@@ -392,15 +392,31 @@ function isoToday(){ const d=new Date(); return `${d.getFullYear()}-${pad(d.getM
 function isoToDisplay(iso){ if(!iso) return '—'; if(/^\d{4}-\d{2}-\d{2}$/.test(iso)){ const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; } const dt=new Date(iso); if(isNaN(dt.getTime())) return iso; return `${pad(dt.getDate())}/${pad(dt.getMonth()+1)}/${dt.getFullYear()}`; }
 
 
+function ajustarAServicio(fechaISO) {
+  if (!fechaISO) return fechaISO;
+
+  const d = new Date(fechaISO);
+  if (isNaN(d)) return fechaISO;
+
+  // Si es sábado (6), mover a domingo
+  if (d.getDay() === 6) {
+    d.setDate(d.getDate() + 1);
+  }
+
+  return d.toISOString().slice(0, 10);
+}
+
 async function obtenerCantantePorFecha(fechaISO){
   try {
-    const mes = fechaISO.slice(0,7); // YYYY-MM
+    const fechaServicio = ajustarAServicio(fechaISO); // 👈 clave
+    const mes = fechaServicio.slice(0,7); // YYYY-MM
+
     const analisisSnap = await getDoc(doc(db,"analisis_mensual",mes));
 
     if (analisisSnap.exists()) {
       const data = analisisSnap.data();
-      if (data.cantantes && data.cantantes[fechaISO]) {
-        return data.cantantes[fechaISO];
+      if (data.cantantes && data.cantantes[fechaServicio]) {
+        return data.cantantes[fechaServicio];
       }
     }
 
@@ -855,27 +871,33 @@ const resumen = [...listaCanciones].sort((a,b)=>b.veces - a.veces);
     card.style.marginTop = "12px";
 
 // Cantantes
-const domingos = obtenerDomingosDelMes(mes);
+const domingos = obtenerDomingosDelMes(mes).map(f => ajustarAServicio(f));
 
 const cantanteHtml = `
   <details class="details-slow" style="margin-top:6px;">
     <summary>🎤 Cantantes del mes</summary>
 
-    ${domingos.map(fecha => `
-      <div style="margin-top:6px">
-        ${isoToDisplay(fecha)} →
-        ${
-          modoEdicion
-            ? `<select class="cantante-select" data-mes="${mes}" data-fecha="${fecha}">
-                <option value=""></option>
-                <option value="Milly" ${datosMes.cantantes?.[fecha]==="Milly"?"selected":""}>Milly</option>
-                <option value="Carolina" ${datosMes.cantantes?.[fecha]==="Carolina"?"selected":""}>Carolina</option>
-                <option value="Jason" ${datosMes.cantantes?.[fecha]==="Jason"?"selected":""}>Jason</option>
-              </select>`
-            : `<strong>${datosMes.cantantes?.[fecha] || "-"}</strong>`
-        }
-      </div>
-    `).join("")}
+    ${domingos.map(fechaOriginal => {
+      const fecha = ajustarAServicio(fechaOriginal);
+
+      return `
+        <div style="margin-top:6px">
+          ${isoToDisplay(fecha)} →
+          ${
+            modoEdicion
+              ? `<select class="cantante-select"
+                    data-mes="${mes}"
+                    data-fecha="${fecha}">
+                  <option value=""></option>
+                  <option value="Milly" ${datosMes.cantantes?.[fecha]==="Milly"?"selected":""}>Milly</option>
+                  <option value="Carolina" ${datosMes.cantantes?.[fecha]==="Carolina"?"selected":""}>Carolina</option>
+                  <option value="Jason" ${datosMes.cantantes?.[fecha]==="Jason"?"selected":""}>Jason</option>
+                </select>`
+              : `<strong>${datosMes.cantantes?.[fecha] || "-"}</strong>`
+          }
+        </div>
+      `;
+    }).join("")}
 
   </details>
 `;
