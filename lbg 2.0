@@ -238,6 +238,56 @@ details[open] > *:not(summary){
 details > *{
   will-change: transform, opacity;
 }
+
+.metronome-ui{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.bpm-display{
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+#bpmSlider{
+  width: 100%;
+}
+
+.metro-buttons{
+  display: flex;
+  justify-content: center;
+}
+
+.modal{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content{
+  background: var(--card-bg);
+  width: 90%;
+  max-width: 360px;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+  position: relative;
+}
+
+.close-btn{
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  font-size: 1.2rem;
+}
   </style>
 </head>
 <body>
@@ -251,7 +301,7 @@ details > *{
   <div class="controls">
     <button onclick="toggleDark()">🌙 / ☀️</button>
     <button onclick="activarEdicion()">✏️ Editar</button>
-    <button onclick="window.open('https://www.metronomeonline.com','_blank')">🕒 Metrónomo</button>
+    <button onclick="abrirMetronomo()">🕒 Metrónomo</button>
     <button id="toggleCancionesBtn" onclick="toggleCanciones()">🎵 Mostrar lista</button>
   </div>
 </header>
@@ -274,15 +324,14 @@ details > *{
 
   <div id="contenedor-semana" style="display:none; margin-top:10px;">
   <input id="titulo-semana" placeholder="Título (ej. Semana del 7 al 13)" />
-  <textarea id="canciones-semana" placeholder="Canciones (una por línea)"></textarea>
-  <textarea id="notas-edit-semana" placeholder="Notas de esta semana..."></textarea>
-  <label style="font-weight:600">🎤 Cantante de la semana</label>
-<select id="cantante-semana" class="edit-input">
-  <option value="">— Seleccionar —</option>
+  <select id="cantante-semana" style="margin-bottom:10px">
+  <option value="">🎤 Cantante</option>
+  <option value="Milly">Milly</option>
   <option value="Carolina">Carolina</option>
   <option value="Jason">Jason</option>
-  <option value="Milly">Milly</option>
 </select>
+  <textarea id="canciones-semana" placeholder="Canciones (una por línea)"></textarea>
+  <textarea id="notas-edit-semana" placeholder="Notas de esta semana..."></textarea>
   <button onclick="guardarSeccion('semana')">Guardar sección</button>
 </div>
 </div>
@@ -330,8 +379,6 @@ details > *{
     <button style="background:var(--accent);" onclick="toggleRegistro()">📊 Registro de canciones</button>
     <button onclick="toggleAnalisis()">📊 Análisis mensual</button>
     <div id="analisis-mensual" class="section" style="display:none;"></div>
-    <button onclick="toggleCantantes()">📊 por cantante</button>
-    <div id="analisis-cantantes" class="section" style="display:none;"></div>
     <div id="registro-canciones" class="section" style="display:none;">
       <h2>📋 Registro de canciones</h2>
       <table id="tabla-registro">
@@ -379,6 +426,45 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+
+/* =========================
+   SECCIONES EN TIEMPO REAL
+========================= */
+function escucharSeccion(tipo) {
+  const ref = doc(db, "secciones", tipo);
+
+  onSnapshot(ref, snap => {
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+
+    const cont = document.getElementById(`mostrar-${tipo}`);
+    cont.innerHTML = `
+      <h3>${data.titulo || ""}</h3>
+      ${tipo === "semana"
+        ? `<p>🎤 Cantante: <strong>${data.cantante || "-"}</strong></p>`
+        : ""}
+      <ul>
+        ${(data.canciones || []).map(c => `<li>${c}</li>`).join("")}
+      </ul>
+    `;
+
+    const notasBox = document.getElementById(`notas-${tipo}`);
+    if (notasBox) {
+      notasBox.innerHTML = `
+        <div class="notas-card">
+          <h3>📝 Notas</h3>
+          ${renderNotas(data.notas)}
+        </div>`;
+    }
+
+    // 🔁 Si el Worship Pack está abierto, refrescarlo
+    const pack = document.getElementById(`worshippack-${tipo}`);
+    if (pack && pack.style.display === "block") {
+      mostrarWorshipPack(tipo);
+    }
+  });
+}
 /* Estado */
 let modoEdicion = false;
 let cancionesCache = [];
@@ -393,6 +479,65 @@ function resaltar(t,q){ if(!q) return t; try{ const r=new RegExp(`(${q})`,"gi");
 function pad(n){ return String(n).padStart(2,'0'); }
 function isoToday(){ const d=new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
 function isoToDisplay(iso){ if(!iso) return '—'; if(/^\d{4}-\d{2}-\d{2}$/.test(iso)){ const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; } const dt=new Date(iso); if(isNaN(dt.getTime())) return iso; return `${pad(dt.getDate())}/${pad(dt.getMonth()+1)}/${dt.getFullYear()}`; }
+
+
+function ajustarAServicio(fechaISO) {
+  if (!fechaISO) return fechaISO;
+
+  const d = new Date(fechaISO);
+  if (isNaN(d)) return fechaISO;
+
+  // Si es sábado (6), mover a domingo
+  if (d.getDay() === 6) {
+    d.setDate(d.getDate() + 1);
+  }
+
+  return d.toISOString().slice(0, 10);
+}
+
+async function obtenerCantantePorFecha(fechaISO){
+  try {
+    const fechaServicio = ajustarAServicio(fechaISO); // 👈 clave
+    const mes = fechaServicio.slice(0,7); // YYYY-MM
+
+    const analisisSnap = await getDoc(doc(db,"analisis_mensual",mes));
+
+    if (analisisSnap.exists()) {
+      const data = analisisSnap.data();
+      if (data.cantantes && data.cantantes[fechaServicio]) {
+        return data.cantantes[fechaServicio];
+      }
+    }
+
+    // fallback: cantante de la semana
+    const semanaSnap = await getDoc(doc(db,"secciones","semana"));
+    if (semanaSnap.exists()) {
+      return semanaSnap.data().cantante || "—";
+    }
+
+    return "—";
+  } catch (e) {
+    console.error("Error obteniendo cantante:", e);
+    return "—";
+  }
+}
+
+/* =========================
+   Fechas – análisis mensual
+========================= */
+function obtenerDomingosDelMes(mes) {
+  const [y, m] = mes.split("-").map(Number);
+  const fechas = [];
+  const d = new Date(y, m - 1, 1);
+
+  while (d.getMonth() === m - 1) {
+    if (d.getDay() === 0) { // Domingo
+      fechas.push(d.toISOString().slice(0,10));
+    }
+    d.setDate(d.getDate() + 1);
+  }
+  return fechas;
+}
 
 /* Inicialización: escucha realtime de canciones */
 async function inicializarCanciones(){
@@ -617,16 +762,23 @@ async function cargarSeccion(tipo){
     }
 
     if(snap.exists()){
+
       const data = snap.data();
-      // Sección principal con título y canciones
-      cont.innerHTML = `
-        <h3>${data.titulo || ""}</h3>
-        <ul>${(data.canciones || []).map(c => `<li>${c}</li>`).join("")}</ul>
-      `;
-      if(data.cantante){
-  cont.innerHTML += `<p>🎤 <strong>Cantante:</strong> ${data.cantante}</p>`;
+            if (modoEdicion && tipo === "semana") {
+  const sel = document.getElementById("cantante-semana");
+  if (sel) sel.value = data.cantante || "";
 }
       
+      // Sección principal con título y canciones
+     cont.innerHTML = `
+  <h3>${data.titulo || ""}</h3>
+  ${tipo === "semana"
+    ? `<p>🎤 Cantante: <strong>${data.cantante || "-"}</strong></p>`
+    : ""
+  }
+  <ul>${(data.canciones || []).map(c => `<li>${c}</li>`).join("")}</ul>
+`;
+
       // Renderizar notas si existe el contenedor
       if(notasBox){
         notasBox.innerHTML = `<div class="notas-card"><h3>📝 Notas</h3>${renderNotas(data.notas)}</div>`;
@@ -671,21 +823,20 @@ function toggleNotas(tipo){
 
 async function guardarSeccion(tipo){
   const titulo = document.getElementById(`titulo-${tipo}`).value.trim();
-  const canciones = document.getElementById(`canciones-${tipo}`).value
-    .split("\n").map(s=>s.trim()).filter(Boolean);
+  const canciones = document.getElementById(`canciones-${tipo}`).value.trim().split("\n").map(s=>s.trim()).filter(Boolean);
+  const cantante =
+  tipo === "semana"
+    ? document.getElementById("cantante-semana")?.value || ""
+    : undefined;
   const notas = document.getElementById(`notas-edit-${tipo}`).value.trim();
 
-  const data = { titulo, canciones, notas };
+ await setDoc(doc(db, "secciones", tipo), { 
+  titulo, 
+  canciones, 
+  ...(tipo === "semana" && { cantante }),
+  notas 
+});
 
-  if(tipo === "semana"){
-    data.cantante = document.getElementById("cantante-semana").value;
-    data.fecha = isoToday();
-
-    // 🔒 Guardar histórico semanal
-    await addDoc(collection(db,"secciones_historico"), data);
-  }
-
-  await setDoc(doc(db,"secciones", tipo), data);
   alert("✅ Sección guardada");
   cargarSeccion(tipo);
 }
@@ -709,6 +860,9 @@ function activarEdicion(){
     alert("🔒 Modo edición desactivado");
   }
   cargarSeccion("semana"); cargarSeccion("mes"); cargarCanciones(); cargarRegistro();
+  if (document.getElementById("analisis-mensual").style.display === "block") {
+  cargarAnalisisMensual();
+  }
 }
 
 /* Búsqueda */
@@ -764,29 +918,20 @@ async function cargarAnalisisMensual() {
   const analisisGuardado = {};
   analisisSnap.forEach(d => analisisGuardado[d.id] = d.data());
 
-// Agrupar por mes y por cantante (desde semanas)
-const semanasSnap = await getDocs(collection(db,"secciones_historico"));
-const mapaMeses = {};
+  // Agrupar por mes
+  const mapaMeses = {}; 
+  snapRegistro.forEach(docu => {
+    const data = docu.data();
+    const fechas = Array.isArray(data.fechas) ? data.fechas : [];
+    const cancion = cancionesCache.find(c => c.id === docu.id);
+    if(!cancion) return;
 
-semanasSnap.forEach(docu=>{
-  const s = docu.data();
-  if(!s.fecha || !s.cantante) return;
-
-  const mes = s.fecha.slice(0,7);
-
-  if(!mapaMeses[mes]) mapaMeses[mes] = {};
-  if(!mapaMeses[mes][s.cantante]) mapaMeses[mes][s.cantante] = {};
-
-  s.canciones.forEach(nombre=>{
-    const c = cancionesCache.find(x =>
-      normalizar(x.titulo) === normalizar(nombre)
-    );
-    if(!c) return;
-
-    mapaMeses[mes][s.cantante][c.id] =
-      (mapaMeses[mes][s.cantante][c.id] || 0) + 1;
+    fechas.forEach(f => {
+      const mes = f.slice(0,7);
+      if(!mapaMeses[mes]) mapaMeses[mes] = { canciones:{}, cantantes: "", evaluaciones:{}, observaciones:"" };
+      mapaMeses[mes].canciones[cancion.id] = (mapaMeses[mes].canciones[cancion.id] || 0) + 1;
+    });
   });
-});
 
   let meses = Object.keys(mapaMeses).sort().reverse(); // Mes más reciente primero
   if(!meses.length){
@@ -799,13 +944,8 @@ semanasSnap.forEach(docu=>{
 meses.forEach((mes, index) => {
     const fecha = new Date(mes+"-01");
     const nombreMes = fecha.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
-    const datosMes = analisisGuardado[mes] || { canciones:{}, cantante:"", evaluaciones:{}, observaciones:"" };
-    const cancionesMes = {};
-Object.values(mapaMeses[mes]).forEach(bloque=>{
-  Object.entries(bloque).forEach(([id, veces])=>{
-    cancionesMes[id] = (cancionesMes[id] || 0) + veces;
-  });
-});
+    const datosMes = analisisGuardado[mes] || { canciones:{}, cantantes:{}, evaluaciones:{}, observaciones:"" };
+    const cancionesMes = mapaMeses[mes].canciones;
 
     const listaCanciones = Object.keys(cancionesMes).map(id => {
       const c = cancionesCache.find(x=>x.id===id);
@@ -819,15 +959,37 @@ const resumen = [...listaCanciones].sort((a,b)=>b.veces - a.veces);
     card.className = "card";
     card.style.marginTop = "12px";
 
-    // Cantante
-    const cantanteHtml = modoEdicion 
-      ? `<label>🎤 Cantante: <select class="cantante-select" data-mes="${mes}">
-           <option value="Carolina" ${datosMes.cantante==="Carolina"?"selected":""}>Carolina</option>
-           <option value="Jason" ${datosMes.cantante==="Jason"?"selected":""}>Jason</option>
-           <option value="Milly" ${datosMes.cantante==="Milly"?"selected":""}>Milly</option>
-         </select></label>`
-      : `<p>🎤 Cantante: ${datosMes.cantante || "-"}</p>`;
+// Cantantes
+const domingos = obtenerDomingosDelMes(mes).map(f => ajustarAServicio(f));
 
+const cantanteHtml = `
+  <details class="details-slow" style="margin-top:6px;">
+    <summary>🎤 Cantantes del mes</summary>
+
+    ${domingos.map(fechaOriginal => {
+      const fecha = ajustarAServicio(fechaOriginal);
+
+      return `
+        <div style="margin-top:6px">
+          ${isoToDisplay(fecha)} →
+          ${
+            modoEdicion
+              ? `<select class="cantante-select"
+                    data-mes="${mes}"
+                    data-fecha="${fecha}">
+                  <option value=""></option>
+                  <option value="Milly" ${datosMes.cantantes?.[fecha]==="Milly"?"selected":""}>Milly</option>
+                  <option value="Carolina" ${datosMes.cantantes?.[fecha]==="Carolina"?"selected":""}>Carolina</option>
+                  <option value="Jason" ${datosMes.cantantes?.[fecha]==="Jason"?"selected":""}>Jason</option>
+                </select>`
+              : `<strong>${datosMes.cantantes?.[fecha] || "-"}</strong>`
+          }
+        </div>
+      `;
+    }).join("")}
+
+  </details>
+`;
   
     // Top 3 canciones con veces tocadas y emoji de valoración
     const resumenHtml = resumen.map(c=>{
@@ -858,13 +1020,6 @@ const resumen = [...listaCanciones].sort((a,b)=>b.veces - a.veces);
       <details ${abierto}>
         <summary>📅 ${nombreMes}</summary>
         <div style="margin-top:8px;">${cantanteHtml}</div>
-        <label>Filtrar por cantante:</label>
-<select class="cantante-mes-select" data-mes="${mes}">
-  <option value="todos">Todos</option>
-  ${Object.keys(mapaMeses[mes]).map(c =>
-    `<option value="${c}">${c}</option>`
-  ).join("")}
-</select>
         <details class="details-slow" style="margin-top:6px;">
         <summary>📌 resumen musical 🔥</summary>
           <div class="notas-card" style="margin-top:4px;"><ul>${resumenHtml}</ul></div>
@@ -899,14 +1054,17 @@ if (index === 0) {
           const id = sel.dataset.id;
           evaluaciones[id] = sel.value;
         });
-        const cantante = document.querySelector(`.cantante-select[data-mes="${mes}"]`).value;
+        const cantantes = {};
+document.querySelectorAll(`.cantante-select[data-mes="${mes}"]`).forEach(sel => {
+  cantantes[sel.dataset.fecha] = sel.value;
+});
         const observaciones = document.querySelector(`.obs-textarea[data-mes="${mes}"]`).value;
         await setDoc(doc(db,"analisis_mensual",mes),{
-          canciones: mapaMeses[mes].canciones,
-          evaluaciones,
-          cantante,
-          observaciones
-        });
+  canciones: mapaMeses[mes].canciones,
+  evaluaciones,
+  cantantes,
+  observaciones
+});
         alert("✅ Análisis mensual guardado");
       });
     });
@@ -942,9 +1100,22 @@ async function cargarRegistro(){
     if(modoEdicion){
       fechasHtml = `<div class="fechas-box">${r.fechas.map((f,idx)=>`<div><input type="date" value="${f}" onchange="modificarFecha('${r.id}',${idx},this.value)"> <button class="small" onclick="borrarFecha('${r.id}',${idx})">❌</button></div>`).join("")}<div style="margin-top:4px"><button class="small" onclick="agregarFechaManual('${r.id}')">➕ Añadir fecha</button></div></div>`;
     } else {
-      const ultima = r.fechas.length ? r.fechas[r.fechas.length-1] : "";
-      fechasHtml = `<div class="fechas-box">${ultima ? isoToDisplay(ultima) : ''} ${r.fechas.length>1 ? `<button class="small" onclick="alert('Historial de fechas:\\n${r.fechas.join("\\n")}')">Ver más</button>` : ""}</div>`;
+const ultima = r.fechas.length ? r.fechas[r.fechas.length-1] : "";
+
+fechasHtml = `
+  <div class="fechas-box">
+    ${ultima ? isoToDisplay(ultima) : ""}
+    ${
+      r.fechas.length > 1
+        ? `<button class="small ver-mas-btn"
+            data-fechas='${JSON.stringify(r.fechas)}'>
+            Ver más
+           </button>`
+        : ""
     }
+  </div>
+`;
+     }
     const tr = document.createElement("tr");
     tr.innerHTML = `<td style="text-align:left">${r.titulo}</td><td>${r.veces}</td><td>${fechasHtml}</td>`;
     tbody.appendChild(tr);
@@ -953,6 +1124,33 @@ async function cargarRegistro(){
   document.getElementById('sortTitulo').textContent = ordenActual.campo==='titulo' ? (ordenActual.sentido==='asc' ? '🔼' : '🔽') : '';
   document.getElementById('sortVeces').textContent = ordenActual.campo==='veces' ? (ordenActual.sentido==='asc' ? '🔼' : '🔽') : '';
   document.getElementById('sortUltima').textContent = ordenActual.campo==='ultima' ? (ordenActual.sentido==='asc' ? '🔼' : '🔽') : '';
+  }
+// Activar botones "Ver más"
+document.addEventListener("click", e => {
+  const btn = e.target.closest(".ver-mas-btn");
+  if (!btn) return;
+
+  try {
+    const fechas = JSON.parse(btn.dataset.fechas || "[]");
+    verHistorialConCantante(fechas);
+  } catch (err) {
+    console.error("Error parseando fechas:", err);
+    alert("Error mostrando el historial");
+  }
+});
+/* =========================
+   Historial con cantante
+========================= */
+
+async function verHistorialConCantante(fechas){
+  let texto = "📅 Historial de canciones\n\n";
+
+  for (const f of fechas) {
+    const cantante = await obtenerCantantePorFecha(f);
+    texto += `${isoToDisplay(f)} → ${cantante || "—"}\n`;
+  }
+
+  alert(texto);
 }
 
 /* Fecha helpers */
@@ -1036,145 +1234,107 @@ document.querySelectorAll(`.eval-input[data-mes="${mes}"]`).forEach(i=>{
   canciones[id] = canciones[id] || {};
   canciones[id].eval = i.value;
 });
-await setDoc(
-  doc(db,"analisis_mensual", mes),
-  {
-    evaluaciones,
-    observaciones
-  },
-  { merge: true }
-);
+  await setDoc(doc(db,"analisis_mensual",mes),{
+    canciones,
+    notasGenerales
+  });
 
   alert("✅ Análisis mensual guardado");
 }
 
-function toggleCantantes(){
-  const el = document.getElementById("analisis-cantantes");
-  if(!el) return;
+let audioCtx;
+let metronomeInterval = null;
+let isRunning = false;
+let currentBpm = Number(localStorage.getItem("metroBpm")) || 80;
 
-  el.style.display = el.style.display === "block" ? "none" : "block";
-  if(el.style.display === "block") cargarAnalisisCantantes();
+const bpmSlider = () => document.getElementById("bpmSlider");
+const bpmValue  = () => document.getElementById("bpmValue");
+const metroBtn  = () => document.getElementById("metroToggle");
+
+function initMetronome(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
 }
 
+function playClick(){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
 
-async function cargarAnalisisCantantes(){
-  const cont = document.getElementById("analisis-cantantes");
-  cont.innerHTML = "<h2>🎤 Análisis por cantante</h2>";
+  osc.type = "square";
+  osc.frequency.value = 1000;
+  gain.gain.value = 0.15;
 
-  const snap = await getDocs(collection(db,"secciones_historico"));
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
 
-  const porCantante = {};
+  osc.start();
+  osc.stop(audioCtx.currentTime + 0.05);
+}
 
-  snap.forEach(docu=>{
-    const s = docu.data();
-    if(!s.cantante || !s.fecha) return;
+function startMetronome(){
+  initMetronome();
+  const interval = 60000 / currentBpm;
 
-    const mes = s.fecha.slice(0,7);
-    const cantante = s.cantante;
+  playClick();
+  metronomeInterval = setInterval(playClick, interval);
+  isRunning = true;
+  metroBtn().textContent = "⏸ Stop";
+}
 
-    if(!porCantante[cantante]) porCantante[cantante] = {};
+function stopMetronome(){
+  clearInterval(metronomeInterval);
+  metronomeInterval = null;
+  isRunning = false;
+  metroBtn().textContent = "▶️ Start";
+}
 
-    if(!porCantante[cantante][mes]){
-      porCantante[cantante][mes] = {
-        canciones:{},
-        observaciones:""
-      };
+function toggleMetronome(){
+  isRunning ? stopMetronome() : startMetronome();
+}
+
+function abrirMetronomo(){
+  document.getElementById("modal-metronomo").style.display = "flex";
+
+  bpmSlider().value = currentBpm;
+  bpmValue().textContent = currentBpm;
+}
+
+function cerrarMetronomo(){
+  stopMetronome();
+  document.getElementById("modal-metronomo").style.display = "none";
+}
+
+/* Eventos */
+document.addEventListener("input", e => {
+  if(e.target.id === "bpmSlider"){
+    currentBpm = Number(e.target.value);
+    bpmValue().textContent = currentBpm;
+    localStorage.setItem("metroBpm", currentBpm);
+
+    if(isRunning){
+      stopMetronome();
+      startMetronome();
     }
+  }
+});
 
-    s.canciones.forEach(nombre=>{
-      const c = cancionesCache.find(x =>
-        normalizar(x.titulo) === normalizar(nombre)
-      );
-      if(!c) return;
-
-      porCantante[cantante][mes].canciones[c.id] =
-        (porCantante[cantante][mes].canciones[c.id] || 0) + 1;
-    });
-  });
-
-  Object.keys(porCantante).forEach(nombre=>{
-    cont.appendChild(renderCantante(nombre, porCantante[nombre]));
-  });
-}
-
-
-
-function renderCantante(nombre, meses){
-  const card = document.createElement("div");
-  card.className = "card";
-
-  const mesesOrdenados = Object.keys(meses).sort().reverse();
-
-  card.innerHTML = `
-    <details>
-      <summary>🎤 ${nombre}</summary>
-      ${mesesOrdenados.map(mes=>{
-        const fecha = new Date(mes+"-01")
-          .toLocaleDateString("es-ES",{month:"long",year:"numeric"});
-
-        const canciones = meses[mes].canciones;
-        const lista = Object.keys(canciones).map(id=>{
-          const c = cancionesCache.find(x=>x.id===id);
-          return `<li>${c?.titulo || "—"} (${canciones[id]})</li>`;
-        }).join("");
-
-        return `
-          <div class="notas-card" style="margin-top:10px;">
-            <h3>📅 ${fecha}</h3>
-            <ul>${lista}</ul>
-          </div>
-        `;
-      }).join("")}
-    </details>
-  `;
-
-  return card;
-}
-
-
-function renderMesCantante(m){
-  const fecha = new Date(m.mes+"-01")
-    .toLocaleDateString("es-ES",{month:"long",year:"numeric"});
-
-  let ex = 0, bien = 0, mal = 0;
-
-  const cancionesHtml = Object.keys(m.canciones).map(id=>{
-    const c = cancionesCache.find(x=>x.id===id);
-    const titulo = c?.titulo || "—";
-    const veces = m.canciones[id];
-    const ev = m.evaluaciones?.[id] || "";
-
-    if(ev === "Excelente") ex++;
-    else if(ev === "Bien") bien++;
-    else if(ev === "A mejorar") mal++;
-
-    const emoji =
-      ev === "Excelente" ? "🚀" :
-      ev === "Bien" ? "👍" :
-      ev === "A mejorar" ? "‼️" : "";
-
-    return `<li>${titulo} (${veces}) ${emoji}</li>`;
-  }).join("");
-
-  return `
-    <div class="notas-card" style="margin-top:10px;">
-      <h3>📅 ${fecha}</h3>
-      <p><strong>Resumen:</strong> 🚀 ${ex} 👍 ${bien} ‼️ ${mal}</p>
-      <ul>${cancionesHtml}</ul>
-      ${m.observaciones ? `<p><strong>📝 Observaciones:</strong><br>${m.observaciones}</p>` : ""}
-    </div>
-  `;
-}
-
+document.addEventListener("click", e => {
+  if(e.target.id === "metroToggle"){
+    toggleMetronome();
+  }
+});
 /* BOOT */
 
 /* Mostrar / ocultar Worship Pack (tarjetas de las canciones listadas en la sección) */
 async function mostrarWorshipPack(tipo) {
   const cont = document.getElementById(`worshippack-${tipo}`);
-  const boton = document.querySelector(`button[onclick="mostrarWorshipPack('${tipo}')"]`);
+  const boton = document.querySelector(
+    `button[onclick="mostrarWorshipPack('${tipo}')"]`
+  );
   if (!cont || !boton) return;
 
-  // Si ya está visible, la ocultamos y restauramos el texto del botón
+  // Toggle
   if (cont.style.display === "block") {
     cont.style.display = "none";
     cont.innerHTML = "";
@@ -1182,28 +1342,31 @@ async function mostrarWorshipPack(tipo) {
     return;
   }
 
-  // Mostrar el pack
   const snap = await getDoc(doc(db, "secciones", tipo));
   if (!snap.exists()) {
-    cont.innerHTML = "<p>No hay canciones guardadas para esta sección.</p>";
+    cont.innerHTML = "<p>No hay canciones guardadas.</p>";
     cont.style.display = "block";
     boton.textContent = "🔽 Ocultar pack";
     return;
   }
 
   const data = snap.data();
-  const lista = (data.canciones || []).map(t => normalizar(t));
-  cont.innerHTML = ""; // limpiar
+  cont.innerHTML = "";
 
-  // Mostrar tarjetas de las canciones de la lista
-  cancionesCache.forEach(c => {
-    if (lista.includes(normalizar(c.titulo))) {
-      cont.appendChild(construirCard(c));
+  // 🔑 CLAVE: recorrer en el orden escrito
+  data.canciones.forEach(tituloSemana => {
+    const cancion = cancionesCache.find(
+      c => normalizar(c.titulo) === normalizar(tituloSemana)
+    );
+
+    if (cancion) {
+      cont.appendChild(construirCard(cancion));
     }
   });
 
   if (!cont.innerHTML) {
-    cont.innerHTML = "<p>⚠️ Ninguna de las canciones guardadas coincide con las del repertorio.</p>";
+    cont.innerHTML =
+      "<p>⚠️ Ninguna de las canciones coincide con el repertorio.</p>";
   }
 
   cont.style.display = "block";
@@ -1237,12 +1400,39 @@ window.addEventListener('load', ()=>{
   window.actualizarRegistroCard = actualizarRegistroCard;
   window.mostrarWorshipPack = mostrarWorshipPack;
   window.toggleNotas = toggleNotas;
+  window.abrirMetronomo = abrirMetronomo;
+  window.cerrarMetronomo = cerrarMetronomo;
+  window.toggleMetronome = toggleMetronome;
   inicializarCanciones();
-  cargarSeccion("semana");
-  cargarSeccion("mes");
+  escucharSeccion("semana");
+  escucharSeccion("mes");
   window.toggleAnalisis = toggleAnalisis;
-  window.toggleCantantes = toggleCantantes;
+  window.verHistorialConCantante = verHistorialConCantante;
 });
 </script>
+<div id="modal-metronomo" class="modal">
+  <div class="modal-content fade-apple">
+    <button class="close-btn" onclick="cerrarMetronomo()">✖</button>
+
+    <h3>🕒 Metrónomo</h3>
+
+    <div class="metronome-ui">
+      <div class="bpm-display">
+        <span id="bpmValue">80</span> BPM
+      </div>
+
+      <input
+        type="range"
+        min="50"
+        max="180"
+        value="80"
+        id="bpmSlider" />
+
+      <div class="metro-buttons">
+        <button id="metroToggle">▶️ Start</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
