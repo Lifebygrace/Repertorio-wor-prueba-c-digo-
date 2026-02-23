@@ -288,6 +288,24 @@ details > *{
   background: transparent;
   font-size: 1.2rem;
 }
+
+.metro-controls{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:28px;           /* ← separación horizontal */
+  margin-top:14px;
+}
+
+.metro-controls button{
+  min-width:110px;    /* tamaño consistente */
+}
+
+#tapTempo{
+  touch-action: manipulation;      /* evita doble-tap zoom */
+  -webkit-user-select: none;       /* evita selección */
+  user-select: none;
+}
   </style>
 </head>
 <body>
@@ -302,7 +320,8 @@ details > *{
     <button onclick="toggleDark()">🌙 / ☀️</button>
     <button onclick="activarEdicion()">✏️ Editar</button>
     <button onclick="abrirMetronomo()">🕒 Metrónomo</button>
-    <button id="toggleCancionesBtn" onclick="toggleCanciones()">🎵 Mostrar lista</button>
+    <button id="toggleCancionesBtn" onclick="toggleCanciones()">🎵Mostrar lista</button>
+    <button onclick="toggleListadoMensual()">📅 Listado mensual</button>
   </div>
 </header>
 
@@ -357,6 +376,18 @@ details > *{
     <textarea id="notas-edit-mes" placeholder="Notas de este mes..."></textarea>
     <button onclick="guardarSeccion('mes')">Guardar sección</button>
   </div>
+</div>
+
+<div id="listado-mensual" class="section" style="display:none;">
+  <h2>📅 Listado mensual</h2>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <button onclick="cambiarMes(-1)">⬅️</button>
+    <h3 id="mes-actual"></h3>
+    <button onclick="cambiarMes(1)">➡️</button>
+  </div>
+
+  <div id="domingos-container"></div>
 </div>
 
   <button id="btnAgregar" onclick="toggleFormulario()" style="display:none;">➕ Agregar nueva canción</button>
@@ -1247,6 +1278,10 @@ let audioCtx;
 let metronomeInterval = null;
 let isRunning = false;
 let currentBpm = Number(localStorage.getItem("metroBpm")) || 80;
+// TAP TEMPO
+let tapTimes = [];
+let lastTap = 0;
+const MAX_TAPS = 6;
 
 const bpmSlider = () => document.getElementById("bpmSlider");
 const bpmValue  = () => document.getElementById("bpmValue");
@@ -1255,6 +1290,10 @@ const metroBtn  = () => document.getElementById("metroToggle");
 function initMetronome(){
   if(!audioCtx){
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  if(audioCtx.state === "suspended"){
+    audioCtx.resume();
   }
 }
 
@@ -1307,6 +1346,43 @@ function stopMetronome(){
   isRunning = false;
   metroBtn().textContent = "▶️ Start";
 }
+function tapTempo(){
+  initMetronome();
+
+  const now = performance.now();
+
+  if(now - lastTap > 2000){
+    tapTimes = [];
+  }
+
+  lastTap = now;
+  tapTimes.push(now);
+
+  if(tapTimes.length > MAX_TAPS){
+    tapTimes.shift();
+  }
+
+  if(tapTimes.length >= 2){
+    let intervals = [];
+    for(let i = 1; i < tapTimes.length; i++){
+      intervals.push(tapTimes[i] - tapTimes[i-1]);
+    }
+
+    const avg = intervals.reduce((a,b)=>a+b) / intervals.length;
+    const bpm = Math.round(60000 / avg);
+
+    if(bpm >= 50 && bpm <= 280){
+      currentBpm = bpm;
+      bpmSlider().value = bpm;
+      bpmDisplay().textContent = bpm;
+
+      if(isRunning){
+        stopMetronome();
+        startMetronome();
+      }
+    }
+  }
+}
 
 function toggleMetronome(){
   isRunning ? stopMetronome() : startMetronome();
@@ -1343,7 +1419,119 @@ document.addEventListener("click", e => {
     toggleMetronome();
   }
 });
+
+document.getElementById("tapTempo").addEventListener("click", tapTempo);
+
+
+// 🔊 Reactivar audio al volver a la app (iOS / PWA)
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState === "visible" && audioCtx){
+    audioCtx.resume();
+  }
+});
+
+window.addEventListener("pageshow", ()=>{
+  if (audioCtx) {
+    audioCtx.resume();
+  }
+});
+
+let lastTouchEnd = 0;
+
+document.addEventListener("touchend", function (event) {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    if (event.target.closest("#tapTempo")) {
+      event.preventDefault();
+    }
+  }
+  lastTouchEnd = now;
+}, { passive: false });
+
 /* BOOT */
+
+let mesListadoActual = new Date();
+
+window.toggleListadoMensual = function(){
+  const el = document.getElementById("listado-mensual");
+  el.style.display = el.style.display === "block" ? "none" : "block";
+  if(el.style.display === "block"){
+    renderListadoMensual();
+  }
+}
+
+window.cambiarMes = function(delta){
+  mesListadoActual.setMonth(mesListadoActual.getMonth() + delta);
+  renderListadoMensual();
+}
+
+async function renderListadoMensual(){
+
+  const mes = mesListadoActual.toISOString().slice(0,7);
+  const nombreMes = mesListadoActual.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+  document.getElementById("mes-actual").textContent = nombreMes.toUpperCase();
+
+  const domingos = obtenerDomingosDelMes(mes);
+  const cont = document.getElementById("domingos-container");
+  cont.innerHTML = "";
+
+  const docRef = doc(db,"listado_mensual",mes);
+  const snap = await getDoc(docRef);
+  const data = snap.exists() ? snap.data() : {};
+
+  domingos.forEach(fecha => {
+
+    const cancionesAsignadas = data[fecha] || [];
+
+    const div = document.createElement("div");
+    div.className = "card";
+
+    if(modoEdicion){
+      div.innerHTML = `
+        <h4>${isoToDisplay(fecha)}</h4>
+        <textarea data-fecha="${fecha}" class="edit-listado edit-input"
+          placeholder="Una canción por línea...">${cancionesAsignadas.join("\n")}</textarea>
+      `;
+    } else {
+      div.innerHTML = `
+        <h4>${isoToDisplay(fecha)}</h4>
+        <ul>
+          ${cancionesAsignadas.map(c=>`<li>${c}</li>`).join("") || "<li>—</li>"}
+        </ul>
+      `;
+    }
+
+    cont.appendChild(div);
+  });
+
+  if(modoEdicion){
+    const btnGuardar = document.createElement("button");
+    btnGuardar.textContent = "💾 Guardar listado";
+    btnGuardar.style.marginTop = "10px";
+    btnGuardar.onclick = () => guardarListadoMensual(mes);
+    cont.appendChild(btnGuardar);
+  }
+}
+
+async function guardarListadoMensual(mes){
+
+  const inputs = document.querySelectorAll(".edit-listado");
+  const datos = {};
+
+  inputs.forEach(input=>{
+    const fecha = input.dataset.fecha;
+    const canciones = input.value
+      .split("\n")
+      .map(s=>s.trim())
+      .filter(Boolean);
+
+    datos[fecha] = canciones;
+  });
+
+  await setDoc(doc(db,"listado_mensual",mes), datos);
+  alert("✅ Listado mensual guardado");
+  renderListadoMensual();
+}
 
 /* Mostrar / ocultar Worship Pack (tarjetas de las canciones listadas en la sección) */
 async function mostrarWorshipPack(tipo) {
@@ -1425,6 +1613,7 @@ window.addEventListener('load', ()=>{
   inicializarCanciones();
   escucharSeccion("semana");
   escucharSeccion("mes");
+  initMetronome();
   window.toggleAnalisis = toggleAnalisis;
   window.verHistorialConCantante = verHistorialConCantante;
 });
@@ -1443,12 +1632,15 @@ window.addEventListener('load', ()=>{
       <input
         type="range"
         min="50"
-        max="180"
+        max="280"
         value="80"
         id="bpmSlider" />
 
       <div class="metro-buttons">
-        <button id="metroToggle">▶️ Start</button>
+        <div class="metro-controls">
+  <button id="metroToggle">▶ Start</button>
+  <button id="tapTempo">TAP</button>
+</div>
       </div>
     </div>
   </div>
