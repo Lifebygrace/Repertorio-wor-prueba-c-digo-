@@ -307,12 +307,191 @@ details > *{
   user-select: none;
 }
 
+/* ================================
+   DOMINGO RESALTADO (BASE)
+================================ */
 .domingo-proximo {
-  border: 2px solid #ff8c00;
-  background: linear-gradient(135deg, #3a2605, #4a3008);
-  box-shadow: 0 0 18px rgba(255, 140, 0, 0.5);
+  border-radius: 12px;
   transform: scale(1.02);
-  transition: 0.3s ease;
+  transition: all 0.3s ease;
+}
+    /* =================================
+   ✨ GLOW PULSANTE PARA DOMINGO RESALTADO
+================================= */
+@keyframes domingoGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.35),
+                0 0 20px rgba(255, 140, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(255, 140, 0, 0.55),
+                0 0 32px rgba(255, 140, 0, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.35),
+                0 0 20px rgba(255, 140, 0, 0.2);
+  }
+}
+
+.domingo-proximo {
+  animation: domingoGlow 2.5s ease-in-out infinite;
+}
+
+/* ================================
+   ☀ MODO CLARO
+================================ */
+body:not(.dark) .domingo-proximo {
+  background: linear-gradient(135deg, #ffb347, #ff8c00);
+  border: 2px solid #ff8c00;
+  box-shadow: 0 6px 18px rgba(255, 140, 0, 0.35);
+  color: #ffffff;
+}
+
+body:not(.dark) .domingo-proximo h4,
+body:not(.dark) .domingo-proximo li {
+  color: #ffffff;
+}
+
+/* ================================
+   🌙 MODO OSCURO (Elegante)
+================================ */
+body.dark .domingo-proximo {
+  background: linear-gradient(135deg, #2a1a00, #3a2400);
+  border: 1px solid rgba(255, 140, 0, 0.4);
+  box-shadow: 0 0 22px rgba(255, 140, 0, 0.25);
+  color: #ffffff;
+}
+
+body.dark .domingo-proximo h4,
+body.dark .domingo-proximo li {
+  color: #ffffff;
+}
+
+/* =================================
+   🏷 ETIQUETA PRÓXIMO SERVICIO CON GLOW PREMIUM
+================================= */
+.proximo-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+  text-shadow: 0 0 6px rgba(255, 140, 0, 0.6),
+               0 0 12px rgba(255, 140, 0, 0.4),
+               0 0 18px rgba(255, 140, 0, 0.3);
+  animation: glowPulse 2.5s ease-in-out infinite;
+}
+
+/* En modo claro */
+body:not(.dark) .proximo-label {
+  color: #ffecb3; /* amarillo suave */
+}
+
+/* En modo oscuro */
+body.dark .proximo-label {
+  color: #ffd27f; /* amarillo elegante */
+}
+
+/* ✨ ANIMACIÓN GLOW PULSANTE */
+@keyframes glowPulse {
+  0% {
+    text-shadow: 0 0 6px rgba(255, 140, 0, 0.6),
+                 0 0 12px rgba(255, 140, 0, 0.4),
+                 0 0 18px rgba(255, 140, 0, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(255, 140, 0, 0.9),
+                 0 0 20px rgba(255, 140, 0, 0.6),
+                 0 0 28px rgba(255, 140, 0, 0.4);
+  }
+  100% {
+    text-shadow: 0 0 6px rgba(255, 140, 0, 0.6),
+                 0 0 12px rgba(255, 140, 0, 0.4),
+                 0 0 18px rgba(255, 140, 0, 0.3);
+  }
+}
+
+/* =========================
+   MODAL LISTADO MENSUAL
+========================= */
+.modal-listado {
+  background: #fff8dc; /* amarillo claro tipo secciones */
+  color: black;
+  opacity: 0;
+  transform: translate(-50%, -48%) scale(0.96);
+  transition: 
+    opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.3s ease;
+}
+
+/* Visible */
+.modal-listado.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+body.dark .modal-listado {
+  background: rgba(20, 20, 20, 0.85);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Títulos en modo oscuro */
+body.dark .modal-listado h2,
+body.dark .modal-listado h3,
+body.dark .modal-listado h4 {
+  color: #ffffff;
+}
+
+/* Texto de listas */
+body.dark .modal-listado li {
+  color: #ffffff;
+}
+
+/* Botón cerrar */
+body.dark .modal-listado .close-btn {
+  color: #ffffff;
+}
+    
+  /* Base modal */
+.modal-listado {
+  opacity: 0;
+  transform: translate(-50%, -48%) scale(0.96);
+  transition: 
+    opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Visible */
+.modal-listado.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+    /* =================================
+   🏷 ETIQUETA PRÓXIMO SERVICIO
+================================= */
+.proximo-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+  opacity: 0.85;
+}
+
+/* En modo claro */
+body:not(.dark) .proximo-label {
+  color: #5a5a5a; /* gris suave */
+}
+
+/* En modo oscuro */
+body.dark .proximo-label {
+  color: #bbbbbb; /* gris claro elegante */
 }
   </style>
 </head>
@@ -386,8 +565,9 @@ details > *{
   </div>
 </div>
 
-<div id="listado-mensual" class="section" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); 
-     background:white; border:2px solid #ccc; padding:20px; z-index:9999; box-shadow:0 4px 20px rgba(0,0,0,0.3); 
+<div id="listado-mensual" class="section modal-listado" 
+     style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+     border:2px solid #ccc; padding:20px; z-index:9999; box-shadow:0 4px 20px rgba(0,0,0,0.3); 
      max-height:80vh; overflow-y:auto; width:90%; max-width:600px; border-radius:8px;">
 
   <!-- Botón de cerrar -->
@@ -574,14 +754,26 @@ async function obtenerCantantePorFecha(fechaISO){
 function obtenerDomingosDelMes(mes) {
   const [y, m] = mes.split("-").map(Number);
   const fechas = [];
-  const d = new Date(y, m - 1, 1);
+
+  let d = new Date(y, m - 1, 1);
+
+  // Ir al primer domingo del mes
+  const diaSemana = d.getDay();
+  if (diaSemana !== 0) {
+    d.setDate(d.getDate() + (7 - diaSemana));
+  }
 
   while (d.getMonth() === m - 1) {
-    if (d.getDay() === 0) { // Domingo
-      fechas.push(d.toISOString().slice(0,10));
-    }
-    d.setDate(d.getDate() + 1);
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    fechas.push(`${year}-${month}-${day}`);
+
+    d.setDate(d.getDate() + 7);
   }
+
   return fechas;
 }
 
@@ -1469,8 +1661,17 @@ let mesListadoActual = new Date();
 
 window.toggleListadoMensual = function(){
   const el = document.getElementById("listado-mensual");
-  el.style.display = el.style.display === "block" ? "none" : "block";
+
   if(el.style.display === "block"){
+    el.classList.remove("show");
+    setTimeout(() => {
+      el.style.display = "none";
+    }, 350);
+  } else {
+    el.style.display = "block";
+    setTimeout(() => {
+      el.classList.add("show");
+    }, 10);
     renderListadoMensual();
   }
 }
@@ -1506,31 +1707,55 @@ proximoDomingo.setDate(hoy.getDate() + diasHastaDomingo);
 
 const proximoDomingoISO = proximoDomingo.toISOString().slice(0,10);
 
-  domingos.forEach(fecha => {
+domingos.forEach(fecha => {
 
-    const cancionesAsignadas = data[fecha] || [];
+  const infoDia = data[fecha] || { canciones: [], cantante: "" };
+  const cancionesAsignadas = infoDia.canciones || [];
+  const cantanteAsignado = infoDia.cantante || "";
 
-    const div = document.createElement("div");
-const esProximo = fecha === proximoDomingoISO;
-div.className = esProximo ? "card domingo-proximo" : "card";
+  const div = document.createElement("div");
+  const esProximo = fecha === proximoDomingoISO;
+  div.className = esProximo ? "card domingo-proximo" : "card";
 
-    if(modoEdicion){
-      div.innerHTML = `
-        <h4>${isoToDisplay(fecha)}</h4>
-        <textarea data-fecha="${fecha}" class="edit-listado edit-input"
-          placeholder="Una canción por línea...">${cancionesAsignadas.join("\n")}</textarea>
-      `;
-    } else {
-      div.innerHTML = `
-        <h4>${isoToDisplay(fecha)}</h4>
-        <ul>
-          ${cancionesAsignadas.map(c=>`<li>${c}</li>`).join("") || "<li>—</li>"}
-        </ul>
-      `;
-    }
+  if (modoEdicion) {
 
-    cont.appendChild(div);
-  });
+    div.innerHTML = `
+      <h4>
+        ${isoToDisplay(fecha)}
+        ${esProximo ? '<span class="proximo-label">Próximo servicio 🔥</span>' : ''}
+      </h4>
+
+      🎤 Cantante:
+      <select class="cantante-listado" data-fecha="${fecha}">
+        <option value=""></option>
+        <option value="Carolina" ${cantanteAsignado==="Carolina"?"selected":""}>Carolina</option>
+        <option value="Milly" ${cantanteAsignado==="Milly"?"selected":""}>Milly</option>
+        <option value="Jason" ${cantanteAsignado==="Jason"?"selected":""}>Jason</option>
+      </select>
+
+      <textarea data-fecha="${fecha}" 
+        class="edit-listado edit-input"
+        placeholder="Una canción por línea...">${cancionesAsignadas.join("\n")}</textarea>
+    `;
+
+  } else {
+
+    div.innerHTML = `
+      <h4>
+        ${isoToDisplay(fecha)}
+        ${esProximo ? '<span class="proximo-label">Próximo servicio 🔥</span>' : ''}
+      </h4>
+
+      <p>🎤 Cantante: <strong>${cantanteAsignado || "-"}</strong></p>
+
+      <ul>
+        ${cancionesAsignadas.map(c => `<li>${c}</li>`).join("")}
+      </ul>
+    `;
+  }
+
+  cont.appendChild(div);
+});
 
   if(modoEdicion){
     const btnGuardar = document.createElement("button");
@@ -1541,25 +1766,35 @@ div.className = esProximo ? "card domingo-proximo" : "card";
   }
 }
 
-async function guardarListadoMensual(mes){
+window.guardarListadoMensual = async function(){
 
-  const inputs = document.querySelectorAll(".edit-listado");
-  const datos = {};
+  const mes = mesListadoActual.toISOString().slice(0,7);
+  const datosGuardar = {};
 
-  inputs.forEach(input=>{
-    const fecha = input.dataset.fecha;
-    const canciones = input.value
+  document.querySelectorAll(".edit-listado").forEach(textarea => {
+
+    const fecha = textarea.dataset.fecha;
+
+    const canciones = textarea.value
       .split("\n")
-      .map(s=>s.trim())
+      .map(s => s.trim())
       .filter(Boolean);
 
-    datos[fecha] = canciones;
+    const select = document.querySelector(`.cantante-listado[data-fecha="${fecha}"]`);
+    const cantante = select ? select.value : "";
+
+    datosGuardar[fecha] = {
+      canciones,
+      cantante
+    };
+
   });
 
-  await setDoc(doc(db,"listado_mensual",mes), datos);
+  await setDoc(doc(db,"listado_mensual",mes), datosGuardar);
+
   alert("✅ Listado mensual guardado");
   renderListadoMensual();
-}
+};
 
 /* Mostrar / ocultar Worship Pack (tarjetas de las canciones listadas en la sección) */
 async function mostrarWorshipPack(tipo) {
