@@ -1967,73 +1967,129 @@ async function cargarAnalisisReal() {
     return;
   }
 
-  // ===== CREAR TARJETA ANÁLISIS POR CANTANTE 🎤 =====
-  const tarjetaCantante = document.createElement("div");
-  tarjetaCantante.className = "card";
-  tarjetaCantante.style.marginBottom = "20px";
-  tarjetaCantante.innerHTML = `<h2 style="cursor:pointer; font-size: 1.3em;">🎤 Análisis por cantante ▼</h2>
-    <div class="contenido-cantante" style="display:none; margin-top:10px;"></div>`;
+// ===== CREAR TARJETA ANÁLISIS POR CANTANTE 🎤 =====
+const tarjetaCantante = document.createElement("div");
+tarjetaCantante.className = "card";
+tarjetaCantante.style.marginBottom = "20px";
 
-  const contCantante = tarjetaCantante.querySelector(".contenido-cantante");
-  tarjetaCantante.querySelector("h2").addEventListener("click", () => {
-    contCantante.style.display = contCantante.style.display === "block" ? "none" : "block";
+tarjetaCantante.innerHTML = `
+  <h2 style="cursor:pointer; font-size:1.3em;">🎤 Análisis por cantante ▼</h2>
+  <div class="contenido-cantante" style="display:none; margin-top:15px;"></div>
+`;
+
+const contCantante = tarjetaCantante.querySelector(".contenido-cantante");
+
+tarjetaCantante.querySelector("h2").addEventListener("click", () => {
+  contCantante.style.display =
+    contCantante.style.display === "block" ? "none" : "block";
+});
+
+const cantantes = ["Milly", "Carolina", "Jason"];
+
+cantantes.forEach(nombre => {
+
+  // Ahora guardamos conteo por canción
+  const conteo = {
+    "Excelente": {},
+    "Bien": {},
+    "A mejorar": {}
+  };
+
+  snapRegistro.forEach(docu => {
+    const data = docu.data();
+    const fechas = Array.isArray(data.fechas) ? data.fechas : [];
+
+    fechas.forEach(f => {
+
+      const analisis = analisisGuardado[f];
+      if (!analisis) return;
+      if (analisis.cantante !== nombre) return;
+
+      const evaluacion = analisis.evaluaciones?.[docu.id];
+      if (!evaluacion) return;
+
+      const cancion = cancionesCache.find(c => c.id === docu.id);
+      const titulo = cancion?.titulo || docu.id;
+
+      if (!conteo[evaluacion][titulo]) {
+        conteo[evaluacion][titulo] = 0;
+      }
+
+      conteo[evaluacion][titulo]++;
+    });
   });
 
-  // Conteo por cantante
-  const cantantes = ["Milly", "Carolina", "Jason"];
-  cantantes.forEach(nombre => {
-    // Inicializar conteo
-    const conteo = { "Excelente": [], "Bien": [], "A mejorar": [] };
+  const total =
+    Object.keys(conteo["Excelente"]).length +
+    Object.keys(conteo["Bien"]).length +
+    Object.keys(conteo["A mejorar"]).length;
 
-    snapRegistro.forEach(docu => {
-      const data = docu.data();
-      const fechas = Array.isArray(data.fechas) ? data.fechas : [];
+  const divCantante = document.createElement("div");
+  divCantante.style.marginBottom = "25px";
+  divCantante.innerHTML = `<h3 style="margin-bottom:12px;">${nombre}</h3>`;
 
-      fechas.forEach(f => {
-        const evals = analisisGuardado[f]?.evaluaciones || {};
-        const cantanteGuardado = analisisGuardado[f]?.cantante || "";
+  Object.entries(conteo).forEach(([tipo, cancionesObj]) => {
 
-        if (cantanteGuardado !== nombre) return;
+    const cantidad = Object.keys(cancionesObj).length;
+    const porcentaje = total ? ((cantidad / total) * 100).toFixed(0) : 0;
 
-        const cancion = cancionesCache.find(c => c.id === docu.id);
-        const titulo = cancion?.titulo || docu.id;
+    const color =
+      tipo === "Excelente" ? "#4caf50" :
+      tipo === "Bien" ? "#2196f3" :
+      "#f44336";
 
-        if (evals[docu.id] === "Excelente") conteo["Excelente"].push(titulo);
-        else if (evals[docu.id] === "Bien") conteo["Bien"].push(titulo);
-        else if (evals[docu.id] === "A mejorar") conteo["A mejorar"].push(titulo);
-      });
-    });
+    const emoji =
+      tipo === "Excelente" ? "🚀" :
+      tipo === "Bien" ? "👍" :
+      "‼️";
 
-    // Crear sección por cantante
-    const divCantante = document.createElement("div");
-    divCantante.style.marginBottom = "15px";
+    const wrapper = document.createElement("div");
+    wrapper.style.marginBottom = "10px";
 
-    // Generar barras y listas desplegables
-    const barrasHtml = Object.entries(conteo).map(([key, lista]) => {
-      const porcentaje = Math.min((lista.length / Math.max(1, Math.max(...Object.values(conteo).map(l => l.length)))) * 100, 100);
-      return `
-        <div class="barra" style="width:${porcentaje}%; background:${key==='Excelente'?'#4caf50':key==='Bien'?'#2196f3':'#f44336'}; padding:4px 8px; margin:2px 0; cursor:pointer; color:#fff;">
-          ${key==='Excelente'?'🚀':key==='Bien'?'👍':'‼️'} ${key} (${lista.length})
+    wrapper.innerHTML = `
+      <div class="barra-container"
+           style="
+             background:#e0e0e0;
+             border-radius:6px;
+             overflow:hidden;
+             cursor:pointer;
+           ">
+        <div style="
+              width:${porcentaje}%;
+              background:${color};
+              padding:6px 10px;
+              color:white;
+              font-weight:bold;
+              white-space:nowrap;
+            ">
+          ${emoji} ${tipo} (${cantidad}) | ${porcentaje}%
         </div>
-        <ul class="lista-canciones" style="display:none; margin-left:15px; margin-bottom:5px;">
-          ${lista.map(t => `<li>${t}</li>`).join("")}
-        </ul>
-      `;
-    }).join("");
+      </div>
+      <ul style="
+            display:none;
+            margin:8px 0 0 18px;
+          ">
+        ${Object.entries(cancionesObj)
+          .map(([titulo, veces]) => `<li>${titulo} (${veces})</li>`)
+          .join("")}
+      </ul>
+    `;
 
-    divCantante.innerHTML = `<strong>${nombre}</strong><br>${barrasHtml}`;
-    contCantante.appendChild(divCantante);
-  });
+    const barra = wrapper.querySelector(".barra-container");
+    const ul = wrapper.querySelector("ul");
 
-  cont.appendChild(tarjetaCantante);
-
-  // Activar toggle de listas al pulsar barra
-  cont.querySelectorAll(".barra").forEach(b => {
-    b.addEventListener("click", () => {
-      const ul = b.nextElementSibling;
-      ul.style.display = ul.style.display === "block" ? "none" : "block";
+    barra.addEventListener("click", () => {
+      ul.style.display =
+        ul.style.display === "block" ? "none" : "block";
     });
+
+    divCantante.appendChild(wrapper);
   });
+
+  contCantante.appendChild(divCantante);
+});
+
+cont.appendChild(tarjetaCantante);
 
   // ===== FUNCIÓN PARA CREAR CARD DE MES =====
   function crearCardMes(mesKey) {
