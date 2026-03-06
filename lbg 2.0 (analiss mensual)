@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+  
+<!-- =====================================================
+   ⚙️ META CONFIG / PWA CONFIG
+   - iOS icon
+   - Android manifest
+===================================================== -->
+
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Repertorio Worship</title>
@@ -15,6 +22,10 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" sizes="192x192" href="logo-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="logo-512.png">
+  
+<!-- =====================================================
+   🎨 CSS STYLE GLOBAL
+===================================================== -->
   
   <style>
   :root{
@@ -78,7 +89,7 @@ button:active{
 /* Hover solo escritorio */
 @media (hover: hover){
   .card:hover{
-    transform: translateY(-2px);
+    transform: translateY(-2px); mi
     box-shadow: 0 6px 20px rgba(0,0,0,.10);
   }
 }
@@ -238,10 +249,307 @@ details[open] > *:not(summary){
 details > *{
   will-change: transform, opacity;
 }
+
+.metronome-ui{
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.bpm-display{
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+#bpmSlider{
+  width: 100%;
+}
+
+.metro-buttons{
+  display: flex;
+  justify-content: center;
+}
+
+.modal{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.modal-content{
+  background: var(--card-bg);
+  width: 90%;
+  max-width: 360px;
+  padding: 16px;
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+  position: relative;
+}
+
+.close-btn{
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: transparent;
+  font-size: 1.2rem;
+}
+
+.metro-controls{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:28px;           /* ← separación horizontal */
+  margin-top:14px;
+}
+
+.metro-controls button{
+  min-width:110px;    /* tamaño consistente */
+}
+
+#tapTempo{
+  width: 120px;                  /* tamaño grande */
+  height: 120px;                 /* igual que el ancho para ser redondo */
+  border-radius: 50%;            /* círculo perfecto */
+  background: linear-gradient(145deg, #ff7f50, #ff6347); /* degradado atractivo */
+  color: white;                   /* texto legible */
+  font-size: 1.6rem;             /* tamaño del texto */
+  font-weight: 700;
+  border: none;                  /* quitar borde predeterminado */
+  cursor: pointer;               /* indica que se puede tocar */
+  box-shadow: 0 6px 15px rgba(0,0,0,0.25); /* profundidad */
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.3s ease; /* animación al tocar */
+  touch-action: manipulation;      /* evita doble-tap zoom */
+  -webkit-user-select: none;       /* evita selección */
+  user-select: none;
+  animation: pulse 1.2s infinite ease-in-out; /* efecto latido */
+}
+
+#tapTempo:active {
+  transform: scale(0.95);       /* efecto de “presionar” */
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+}
+
+#tapTempo:hover {
+  transform: scale(1.05);       /* efecto sugerente al pasar el mouse */
+  background: linear-gradient(145deg, #ff6347, #ff4500); /* realce al pasar mouse */
+}
+
+/* Animación de latido */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  }
+}
+/* ================================
+   DOMINGO RESALTADO (BASE)
+================================ */
+.domingo-proximo {
+  border-radius: 12px;
+  transform: scale(1.02);
+  transition: all 0.3s ease;
+}
+    /* =================================
+   ✨ GLOW PULSANTE PARA DOMINGO RESALTADO
+================================= */
+@keyframes domingoGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.35),
+                0 0 20px rgba(255, 140, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 22px rgba(255, 140, 0, 0.55),
+                0 0 32px rgba(255, 140, 0, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 10px rgba(255, 140, 0, 0.35),
+                0 0 20px rgba(255, 140, 0, 0.2);
+  }
+}
+
+.domingo-proximo {
+  animation: domingoGlow 2.5s ease-in-out infinite;
+}
+
+/* ================================
+   ☀ MODO CLARO
+================================ */
+body:not(.dark) .domingo-proximo {
+  background: linear-gradient(135deg, #ffb347, #ff8c00);
+  border: 2px solid #ff8c00;
+  box-shadow: 0 6px 18px rgba(255, 140, 0, 0.35);
+  color: #ffffff;
+}
+
+body:not(.dark) .domingo-proximo h4,
+body:not(.dark) .domingo-proximo li {
+  color: #ffffff;
+}
+
+/* ================================
+   🌙 MODO OSCURO (Elegante)
+================================ */
+body.dark .domingo-proximo {
+  background: linear-gradient(135deg, #2a1a00, #3a2400);
+  border: 1px solid rgba(255, 140, 0, 0.4);
+  box-shadow: 0 0 22px rgba(255, 140, 0, 0.25);
+  color: #ffffff;
+}
+
+body.dark .domingo-proximo h4,
+body.dark .domingo-proximo li {
+  color: #ffffff;
+}
+
+/* =================================
+   🏷 ETIQUETA PRÓXIMO SERVICIO CON GLOW PREMIUM
+================================= */
+.proximo-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+  text-shadow: 0 0 6px rgba(255, 140, 0, 0.6),
+               0 0 12px rgba(255, 140, 0, 0.4),
+               0 0 18px rgba(255, 140, 0, 0.3);
+  animation: glowPulse 2.5s ease-in-out infinite;
+}
+
+/* En modo claro */
+body:not(.dark) .proximo-label {
+  color: #ffecb3; /* amarillo suave */
+}
+
+/* En modo oscuro */
+body.dark .proximo-label {
+  color: #ffd27f; /* amarillo elegante */
+}
+
+/* ✨ ANIMACIÓN GLOW PULSANTE */
+@keyframes glowPulse {
+  0% {
+    text-shadow: 0 0 6px rgba(255, 140, 0, 0.6),
+                 0 0 12px rgba(255, 140, 0, 0.4),
+                 0 0 18px rgba(255, 140, 0, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 12px rgba(255, 140, 0, 0.9),
+                 0 0 20px rgba(255, 140, 0, 0.6),
+                 0 0 28px rgba(255, 140, 0, 0.4);
+  }
+  100% {
+    text-shadow: 0 0 6px rgba(255, 140, 0, 0.6),
+                 0 0 12px rgba(255, 140, 0, 0.4),
+                 0 0 18px rgba(255, 140, 0, 0.3);
+  }
+}
+
+/* =========================
+   MODAL LISTADO MENSUAL
+========================= */
+.modal-listado {
+  background: #fff8dc; /* amarillo claro tipo secciones */
+  color: black;
+  opacity: 0;
+  transform: translate(-50%, -48%) scale(0.96);
+  transition: 
+    opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.3s ease;
+}
+
+/* Visible */
+.modal-listado.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+body.dark .modal-listado {
+  background: rgba(20, 20, 20, 0.85);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Títulos en modo oscuro */
+body.dark .modal-listado h2,
+body.dark .modal-listado h3,
+body.dark .modal-listado h4 {
+  color: #ffffff;
+}
+
+/* Texto de listas */
+body.dark .modal-listado li {
+  color: #ffffff;
+}
+
+/* Botón cerrar */
+body.dark .modal-listado .close-btn {
+  color: #ffffff;
+}
+    
+  /* Base modal */
+.modal-listado {
+  opacity: 0;
+  transform: translate(-50%, -48%) scale(0.96);
+  transition: 
+    opacity 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Visible */
+.modal-listado.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+    /* =================================
+   🏷 ETIQUETA PRÓXIMO SERVICIO
+================================= */
+.proximo-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 4px;
+  letter-spacing: 0.5px;
+  opacity: 0.85;
+}
+
+/* En modo claro */
+body:not(.dark) .proximo-label {
+  color: #5a5a5a; /* gris suave */
+}
+
+/* En modo oscuro */
+body.dark .proximo-label {
+  color: #bbbbbb; /* gris claro elegante */
+}
   </style>
 </head>
+
+
+<!-- =====================================================
+   🖥️ INTERFAZ PRINCIPAL
+===================================================== -->
+
 <body>
 <div class="edit-banner">✏️ Modo edición activo</div>
+<!-- =====================================================
+   🔝 HEADER / CONTROLES PRINCIPALES
+===================================================== -->
 
 <header>
   <div class="logo">
@@ -251,10 +559,15 @@ details > *{
   <div class="controls">
     <button onclick="toggleDark()">🌙 / ☀️</button>
     <button onclick="activarEdicion()">✏️ Editar</button>
-    <button onclick="window.open('https://www.metronomeonline.com','_blank')">🕒 Metrónomo</button>
-    <button id="toggleCancionesBtn" onclick="toggleCanciones()">🎵 Mostrar lista</button>
+    <button onclick="abrirMetronomo()">🕒 Metrónomo</button>
+    <button id="toggleCancionesBtn" onclick="toggleCanciones()">🎵Mostrar lista</button>
+    <button onclick="toggleListadoMensual()">📅 Listado mensual</button>
   </div>
 </header>
+
+<!-- =====================================================
+   📚 CONTENIDO PRINCIPAL
+===================================================== -->
 
 <main>
   <div class="search-container">
@@ -309,6 +622,26 @@ details > *{
   </div>
 </div>
 
+<div id="listado-mensual" class="section modal-listado" 
+     style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+     border:2px solid #ccc; padding:20px; z-index:9999; box-shadow:0 4px 20px rgba(0,0,0,0.3); 
+     max-height:80vh; overflow-y:auto; width:90%; max-width:600px; border-radius:8px;">
+
+  <!-- Botón de cerrar -->
+  <span class="close-btn" onclick="toggleListadoMensual()" 
+        style="position:absolute; top:10px; right:15px; cursor:pointer; font-size:18px;">✖</span>
+
+  <h2>📅 Listado mensual</h2>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+    <button onclick="cambiarMes(-1)">⬅️</button>
+    <h3 id="mes-actual"></h3>
+    <button onclick="cambiarMes(1)">➡️</button>
+  </div>
+
+  <div id="domingos-container"></div>
+</div>
+
   <button id="btnAgregar" onclick="toggleFormulario()" style="display:none;">➕ Agregar nueva canción</button>
 
   <form id="formulario" onsubmit="event.preventDefault(); agregarCancion();" style="display:none;margin-top:12px;">
@@ -325,9 +658,16 @@ details > *{
 
   <div id="lista-canciones" style="display:none;margin-top:12px;"></div>
 
+
+<!-- =====================================================
+   📊 REGISTRO Y ANALÍTICAS
+===================================================== -->
+
   <div id="registro-canciones-container" style="margin-top:12px;">
     <button style="background:var(--accent);" onclick="toggleRegistro()">📊 Registro de canciones</button>
     <button onclick="toggleAnalisis()">📊 Análisis mensual</button>
+    <button onclick="toggleAnalisisReal()">📈 Análisis real</button>
+    <div id="analisis-real" class="section" style="display:none;"></div>
     <div id="analisis-mensual" class="section" style="display:none;"></div>
     <div id="registro-canciones" class="section" style="display:none;">
       <h2>📋 Registro de canciones</h2>
@@ -352,14 +692,25 @@ if ('serviceWorker' in navigator) {
   </div>
 </main>
 
+<!-- =====================================================
+   🔻 FOOTER
+===================================================== -->
 <footer>
   <!-- CONTADOR EN TIEMPO REAL por encima del botón volver al inicio -->
   <div id="contador-final" class="counter-badge">Canciones totales 🎶: 0</div>
   <button onclick="window.scrollTo({top:0, behavior:'smooth'})">⬆️ Volver al inicio</button>
 </footer>
 
+<!-- =====================================================
+   ⚡ JAVASCRIPT APP
+===================================================== -->
+
 <script type="module">
 // Firebase (Firestore v9 modular)
+/* =====================================================
+   🔥 FIREBASE CONFIG
+===================================================== */
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import {
   getFirestore, collection, addDoc, doc, setDoc, getDoc, updateDoc, onSnapshot, getDocs, deleteDoc
@@ -376,6 +727,45 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+
+/* =========================
+   SECCIONES EN TIEMPO REAL
+========================= */
+function escucharSeccion(tipo) {
+  const ref = doc(db, "secciones", tipo);
+
+  onSnapshot(ref, snap => {
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+
+    const cont = document.getElementById(`mostrar-${tipo}`);
+    cont.innerHTML = `
+      <h3>${data.titulo || ""}</h3>
+      ${tipo === "semana"
+        ? `<p>🎤 Cantante: <strong>${data.cantante || "-"}</strong></p>`
+        : ""}
+      <ul>
+        ${(data.canciones || []).map(c => `<li>${c}</li>`).join("")}
+      </ul>
+    `;
+
+    const notasBox = document.getElementById(`notas-${tipo}`);
+    if (notasBox) {
+      notasBox.innerHTML = `
+        <div class="notas-card">
+          <h3>📝 Notas</h3>
+          ${renderNotas(data.notas)}
+        </div>`;
+    }
+
+    // 🔁 Si el Worship Pack está abierto, refrescarlo
+    const pack = document.getElementById(`worshippack-${tipo}`);
+    if (pack && pack.style.display === "block") {
+      mostrarWorshipPack(tipo);
+    }
+  });
+}
 /* Estado */
 let modoEdicion = false;
 let cancionesCache = [];
@@ -385,11 +775,57 @@ let cancionesVisible = false;
 let ordenActual = { campo: 'titulo', sentido: 'desc' };
 
 /* Utilidades */
+/* =====================================================
+   🛠️ UTILIDADES
+===================================================== */
+
 function normalizar(t){ return (t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(); }
 function resaltar(t,q){ if(!q) return t; try{ const r=new RegExp(`(${q})`,"gi"); return t.replace(r,"<mark>$1</mark>"); }catch(e){return t;} }
 function pad(n){ return String(n).padStart(2,'0'); }
 function isoToday(){ const d=new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
 function isoToDisplay(iso){ if(!iso) return '—'; if(/^\d{4}-\d{2}-\d{2}$/.test(iso)){ const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; } const dt=new Date(iso); if(isNaN(dt.getTime())) return iso; return `${pad(dt.getDate())}/${pad(dt.getMonth()+1)}/${dt.getFullYear()}`; }
+
+
+function ajustarAServicio(fechaISO) {
+  if (!fechaISO) return fechaISO;
+
+  const d = new Date(fechaISO);
+  if (isNaN(d)) return fechaISO;
+
+  // Si es sábado (6), mover a domingo
+  if (d.getDay() === 6) {
+    d.setDate(d.getDate() + 1);
+  }
+
+  return d.toISOString().slice(0, 10);
+}
+
+async function obtenerCantantePorFecha(fechaISO){
+  try {
+    const fechaServicio = ajustarAServicio(fechaISO); // 👈 clave
+    const mes = fechaServicio.slice(0,7); // YYYY-MM
+
+    const analisisSnap = await getDoc(doc(db,"analisis_mensual",mes));
+
+    if (analisisSnap.exists()) {
+      const data = analisisSnap.data();
+      if (data.cantantes && data.cantantes[fechaServicio]) {
+        return data.cantantes[fechaServicio];
+      }
+    }
+
+    // fallback: cantante de la semana
+    const semanaSnap = await getDoc(doc(db,"secciones","semana"));
+    if (semanaSnap.exists()) {
+      return semanaSnap.data().cantante || "—";
+    }
+
+    return "—";
+  } catch (e) {
+    console.error("Error obteniendo cantante:", e);
+    return "—";
+  }
+}
 
 /* =========================
    Fechas – análisis mensual
@@ -397,14 +833,26 @@ function isoToDisplay(iso){ if(!iso) return '—'; if(/^\d{4}-\d{2}-\d{2}$/.test
 function obtenerDomingosDelMes(mes) {
   const [y, m] = mes.split("-").map(Number);
   const fechas = [];
-  const d = new Date(y, m - 1, 1);
+
+  let d = new Date(y, m - 1, 1);
+
+  // Ir al primer domingo del mes
+  const diaSemana = d.getDay();
+  if (diaSemana !== 0) {
+    d.setDate(d.getDate() + (7 - diaSemana));
+  }
 
   while (d.getMonth() === m - 1) {
-    if (d.getDay() === 0) { // Domingo
-      fechas.push(d.toISOString().slice(0,10));
-    }
-    d.setDate(d.getDate() + 1);
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    fechas.push(`${year}-${month}-${day}`);
+
+    d.setDate(d.getDate() + 7);
   }
+
   return fechas;
 }
 
@@ -601,6 +1049,10 @@ async function borrarCancion(id){
 }
 
 /* SECCIONES (semana / mes) */
+/* =====================================================
+   📅 SECCIONES (SEMANA / MES)
+===================================================== */
+
 
 // Función para renderizar notas en lista con emojis
 function renderNotas(texto){
@@ -673,6 +1125,10 @@ async function cargarSeccion(tipo){
 }
 
 // Toggle notas
+/* =====================================================
+   🧩 INTERACCIONES UI
+===================================================== */
+
 function toggleNotas(tipo){
   const box = document.getElementById(`notas-${tipo}`);
   if(!box) return;
@@ -711,6 +1167,10 @@ async function guardarSeccion(tipo){
 }
 
 /* MODO EDICIÓN con PIN 2025 */
+/* =========================
+   MODO EDICIÓN (PIN)
+========================= */
+
 function activarEdicion(){
   if(!modoEdicion){
     const pin = prompt("Introduce el PIN para editar:");
@@ -738,10 +1198,14 @@ function activarEdicion(){
 function debounceBuscar(){ clearTimeout(debounceTimer); debounceTimer = setTimeout(cargarCanciones, 300); }
 
 /* Toggles y UI helpers */
+/* =========================
+   CONTROLES DE INTERFAZ
+========================= */
 function toggleDark(){ document.body.classList.toggle("dark"); localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light"); }
 function toggleFormulario(){ const f = document.getElementById("formulario"); f.style.display = f.style.display === "none" ? "block" : "none"; }
-function toggleCanciones(){ cancionesVisible = !cancionesVisible; document.getElementById("toggleCancionesBtn").textContent = cancionesVisible ? "🎵 Ocultar lista" : "🎵 Mostrar lista"; cargarCanciones(); }
+function toggleCanciones(){ cancionesVisible = !cancionesVisible; document.getElementById("toggleCancionesBtn").textContent = cancionesVisible ? "🎵 Ocultar lista" : "🎵Mostrar lista"; cargarCanciones(); }
 function toggleRegistro(){ const el = document.getElementById("registro-canciones"); el.style.display = el.style.display === "block" ? "none" : "block"; if(el.style.display==="block") cargarRegistro(); }
+
 /* =========================
    ANÁLISIS MENSUAL
 ========================= */
@@ -762,7 +1226,19 @@ function toggleAnalisis() {
 async function cargarAnalisisMensual() {
   const cont = document.getElementById("analisis-mensual");
   cont.innerHTML = "<h2>📊 Análisis mensual</h2>";
-  
+  // 🔥 BLOQUE NUEVO – Análisis por periodo
+cont.innerHTML += `
+  <div id="analisis-periodo" class="card" style="margin-top:12px;">
+    <h3>📈 Análisis por periodo</h3>
+
+    <div style="margin-bottom:10px;">
+      <button onclick="analizarPeriodo(3)">Últimos 3 meses</button>
+      <button onclick="analizarPeriodo(0)">Siempre</button>
+    </div>
+
+    <div id="resultado-periodo"></div>
+  </div>
+`;
   const toggleBtn = document.createElement("button");
   toggleBtn.textContent = "📂 Ver meses anteriores";
   toggleBtn.style.margin = "8px 0";
@@ -829,27 +1305,33 @@ const resumen = [...listaCanciones].sort((a,b)=>b.veces - a.veces);
     card.style.marginTop = "12px";
 
 // Cantantes
-const domingos = obtenerDomingosDelMes(mes);
+const domingos = obtenerDomingosDelMes(mes).map(f => ajustarAServicio(f));
 
 const cantanteHtml = `
   <details class="details-slow" style="margin-top:6px;">
     <summary>🎤 Cantantes del mes</summary>
 
-    ${domingos.map(fecha => `
-      <div style="margin-top:6px">
-        ${isoToDisplay(fecha)} →
-        ${
-          modoEdicion
-            ? `<select class="cantante-select" data-mes="${mes}" data-fecha="${fecha}">
-                <option value=""></option>
-                <option value="Milly" ${datosMes.cantantes?.[fecha]==="Milly"?"selected":""}>Milly</option>
-                <option value="Carolina" ${datosMes.cantantes?.[fecha]==="Carolina"?"selected":""}>Carolina</option>
-                <option value="Jason" ${datosMes.cantantes?.[fecha]==="Jason"?"selected":""}>Jason</option>
-              </select>`
-            : `<strong>${datosMes.cantantes?.[fecha] || "-"}</strong>`
-        }
-      </div>
-    `).join("")}
+    ${domingos.map(fechaOriginal => {
+      const fecha = ajustarAServicio(fechaOriginal);
+
+      return `
+        <div style="margin-top:6px">
+          ${isoToDisplay(fecha)} →
+          ${
+            modoEdicion
+              ? `<select class="cantante-select"
+                    data-mes="${mes}"
+                    data-fecha="${fecha}">
+                  <option value=""></option>
+                  <option value="Milly" ${datosMes.cantantes?.[fecha]==="Milly"?"selected":""}>Milly</option>
+                  <option value="Carolina" ${datosMes.cantantes?.[fecha]==="Carolina"?"selected":""}>Carolina</option>
+                  <option value="Jason" ${datosMes.cantantes?.[fecha]==="Jason"?"selected":""}>Jason</option>
+                </select>`
+              : `<strong>${datosMes.cantantes?.[fecha] || "-"}</strong>`
+          }
+        </div>
+      `;
+    }).join("")}
 
   </details>
 `;
@@ -963,9 +1445,22 @@ async function cargarRegistro(){
     if(modoEdicion){
       fechasHtml = `<div class="fechas-box">${r.fechas.map((f,idx)=>`<div><input type="date" value="${f}" onchange="modificarFecha('${r.id}',${idx},this.value)"> <button class="small" onclick="borrarFecha('${r.id}',${idx})">❌</button></div>`).join("")}<div style="margin-top:4px"><button class="small" onclick="agregarFechaManual('${r.id}')">➕ Añadir fecha</button></div></div>`;
     } else {
-      const ultima = r.fechas.length ? r.fechas[r.fechas.length-1] : "";
-      fechasHtml = `<div class="fechas-box">${ultima ? isoToDisplay(ultima) : ''} ${r.fechas.length>1 ? `<button class="small" onclick="alert('Historial de fechas:\\n${r.fechas.join("\\n")}')">Ver más</button>` : ""}</div>`;
+const ultima = r.fechas.length ? r.fechas[r.fechas.length-1] : "";
+
+fechasHtml = `
+  <div class="fechas-box">
+    ${ultima ? isoToDisplay(ultima) : ""}
+    ${
+      r.fechas.length > 1
+        ? `<button class="small ver-mas-btn"
+            data-fechas='${JSON.stringify(r.fechas)}'>
+            Ver más
+           </button>`
+        : ""
     }
+  </div>
+`;
+     }
     const tr = document.createElement("tr");
     tr.innerHTML = `<td style="text-align:left">${r.titulo}</td><td>${r.veces}</td><td>${fechasHtml}</td>`;
     tbody.appendChild(tr);
@@ -974,6 +1469,33 @@ async function cargarRegistro(){
   document.getElementById('sortTitulo').textContent = ordenActual.campo==='titulo' ? (ordenActual.sentido==='asc' ? '🔼' : '🔽') : '';
   document.getElementById('sortVeces').textContent = ordenActual.campo==='veces' ? (ordenActual.sentido==='asc' ? '🔼' : '🔽') : '';
   document.getElementById('sortUltima').textContent = ordenActual.campo==='ultima' ? (ordenActual.sentido==='asc' ? '🔼' : '🔽') : '';
+  }
+// Activar botones "Ver más"
+document.addEventListener("click", e => {
+  const btn = e.target.closest(".ver-mas-btn");
+  if (!btn) return;
+
+  try {
+    const fechas = JSON.parse(btn.dataset.fechas || "[]");
+    verHistorialConCantante(fechas);
+  } catch (err) {
+    console.error("Error parseando fechas:", err);
+    alert("Error mostrando el historial");
+  }
+});
+/* =========================
+   Historial con cantante
+========================= */
+
+async function verHistorialConCantante(fechas){
+  let texto = "📅 Historial de canciones\n\n";
+
+  for (const f of fechas) {
+    const cantante = await obtenerCantantePorFecha(f);
+    texto += `${isoToDisplay(f)} → ${cantante || "—"}\n`;
+  }
+
+  alert(texto);
 }
 
 /* Fecha helpers */
@@ -1064,15 +1586,1097 @@ document.querySelectorAll(`.eval-input[data-mes="${mes}"]`).forEach(i=>{
 
   alert("✅ Análisis mensual guardado");
 }
+
+/* =========================
+  FUNCIONES METRÓNOMO
+========================= */
+
+let beatCount = 0; // para acento en el 1 (4/4)
+let audioCtx;
+let metronomeInterval = null;
+let isRunning = false;
+let currentBpm = Number(localStorage.getItem("metroBpm")) || 80;
+
+///////////////////////////////
+// TAP TEMPO
+///////////////////////////////
+
+let tapTimes = [];
+let lastTap = 0;
+
+const MAX_TAPS = 16;     // más taps para mayor precisión
+const RESET_TIME = 2000; // reinicia si pasan 2s sin taps
+const MIN_INTERVAL = 80; // ignora taps demasiado rápidos (doble click)
+
+const bpmSlider = () => document.getElementById("bpmSlider");
+const bpmValue  = () => document.getElementById("bpmValue");
+const metroBtn  = () => document.getElementById("metroToggle");
+
+function initMetronome(){
+  if(!audioCtx){
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+
+  if(audioCtx.state === "suspended"){
+    audioCtx.resume();
+  }
+}
+
+function playClick(){
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+
+  const isAccent = beatCount === 0;
+
+  // 🌲 Wood click
+  osc.type = "triangle";
+  osc.frequency.value = isAccent ? 1200 : 800;
+
+  const now = audioCtx.currentTime;
+
+  gain.gain.setValueAtTime(0.0001, now);
+
+  gain.gain.exponentialRampToValueAtTime(
+    isAccent ? 0.6 : 0.38,
+    now + 0.005
+  );
+
+  gain.gain.exponentialRampToValueAtTime(
+    0.0001,
+    now + 0.04
+  );
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start(now);
+  osc.stop(now + 0.05);
+
+  beatCount = (beatCount + 1) % 4;
+}
+
+function startMetronome(){
+  initMetronome();
+
+  const interval = 60000 / currentBpm;
+  
+  beatCount = 0;
+
+  playClick();
+
+  metronomeInterval = setInterval(playClick, interval);
+
+  isRunning = true;
+
+  metroBtn().textContent = "⏸ Stop";
+}
+
+function stopMetronome(){
+  clearInterval(metronomeInterval);
+
+  metronomeInterval = null;
+
+  isRunning = false;
+
+  metroBtn().textContent = "▶️ Start";
+}
+
+///////////////////////////////
+// TAP TEMPO
+///////////////////////////////
+
+function tapTempo(){
+
+  initMetronome();
+
+  const now = performance.now();
+
+  // reset si pasa mucho tiempo
+  if(now - lastTap > RESET_TIME){
+    tapTimes = [];
+  }
+
+  // ignorar taps demasiado rápidos
+  if(lastTap && (now - lastTap) < MIN_INTERVAL){
+    return;
+  }
+
+  lastTap = now;
+
+  tapTimes.push(now);
+
+  if(tapTimes.length > MAX_TAPS){
+    tapTimes.shift();
+  }
+
+  if(tapTimes.length < 2) return;
+
+  let intervals = [];
+
+  for(let i = 1; i < tapTimes.length; i++){
+    intervals.push(tapTimes[i] - tapTimes[i-1]);
+  }
+
+  const avg = intervals.reduce((a,b)=>a+b,0) / intervals.length;
+
+  const bpm = Math.round(60000 / avg);
+
+  if(bpm >= 40 && bpm <= 300){
+
+    currentBpm = bpm;
+
+    bpmSlider().value = bpm;
+
+    bpmValue().textContent = bpm;
+
+    localStorage.setItem("metroBpm", bpm);
+
+    if(isRunning){
+      stopMetronome();
+      startMetronome();
+    }
+  }
+}
+
+function toggleMetronome(){
+  isRunning ? stopMetronome() : startMetronome();
+}
+
+function abrirMetronomo(){
+  document.getElementById("modal-metronomo").style.display = "flex";
+
+  bpmSlider().value = currentBpm;
+  bpmValue().textContent = currentBpm;
+}
+
+function cerrarMetronomo(){
+  stopMetronome();
+  document.getElementById("modal-metronomo").style.display = "none";
+}
+
+/* Eventos */
+document.addEventListener("input", e => {
+  if(e.target.id === "bpmSlider"){
+    currentBpm = Number(e.target.value);
+    bpmValue().textContent = currentBpm;
+    localStorage.setItem("metroBpm", currentBpm);
+
+    if(isRunning){
+      stopMetronome();
+      startMetronome();
+    }
+  }
+});
+
+document.addEventListener("click", e => {
+  if(e.target.id === "metroToggle"){
+    toggleMetronome();
+  }
+});
+
+document.getElementById("tapTempo").addEventListener("click", tapTempo);
+
+
+// 🔊 Reactivar audio al volver a la app (iOS / PWA)
+document.addEventListener("visibilitychange", ()=>{
+  if(document.visibilityState === "visible" && audioCtx){
+    audioCtx.resume();
+  }
+});
+
+window.addEventListener("pageshow", ()=>{
+  if (audioCtx) {
+    audioCtx.resume();
+  }
+});
+
+let lastTouchEnd = 0;
+
+document.addEventListener("touchend", function (event) {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    if (event.target.closest("#tapTempo")) {
+      event.preventDefault();
+    }
+  }
+  lastTouchEnd = now;
+}, { passive: false });
+
 /* BOOT */
+
+
+/* =========================
+   LISTADO MENSUAL DE CANCIONES
+========================= */
+let mesListadoActual = new Date();
+
+window.toggleListadoMensual = function(){
+  const el = document.getElementById("listado-mensual");
+
+  if(el.style.display === "block"){
+    el.classList.remove("show");
+    setTimeout(() => {
+      el.style.display = "none";
+    }, 350);
+  } else {
+    el.style.display = "block";
+    setTimeout(() => {
+      el.classList.add("show");
+    }, 10);
+    renderListadoMensual();
+  }
+}
+
+window.cambiarMes = function(delta){
+  mesListadoActual.setMonth(mesListadoActual.getMonth() + delta);
+  renderListadoMensual();
+}
+
+async function renderListadoMensual(){
+
+  const mes = mesListadoActual.toISOString().slice(0,7);
+  const nombreMes = mesListadoActual.toLocaleDateString("es-ES",{month:"long",year:"numeric"});
+  document.getElementById("mes-actual").textContent = nombreMes.toUpperCase();
+
+  const domingos = obtenerDomingosDelMes(mes);
+  const cont = document.getElementById("domingos-container");
+  cont.innerHTML = "";
+
+  const docRef = doc(db,"listado_mensual",mes);
+  const snap = await getDoc(docRef);
+  const data = snap.exists() ? snap.data() : {};
+  
+  const hoy = new Date();
+const hoyISO = hoy.toISOString().slice(0,10);
+
+// calcular próximo domingo
+let proximoDomingo = new Date(hoy);
+let diaSemana = hoy.getDay(); // 0 = domingo
+
+let diasHastaDomingo = diaSemana === 0 ? 0 : 7 - diaSemana;
+proximoDomingo.setDate(hoy.getDate() + diasHastaDomingo);
+
+const proximoDomingoISO = proximoDomingo.toISOString().slice(0,10);
+
+domingos.forEach(fecha => {
+
+  const infoDia = data[fecha] || { canciones: [], cantante: "" };
+  const cancionesAsignadas = infoDia.canciones || [];
+  const cantanteAsignado = infoDia.cantante || "";
+
+  const div = document.createElement("div");
+  const esProximo = fecha === proximoDomingoISO;
+  div.className = esProximo ? "card domingo-proximo" : "card";
+
+  if (modoEdicion) {
+
+    div.innerHTML = `
+      <h4>
+        ${isoToDisplay(fecha)}
+        ${esProximo ? '<span class="proximo-label">Próximo servicio 🔥</span>' : ''}
+      </h4>
+
+      🎤 Cantante:
+      <select class="cantante-listado" data-fecha="${fecha}">
+        <option value=""></option>
+        <option value="Carolina" ${cantanteAsignado==="Carolina"?"selected":""}>Carolina</option>
+        <option value="Milly" ${cantanteAsignado==="Milly"?"selected":""}>Milly</option>
+        <option value="Jason" ${cantanteAsignado==="Jason"?"selected":""}>Jason</option>
+      </select>
+
+      <textarea data-fecha="${fecha}" 
+        class="edit-listado edit-input"
+        placeholder="Una canción por línea...">${cancionesAsignadas.join("\n")}</textarea>
+    `;
+
+  } else {
+
+    div.innerHTML = `
+      <h4>
+        ${isoToDisplay(fecha)}
+        ${esProximo ? '<span class="proximo-label">Próximo servicio 🔥</span>' : ''}
+      </h4>
+
+      <p>🎤 Cantante: <strong>${cantanteAsignado || "-"}</strong></p>
+
+      <ul>
+        ${cancionesAsignadas.map(c => `<li>${c}</li>`).join("")}
+      </ul>
+    `;
+  }
+
+  cont.appendChild(div);
+});
+
+  if(modoEdicion){
+    const btnGuardar = document.createElement("button");
+    btnGuardar.textContent = "💾 Guardar listado";
+    btnGuardar.style.marginTop = "10px";
+    btnGuardar.onclick = () => guardarListadoMensual(mes);
+    cont.appendChild(btnGuardar);
+  }
+}
+
+window.guardarListadoMensual = async function(){
+
+  const mes = mesListadoActual.toISOString().slice(0,7);
+  const datosGuardar = {};
+
+  document.querySelectorAll(".edit-listado").forEach(textarea => {
+
+    const fecha = textarea.dataset.fecha;
+
+    const canciones = textarea.value
+      .split("\n")
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const select = document.querySelector(`.cantante-listado[data-fecha="${fecha}"]`);
+    const cantante = select ? select.value : "";
+
+    datosGuardar[fecha] = {
+      canciones,
+      cantante
+    };
+
+  });
+
+  await setDoc(doc(db,"listado_mensual",mes), datosGuardar);
+
+  alert("✅ Listado mensual guardado");
+  renderListadoMensual();
+};
+
+///////
+////// ANALIZAR PERIODO
+/* =========================
+   LISTADO MENSUAL DE CANCIONES
+========================= */
+
+window.analizarPeriodo = async function(mesesAtras){
+
+  const cont = document.getElementById("resultado-periodo");
+  cont.innerHTML = "Analizando...";
+
+  const snap = await getDocs(collection(db,"analisis_mensual"));
+
+  let meses = snap.docs.map(d => d.id).sort().reverse();
+
+  if(mesesAtras > 0){
+    meses = meses.slice(0, mesesAtras);
+  }
+
+  const acumulado = {
+    Excelente: {},
+    Bien: {},
+    "A mejorar": {}
+  };
+
+  for(const mes of meses){
+    const data = snap.docs.find(d => d.id === mes)?.data();
+    if(!data?.evaluaciones) continue;
+
+    for(const [id, valor] of Object.entries(data.evaluaciones)){
+      if(!valor) continue;
+
+      const cancion = cancionesCache.find(c=>c.id===id);
+      if(!cancion) continue;
+
+      if(!acumulado[valor][id]){
+        acumulado[valor][id] = {
+          titulo: cancion.titulo,
+          veces: 0,
+          cantantes: new Set()
+        };
+      }
+
+      acumulado[valor][id].veces++;
+
+      if(data.cantantes){
+        Object.values(data.cantantes).forEach(c=>{
+          if(c) acumulado[valor][id].cantantes.add(c);
+        });
+      }
+    }
+  }
+
+  const total =
+    Object.keys(acumulado["Excelente"]).length +
+    Object.keys(acumulado["Bien"]).length +
+    Object.keys(acumulado["A mejorar"]).length;
+
+  window.cacheResultados = acumulado;
+
+  cont.innerHTML = `
+    <p>Total evaluadas: <strong>${total}</strong></p>
+
+    <p onclick="mostrarDetallePeriodo('Excelente')" style="cursor:pointer">
+      🚀 ${Object.keys(acumulado["Excelente"]).length} fueron excelentes
+    </p>
+
+    <p onclick="mostrarDetallePeriodo('Bien')" style="cursor:pointer">
+      👍 ${Object.keys(acumulado["Bien"]).length} fueron buenas
+    </p>
+
+    <p onclick="mostrarDetallePeriodo('A mejorar')" style="cursor:pointer">
+      ‼️ ${Object.keys(acumulado["A mejorar"]).length} necesitan mejorar
+    </p>
+
+    <div id="detalle-periodo"></div>
+  `;
+};
+
+window.mostrarDetallePeriodo = function(tipo){
+
+  const datos = window.cacheResultados[tipo];
+  const cont = document.getElementById("detalle-periodo");
+
+  if(!datos || !Object.keys(datos).length){
+    cont.innerHTML = "<p>No hay canciones.</p>";
+    return;
+  }
+
+  const emoji = tipo==="Excelente" ? "🚀"
+              : tipo==="Bien" ? "👍"
+              : "‼️";
+
+  let html = `<h4 style="margin-top:10px">${emoji} Canciones</h4><ul>`;
+
+  Object.values(datos)
+    .sort((a,b)=>b.veces - a.veces)
+    .forEach(c=>{
+      html += `
+        <li>
+          <strong>${c.titulo}</strong> (${c.veces})
+          <br>
+          🎤 ${[...c.cantantes].join(", ") || "-"}
+        </li>
+      `;
+    });
+
+  html += "</ul>";
+
+  cont.innerHTML = html;
+};
+
+/* =========================
+   ANÁLISIS REAL (por fecha exacta)
+========================= */
+
+function toggleAnalisisReal(){
+  const el = document.getElementById("analisis-real");
+  el.style.display = el.style.display === "block" ? "none" : "block";
+  if(el.style.display === "block") cargarAnalisisReal();
+}
+
+
+async function cargarAnalisisReal() {
+  const cont = document.getElementById("analisis-real");
+  cont.innerHTML = "";
+
+  const hoy = new Date();
+  const mesActualKey = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2, "0")}`;
+
+  const snapRegistro = await getDocs(collection(db, "registro"));
+  const snapAnalisis = await getDocs(collection(db, "analisis_real"));
+
+  const analisisGuardado = {};
+  snapAnalisis.forEach(d => analisisGuardado[d.id] = d.data());
+
+  const mapaMeses = {};
+
+  // ===== AGRUPAR POR MES Y SOLO DOMINGOS =====
+  snapRegistro.forEach(docu => {
+    const data = docu.data();
+    const fechas = Array.isArray(data.fechas) ? data.fechas : [];
+
+    fechas.forEach(f => {
+      const fechaObj = new Date(f);
+      if (fechaObj.getDay() !== 0) return; // solo domingos
+      const mesKey = f.substring(0, 7); // YYYY-MM
+
+      if (!mapaMeses[mesKey]) mapaMeses[mesKey] = {};
+      if (!mapaMeses[mesKey][f]) mapaMeses[mesKey][f] = [];
+      mapaMeses[mesKey][f].push(docu.id);
+    });
+  });
+
+  const mesesOrdenados = Object.keys(mapaMeses).sort().reverse();
+
+  if (!mesesOrdenados.length) {
+    cont.innerHTML = "<p>No hay datos registrados.</p>";
+    return;
+  }
+// ==============================
+// 🎤 ANÁLISIS POR CANTANTE
+// ==============================
+
+const cardCantante = document.createElement("div");
+cardCantante.className = "card";
+cardCantante.style.marginBottom = "25px";
+
+cardCantante.innerHTML = `<h2>🎤 Análisis por cantante</h2>`;
+
+const contCantante = document.createElement("div");
+cardCantante.appendChild(contCantante);
+cont.appendChild(cardCantante);
+
+
+// ==============================
+// FILTROS
+// ==============================
+
+const panel = document.createElement("div");
+panel.style.marginBottom = "15px";
+panel.style.display = "flex";
+panel.style.gap = "15px";
+panel.style.flexWrap = "wrap";
+
+panel.innerHTML = `
+  <div>
+    📅 Rango:
+   <select id="filtro-rango">
+  <option value="-">-</option>
+  <option value="1">Último mes</option>
+  <option value="3">Últimos 3 meses</option>
+  <option value="6">Últimos 6 meses</option>
+  <option value="0">Global 🌐</option>
+</select>
+  </div>
+
+  <div>
+    🎤 Cantante:
+    <select id="filtro-cantante">
+      <option value="Todos">Todos</option>
+      <option value="Milly">Milly</option>
+      <option value="Carolina">Carolina</option>
+      <option value="Jason">Jason</option>
+    </select>
+  </div>
+`;
+
+contCantante.appendChild(panel);
+
+
+// ==============================
+// MENSAJE INICIAL
+// ==============================
+
+const mensajeInicial = document.createElement("div");
+mensajeInicial.id = "mensaje-inicial";
+mensajeInicial.style.marginTop = "15px";
+mensajeInicial.style.fontSize = "14px";
+mensajeInicial.style.opacity = "0.7";
+mensajeInicial.textContent = "Selecciona un rango y un cantante para ver el análisis.";
+contCantante.appendChild(mensajeInicial);
+
+// ==============================
+// FUNCIÓN RENDER
+// ==============================
+
+function renderEstadisticas(rangoMeses, cantanteFiltro){
+
+  contCantante.querySelectorAll(".bloque-cantante").forEach(e=>e.remove());
+
+  const hoy = new Date();
+
+  const listaCantantes = cantanteFiltro === "Todos"
+    ? ["Milly","Carolina","Jason"]
+    : [cantanteFiltro];
+
+  listaCantantes.forEach(nombre=>{
+
+    const conteo = {
+      Excelente: {},
+      Bien: {},
+      "A mejorar": {}
+    };
+
+    let total = 0;
+
+    snapRegistro.forEach(docu=>{
+      const data = docu.data();
+      const fechas = Array.isArray(data.fechas) ? data.fechas : [];
+
+      fechas.forEach(f=>{
+
+        const fechaObj = new Date(f);
+
+        // FILTRO RANGO
+        if(rangoMeses > 0){
+          const limite = new Date(hoy.getFullYear(), hoy.getMonth() - rangoMeses, 1);
+          if(fechaObj < limite) return;
+        }
+
+        const analisis = analisisGuardado[f];
+        if(!analisis) return;
+        if(analisis.cantante !== nombre) return;
+
+        const evaluacion = analisis.evaluaciones?.[docu.id];
+        if(!evaluacion) return;
+
+        const cancion = cancionesCache.find(c=>c.id===docu.id);
+        const titulo = cancion?.titulo || docu.id;
+
+        if(!conteo[evaluacion][titulo]){
+          conteo[evaluacion][titulo] = 0;
+        }
+
+        conteo[evaluacion][titulo]++;
+        total++;
+      });
+    });
+
+    const bloque = document.createElement("div");
+    bloque.className = "bloque-cantante";
+    bloque.style.marginTop = "20px";
+    bloque.style.borderTop = "1px solid #ddd";
+    bloque.style.paddingTop = "10px";
+
+    bloque.innerHTML = `
+      <h3 style="margin-bottom:10px;">
+        ${nombre}
+      </h3>
+      <div class="contenido-cantante"></div>
+    `;
+
+    const contenido = bloque.querySelector(".contenido-cantante");
+
+    const categorias = [
+      { key:"Excelente", emoji:"🚀", color:"#1976d2" },
+      { key:"Bien", emoji:"👍", color:"#2e7d32" },
+      { key:"A mejorar", emoji:"‼️", color:"#d32f2f" }
+    ];
+
+    categorias.forEach(cat=>{
+
+      const canciones = conteo[cat.key];
+      const cantidad = Object.values(canciones).reduce((a,b)=>a+b,0);
+      const porcentaje = total ? Math.round((cantidad/total)*100) : 0;
+
+      const fila = document.createElement("div");
+      fila.style.marginBottom = "12px";
+
+      fila.innerHTML = `
+        <div style="display:flex; justify-content:space-between; font-size:14px;">
+          <span>${cat.emoji} ${cat.key} (${cantidad})</span>
+          <span>${porcentaje}%</span>
+        </div>
+
+        <div style="
+          background:#b5b5b5;
+          height:18px;
+          border-radius:10px;
+          overflow:hidden;
+          cursor:pointer;">
+          <!-- Barra animada: empieza en 0%, luego se llena -->
+          <div style="
+            width:0%;
+            background:${cat.color};
+            height:100%;
+            transition: width 0.5s ease-out;">
+          </div>
+        </div>
+
+        <div style="display:none; margin-top:6px; font-size:13px;"></div>
+      `;
+
+const barra = fila.querySelector("div:nth-child(2) > div");
+const porcentajeSpan = fila.querySelector("div:first-child span:last-child"); // selecciona el <span> del %
+barra.style.width = "0%";
+porcentajeSpan.textContent = "0%";
+
+// Animación de la barra
+setTimeout(() => {
+  barra.style.width = porcentaje + "%";
+}, 50);
+
+// Animación del número
+let valorActual = 0;
+const incremento = Math.ceil(porcentaje / 20); // ajusta la velocidad del conteo
+const intervalo = setInterval(() => {
+  valorActual += incremento;
+  if (valorActual >= porcentaje) {
+    valorActual = porcentaje;
+    clearInterval(intervalo);
+  }
+  porcentajeSpan.textContent = valorActual + "%";
+}, 25);
+
+      const listaDiv = fila.lastElementChild;
+
+      barra.parentElement.addEventListener("click",()=>{
+        listaDiv.style.display =
+          listaDiv.style.display === "block" ? "none" : "block";
+      });
+
+      const listaOrdenada = Object.entries(canciones)
+        .sort((a,b)=>b[1]-a[1])
+        .map(([titulo, veces])=>`• ${titulo} (${veces})`)
+        .join("<br>");
+
+      listaDiv.innerHTML = listaOrdenada || "Sin datos";
+
+      contenido.appendChild(fila);
+    });
+
+    contCantante.appendChild(bloque);
+  });
+}
+
+
+// ==============================
+// EVENTOS FILTRO
+// ==============================
+
+const selectRango = document.getElementById("filtro-rango");
+const selectCantante = document.getElementById("filtro-cantante");
+// Estado inicial: cantante deshabilitado
+selectCantante.disabled = true;
+selectCantante.style.opacity = "0.5";
+
+function aplicarFiltros(){
+
+  const rango = selectRango.value;
+  const cantante = selectCantante.value;
+
+  // Si rango es "-" → ocultar todo y deshabilitar cantante
+  if(rango === "-"){
+
+    contCantante.querySelectorAll(".bloque-cantante").forEach(e=>e.remove());
+
+    selectCantante.disabled = true;
+    selectCantante.style.opacity = "0.5";
+
+    return;
+  }
+
+  // Si hay rango válido → habilitar cantante
+  selectCantante.disabled = false;
+  selectCantante.style.opacity = "1";
+
+  renderEstadisticas(parseInt(rango), cantante);
+}
+
+selectRango.addEventListener("change", aplicarFiltros);
+selectCantante.addEventListener("change", aplicarFiltros);
+
+// ===== FUNCIÓN PARA CREAR CARD DE MES =====
+function crearCardMes(mesKey) {
+  const fechasOrdenadas = Object.keys(mapaMeses[mesKey]).sort();
+  const fechaBase = new Date(mesKey + "-01");
+  const nombreMes = fechaBase.toLocaleString("es-ES", { month: "long", year: "numeric" });
+
+  const cardMes = document.createElement("div");
+  cardMes.className = "card";
+  cardMes.style.marginBottom = "20px";
+
+  cardMes.innerHTML = `
+  <h2 style="
+  cursor:pointer; 
+  font-size:1.05em; 
+  font-weight:600; 
+  margin:0;
+">
+  ${nombreMes.charAt(0).toUpperCase() + nombreMes.slice(1)} 🗓️
+</h2>
+<div class="contenido-mes" style="display:none; margin-top:18px;"></div>
+  `;
+
+  const contenidoMes = cardMes.querySelector(".contenido-mes");
+  cardMes.querySelector("h2").addEventListener("click", () => {
+    contenidoMes.style.display = contenidoMes.style.display === "block" ? "none" : "block";
+  });
+
+  fechasOrdenadas.forEach(fecha => {
+    const datosGuardados = analisisGuardado[fecha] || { cantante: "", evaluaciones: {}, observaciones: "" };
+    const domingoDiv = document.createElement("div");
+    domingoDiv.style.marginBottom = "20px";
+
+    // ===== FUNCIÓN PARA RESALTAR SEMANAS =====
+ function formatearObservaciones(texto) {
+  if (!texto) return "";
+
+  // eliminar saltos de línea y espacios al inicio
+  texto = texto.replace(/^\s*\n+/g, "").trimStart();
+
+  return texto.replace(/SEMANA\s?[1-5]/gi, match =>
+    `<span style="
+      color:#e67e22;
+      font-weight:bold;
+      font-size:1.1em;
+      text-decoration:underline;
+    ">${match.toUpperCase()}</span>`
+  );
+}
+
+    // ===== LISTA DE CANCIONES =====
+    const cancionesHtml = mapaMeses[mesKey][fecha].map(id => {
+      const cancion = cancionesCache.find(c => c.id === id);
+      const titulo = cancion?.titulo || "—";
+      const val = datosGuardados.evaluaciones?.[id] || "";
+
+      if (modoEdicion) {
+        return `
+          <li>
+            ${titulo}
+            <select class="eval-real"
+                    data-id="${id}"
+                    data-fecha="${fecha}">
+              <option value=""></option>
+              <option value="Excelente" ${val==="Excelente"?"selected":""}>🚀 Excelente</option>
+              <option value="Bien" ${val==="Bien"?"selected":""}>👍 Bien</option>
+              <option value="A mejorar" ${val==="A mejorar"?"selected":""}>‼️ A mejorar</option>
+            </select>
+          </li>
+        `;
+      } else {
+        const emoji =
+          val==="Excelente"?"🚀":
+          val==="Bien"?"👍":
+          val==="A mejorar"?"‼️":"";
+        return `<li>${titulo} ${emoji}</li>`;
+      }
+    }).join("");
+
+    // ===== CANTANTE =====
+    const cantanteHtml = modoEdicion
+      ? `<select class="cantante-real" data-fecha="${fecha}">
+          <option value=""></option>
+          <option value="Milly" ${datosGuardados.cantante==="Milly"?"selected":""}>Milly</option>
+          <option value="Carolina" ${datosGuardados.cantante==="Carolina"?"selected":""}>Carolina</option>
+          <option value="Jason" ${datosGuardados.cantante==="Jason"?"selected":""}>Jason</option>
+        </select>`
+      : `<strong>${datosGuardados.cantante || "-"}</strong>`;
+      
+
+    // ===== DOMINGO =====
+domingoDiv.innerHTML = `
+  <div class="header-domingo"
+       style="display:flex; align-items:center; gap:40px; cursor:pointer;">
+    <span style="display:flex; align-items:center; gap:6px;">
+      <span class="flecha" style="display:inline-block; transition:transform 0.25s ease;">▶</span>
+      <strong>${isoToDisplay(fecha)} 🗓️</strong>
+    </span>
+    <span>🎤 Cantante: ${cantanteHtml}</span>
+  </div>
+
+  <div class="canciones-domingo"
+       style="display:none; margin-top:8px; margin-left:25px;">
+    <ul>${cancionesHtml}</ul>
+  </div>
+`;
+
+    const headerDomingo = domingoDiv.querySelector(".header-domingo");
+    const contCanciones = domingoDiv.querySelector(".canciones-domingo");
+    const flecha = domingoDiv.querySelector(".flecha");
+
+    // 🔄 Toggle canciones + animación flecha
+    headerDomingo.addEventListener("click", () => {
+      const abierto = contCanciones.style.display === "block";
+      contCanciones.style.display = abierto ? "none" : "block";
+      flecha.style.transform = abierto ? "rotate(0deg)" : "rotate(90deg)";
+    });
+
+contenidoMes.appendChild(domingoDiv);
+
+const separador = document.createElement("div");
+separador.style.borderBottom = "1px solid #ddd";
+separador.style.margin = "12px 0";
+
+contenidoMes.appendChild(separador);
+  });
+
+
+  // ===== GUARDAR =====
+if (modoEdicion) {
+
+  contenidoMes.querySelectorAll(".guardar-real").forEach(btn => {
+
+    btn.addEventListener("click", async () => {
+
+      const fecha = btn.dataset.fecha;
+
+      const evaluaciones = {};
+
+      contenidoMes
+        .querySelectorAll(`.eval-real[data-fecha="${fecha}"]`)
+        .forEach(sel => {
+          evaluaciones[sel.dataset.id] = sel.value;
+        });
+
+      const cantanteSel =
+        contenidoMes.querySelector(`.cantante-real[data-fecha="${fecha}"]`);
+
+      const cantante = cantanteSel ? cantanteSel.value : "";
+
+      // 🔹 Guardar domingo
+      await setDoc(doc(db, "analisis_real", fecha), {
+        cantante,
+        evaluaciones
+      }, { merge: true });
+
+      // 🔹 Guardar observaciones del mes
+      const obsMesTextarea =
+        contenidoMes.querySelector(`.obs-mes-textarea[data-mes="${mesKey}"]`);
+
+      if (obsMesTextarea) {
+
+        await setDoc(doc(db, "analisis_real", mesKey), {
+
+          observaciones: obsMesTextarea.value.trimStart()
+
+        }, { merge: true });
+
+      }
+
+      alert("✅ Análisis real guardado");
+
+    });
+
+  });
+
+}
+// ===== OBSERVACIONES DEL MES (ÚNICA) =====
+
+const datosMes = analisisGuardado[mesKey] || { observaciones: "" };
+
+function formatearObservaciones(texto) {
+  if (!texto) return "";
+  return texto
+    .trimStart()
+    .replace(/SEMANA\s?[1-5]/gi, match => 
+      `<span style="
+        color:#e67e22;
+        font-weight:bold;
+        font-size:1.1em;
+        text-decoration:underline;
+      ">${match.toUpperCase()}</span>`
+    );
+}
+
+const obsMesHtml = modoEdicion 
+  ? `
+    <details class="details-slow" style="margin-top:15px;">
+      <summary style="cursor:pointer;">📝 Observaciones / Consejos del mes</summary>
+      <div class="notas-card" style="margin-top:6px;">
+        <textarea class="obs-mes-textarea"
+                  data-mes="${mesKey}"
+                  placeholder="Escribe observaciones o consejos del mes..."
+                  style="width:100%;height:100px;">${(datosMes.observaciones || "").trim()}</textarea>
+      </div>
+    </details>
+  `
+  : `
+    <details class="details-slow" style="margin-top:15px;">
+      <summary style="cursor:pointer;">📝 Observaciones / Consejos del mes</summary>
+      <div class="notas-card" style="margin-top:6px; white-space:pre-line;">
+        ${formatearObservaciones(datosMes.observaciones)}
+      </div>
+    </details>
+  `;
+
+contenidoMes.insertAdjacentHTML("beforeend", obsMesHtml);
+
+if (modoEdicion) {
+
+  const btnGuardarMes = document.createElement("button");
+  btnGuardarMes.textContent = "💾 Guardar mes";
+  btnGuardarMes.style.marginTop = "12px";
+
+  contenidoMes.appendChild(btnGuardarMes);
+
+  btnGuardarMes.addEventListener("click", async () => {
+
+    const domingos = Object.keys(mapaMeses[mesKey]);
+
+    for (const fecha of domingos) {
+
+      const evaluaciones = {};
+
+      contenidoMes
+        .querySelectorAll(`.eval-real[data-fecha="${fecha}"]`)
+        .forEach(sel => {
+          evaluaciones[sel.dataset.id] = sel.value;
+        });
+
+      const cantanteSel =
+        contenidoMes.querySelector(`.cantante-real[data-fecha="${fecha}"]`);
+
+      const cantante = cantanteSel ? cantanteSel.value : "";
+
+      await setDoc(doc(db, "analisis_real", fecha), {
+        cantante,
+        evaluaciones
+      }, { merge: true });
+
+    }
+
+    const obsMesTextarea =
+      contenidoMes.querySelector(`.obs-mes-textarea[data-mes="${mesKey}"]`);
+
+    if (obsMesTextarea) {
+
+      await setDoc(doc(db, "analisis_real", mesKey), {
+        observaciones: obsMesTextarea.value.trimStart()
+      }, { merge: true });
+
+    }
+
+    alert("✅ Mes guardado correctamente");
+
+  });
+
+}
+
+return cardMes;
+}
+
+
+// ===== MOSTRAR PRIMER MES DISPONIBLE =====
+let primerMesMostrado = null;
+
+if (mesesOrdenados.length) {
+  primerMesMostrado = mesesOrdenados[0];
+  cont.appendChild(crearCardMes(primerMesMostrado));
+}
+
+// ===== MESES ANTERIORES =====
+const mesesAnteriores = mesesOrdenados.filter(m => m !== primerMesMostrado);
+    if (mesesAnteriores.length) {
+    const btn = document.createElement("button");
+    btn.textContent = "📂 Ver meses anteriores";
+    btn.style.margin = "15px 0";
+
+    cont.appendChild(btn);
+
+    const contenedorAntiguos = document.createElement("div");
+    contenedorAntiguos.style.display = "none";
+    cont.appendChild(contenedorAntiguos);
+
+    btn.addEventListener("click", () => {
+      const visible = contenedorAntiguos.style.display === "block";
+      contenedorAntiguos.style.display = visible ? "none" : "block";
+      btn.textContent = visible ? "📂 Ver meses anteriores" : "📂 Ocultar meses anteriores";
+    });
+
+    mesesAnteriores.forEach(mesKey => {
+      contenedorAntiguos.appendChild(crearCardMes(mesKey));
+    });
+  }
+}
+
+window.toggleAnalisisReal = toggleAnalisisReal;
 
 /* Mostrar / ocultar Worship Pack (tarjetas de las canciones listadas en la sección) */
 async function mostrarWorshipPack(tipo) {
   const cont = document.getElementById(`worshippack-${tipo}`);
-  const boton = document.querySelector(`button[onclick="mostrarWorshipPack('${tipo}')"]`);
+  const boton = document.querySelector(
+    `button[onclick="mostrarWorshipPack('${tipo}')"]`
+  );
   if (!cont || !boton) return;
 
-  // Si ya está visible, la ocultamos y restauramos el texto del botón
+  // Toggle
   if (cont.style.display === "block") {
     cont.style.display = "none";
     cont.innerHTML = "";
@@ -1080,28 +2684,31 @@ async function mostrarWorshipPack(tipo) {
     return;
   }
 
-  // Mostrar el pack//
   const snap = await getDoc(doc(db, "secciones", tipo));
   if (!snap.exists()) {
-    cont.innerHTML = "<p>No hay canciones guardadas para esta sección.</p>";
+    cont.innerHTML = "<p>No hay canciones guardadas.</p>";
     cont.style.display = "block";
     boton.textContent = "🔽 Ocultar pack";
     return;
   }
 
   const data = snap.data();
-  const lista = (data.canciones || []).map(t => normalizar(t));
-  cont.innerHTML = ""; // limpiar
+  cont.innerHTML = "";
 
-  // Mostrar tarjetas de las canciones de la lista
-  cancionesCache.forEach(c => {
-    if (lista.includes(normalizar(c.titulo))) {
-      cont.appendChild(construirCard(c));
+  // 🔑 CLAVE: recorrer en el orden escrito
+  data.canciones.forEach(tituloSemana => {
+    const cancion = cancionesCache.find(
+      c => normalizar(c.titulo) === normalizar(tituloSemana)
+    );
+
+    if (cancion) {
+      cont.appendChild(construirCard(cancion));
     }
   });
 
   if (!cont.innerHTML) {
-    cont.innerHTML = "<p>⚠️ Ninguna de las canciones guardadas coincide con las del repertorio.</p>";
+    cont.innerHTML =
+      "<p>⚠️ Ninguna de las canciones coincide con el repertorio.</p>";
   }
 
   cont.style.display = "block";
@@ -1135,11 +2742,46 @@ window.addEventListener('load', ()=>{
   window.actualizarRegistroCard = actualizarRegistroCard;
   window.mostrarWorshipPack = mostrarWorshipPack;
   window.toggleNotas = toggleNotas;
+  window.abrirMetronomo = abrirMetronomo;
+  window.cerrarMetronomo = cerrarMetronomo;
+  window.toggleMetronome = toggleMetronome;
   inicializarCanciones();
-  cargarSeccion("semana");
-  cargarSeccion("mes");
+  escucharSeccion("semana");
+  escucharSeccion("mes");
+  initMetronome();
   window.toggleAnalisis = toggleAnalisis;
+  window.verHistorialConCantante = verHistorialConCantante;
+  window.cacheResultados = {};
+  window.toggleAnalisis = toggleAnalisis;
+  window.toggleHistorial = toggleHistorial;
 });
 </script>
+<div id="modal-metronomo" class="modal">
+  <div class="modal-content fade-apple">
+    <button class="close-btn" onclick="cerrarMetronomo()">✖</button>
+
+    <h3>🕒 Metrónomo</h3>
+
+    <div class="metronome-ui">
+      <div class="bpm-display">
+        <span id="bpmValue">80</span> BPM
+      </div>
+
+      <input
+        type="range"
+        min="50"
+        max="280"
+        value="80"
+        id="bpmSlider" />
+
+      <div class="metro-buttons">
+        <div class="metro-controls">
+  <button id="metroToggle">▶ Start</button>
+  <button id="tapTempo">TAP</button>
+</div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
