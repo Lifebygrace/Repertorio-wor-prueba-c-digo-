@@ -249,6 +249,8 @@ details[open] > *:not(summary){
 details > *{
   will-change: transform, opacity;
 }
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+/* Estilos generales del metrónomo */
 
 .metronome-ui{
   display: flex;
@@ -313,16 +315,16 @@ details > *{
 }
 
 #tapTempo{
-  width: 120px;                  /* tamaño grande */
-  height: 120px;                 /* igual que el ancho para ser redondo */
+  width: 80px;                  /* tamaño reducido a un tercio */
+  height: 80px;                 /* igual que el ancho para ser redondo */
   border-radius: 50%;            /* círculo perfecto */
   background: linear-gradient(145deg, #ff7f50, #ff6347); /* degradado atractivo */
   color: white;                   /* texto legible */
-  font-size: 1.6rem;             /* tamaño del texto */
+  font-size: 1.2rem;             /* texto proporcional al tamaño */
   font-weight: 700;
   border: none;                  /* quitar borde predeterminado */
   cursor: pointer;               /* indica que se puede tocar */
-  box-shadow: 0 6px 15px rgba(0,0,0,0.25); /* profundidad */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25); /* sombra proporcional */
   transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.3s ease; /* animación al tocar */
   touch-action: manipulation;      /* evita doble-tap zoom */
   -webkit-user-select: none;       /* evita selección */
@@ -332,7 +334,7 @@ details > *{
 
 #tapTempo:active {
   transform: scale(0.95);       /* efecto de “presionar” */
-  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
 }
 
 #tapTempo:hover {
@@ -344,13 +346,14 @@ details > *{
 @keyframes pulse {
   0%, 100% {
     transform: scale(1);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   }
   50% {
     transform: scale(1.08);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    box-shadow: 0 7px 14px rgba(0,0,0,0.3);
   }
 }
+
 /* ================================
    DOMINGO RESALTADO (BASE)
 ================================ */
