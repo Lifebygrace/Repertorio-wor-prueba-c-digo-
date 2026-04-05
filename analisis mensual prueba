@@ -613,7 +613,7 @@ body.dark .proximo-label {
 </div>
 
 <div class="section">
-  <h2>🆕 Canciones nuevas del mes</h2>
+  <h2>🆕 Canciones nuevas 🔥 </h2>
 
   <!-- Contenedor donde se mostrarán las canciones del mes -->
   <div id="mostrar-mes" style="margin-top:8px"></div>
@@ -2250,27 +2250,41 @@ function renderEstadisticas(rangoMeses, cantanteFiltro){
       const data = docu.data();
       const fechas = Array.isArray(data.fechas) ? data.fechas : [];
 
-      fechas.forEach(f=>{
+      fechas.forEach(f => {
 
         const fechaObj = new Date(f);
+        if (isNaN(fechaObj)) return;
 
-        // FILTRO RANGO
-        if(rangoMeses > 0){
-          const limite = new Date(hoy.getFullYear(), hoy.getMonth() - rangoMeses, 1);
-          if(fechaObj < limite) return;
+        // Solo domingos
+        if (fechaObj.getDay() !== 0) return;
+
+        // Filtro rango
+        if (rangoMeses > 0) {
+          const limite = new Date(
+            hoy.getFullYear(),
+            hoy.getMonth() - rangoMeses,
+            1
+          );
+
+          if (fechaObj < limite) return;
         }
 
         const analisis = analisisGuardado[f];
-        if(!analisis) return;
-        if(analisis.cantante !== nombre) return;
+        if (!analisis) return;
+        if (analisis.cantante !== nombre) return;
 
         const evaluacion = analisis.evaluaciones?.[docu.id];
-        if(!evaluacion) return;
+        if (!evaluacion) return;
 
-        const cancion = cancionesCache.find(c=>c.id===docu.id);
-        const titulo = cancion?.titulo || docu.id;
+        // 🔥 FILTRO CLAVE: ignorar canciones borradas
+        const cancion = cancionesCache.find(c => c.id === docu.id);
 
-        if(!conteo[evaluacion][titulo]){
+        // 👉 SI NO EXISTE, SE IGNORA (evita "-")
+        if (!cancion || !cancion.titulo) return;
+
+        const titulo = cancion.titulo;
+
+        if (!conteo[evaluacion][titulo]) {
           conteo[evaluacion][titulo] = 0;
         }
 
@@ -2279,6 +2293,10 @@ function renderEstadisticas(rangoMeses, cantanteFiltro){
       });
     });
 
+    // ==============================
+    // UI
+    // ==============================
+
     const bloque = document.createElement("div");
     bloque.className = "bloque-cantante";
     bloque.style.marginTop = "20px";
@@ -2286,9 +2304,7 @@ function renderEstadisticas(rangoMeses, cantanteFiltro){
     bloque.style.paddingTop = "10px";
 
     bloque.innerHTML = `
-      <h3 style="margin-bottom:10px;">
-        ${nombre}
-      </h3>
+      <h3 style="margin-bottom:10px;">${nombre}</h3>
       <div class="contenido-cantante"></div>
     `;
 
@@ -2321,7 +2337,6 @@ function renderEstadisticas(rangoMeses, cantanteFiltro){
           border-radius:10px;
           overflow:hidden;
           cursor:pointer;">
-          <!-- Barra animada: empieza en 0%, luego se llena -->
           <div style="
             width:0%;
             background:${cat.color};
@@ -2333,27 +2348,26 @@ function renderEstadisticas(rangoMeses, cantanteFiltro){
         <div style="display:none; margin-top:6px; font-size:13px;"></div>
       `;
 
-const barra = fila.querySelector("div:nth-child(2) > div");
-const porcentajeSpan = fila.querySelector("div:first-child span:last-child"); // selecciona el <span> del %
-barra.style.width = "0%";
-porcentajeSpan.textContent = "0%";
+      const barra = fila.querySelector("div:nth-child(2) > div");
+      const porcentajeSpan = fila.querySelector("span:last-child");
 
-// Animación de la barra
-setTimeout(() => {
-  barra.style.width = porcentaje + "%";
-}, 50);
+      setTimeout(() => {
+        barra.style.width = porcentaje + "%";
+      }, 50);
 
-// Animación del número
-let valorActual = 0;
-const incremento = Math.ceil(porcentaje / 20); // ajusta la velocidad del conteo
-const intervalo = setInterval(() => {
-  valorActual += incremento;
-  if (valorActual >= porcentaje) {
-    valorActual = porcentaje;
-    clearInterval(intervalo);
-  }
-  porcentajeSpan.textContent = valorActual + "%";
-}, 25);
+      let valorActual = 0;
+      const incremento = Math.ceil(porcentaje / 20);
+
+      const intervalo = setInterval(() => {
+        valorActual += incremento;
+
+        if (valorActual >= porcentaje) {
+          valorActual = porcentaje;
+          clearInterval(intervalo);
+        }
+
+        porcentajeSpan.textContent = valorActual + "%";
+      }, 25);
 
       const listaDiv = fila.lastElementChild;
 
@@ -2375,7 +2389,6 @@ const intervalo = setInterval(() => {
     contCantante.appendChild(bloque);
   });
 }
-
 
 // ==============================
 // EVENTOS FILTRO
