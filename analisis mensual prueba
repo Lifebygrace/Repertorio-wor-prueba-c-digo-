@@ -10,7 +10,7 @@
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Repertorio Worship</title>
+  <title>Repertorio</title>
 
 <!-- 📱 Configuración para iOS (icono pantalla de inicio) -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -550,6 +550,204 @@ body.dark .proximo-label {
   text-decoration: underline;
 }
 
+
+/* =====================================================
+   🛠️ HERRAMIENTAS
+===================================================== */
+
+#herramientas-wrapper {
+  width: 100%;
+  margin: 12px auto;
+  text-align: center;
+}
+
+
+/* =========================
+   BOTÓN PRINCIPAL
+========================= */
+
+#herramientas-toggle {
+
+  width: 100%;
+  max-width: 900px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  margin: 0 auto;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+
+}
+
+
+/* Efecto al pulsar */
+
+#herramientas-toggle:active {
+
+  transform:
+    scale(0.97);
+
+}
+
+
+/* Flecha */
+
+#herramientas-flecha {
+
+  display: inline-block;
+
+  transition:
+    transform 0.25s ease;
+
+}
+
+
+/* Girar flecha */
+
+#herramientas-toggle.abierto
+#herramientas-flecha {
+
+  transform:
+    rotate(180deg);
+
+}
+
+
+/* =========================
+   PANEL
+========================= */
+
+#herramientas-panel {
+
+  width: 100%;
+
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 10px;
+
+  padding: 0;
+
+  max-height: 0;
+
+  overflow: hidden;
+
+  opacity: 0;
+
+  transform:
+    translateY(-8px);
+
+  transition:
+
+    max-height 0.3s ease,
+
+    opacity 0.2s ease,
+
+    padding 0.3s ease,
+
+    transform 0.3s ease;
+
+}
+
+
+/* =========================
+   PANEL ABIERTO
+========================= */
+
+#herramientas-panel.abierto {
+
+  max-height: 1000px;
+
+  opacity: 1;
+
+  padding:
+    12px 0 6px;
+
+  transform:
+    translateY(0);
+
+}
+
+
+/* =========================
+   BOTONES DENTRO
+========================= */
+
+#herramientas-panel button {
+
+  width: 100%;
+
+  margin: 0;
+
+  min-height: 44px;
+
+}
+
+
+/* =========================
+   TABLET / ESCRITORIO
+========================= */
+
+@media (min-width: 700px) {
+
+  #herramientas-panel {
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+  }
+
+}
+
+
+/* =========================
+   MÓVIL PEQUEÑO
+========================= */
+
+@media (max-width: 380px) {
+
+  #herramientas-panel {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+}
+
+
+/* =========================
+   MODO OSCURO
+========================= */
+
+body.dark #herramientas-panel {
+
+  /* Los botones conservan
+     automáticamente tus estilos
+     actuales */
+
+}
   </style>
 </head>
 
@@ -567,14 +765,48 @@ body.dark .proximo-label {
 <header>
   <div class="logo">
     <img src="https://raw.githubusercontent.com/Lifebygrace/Repertorio-worship/main/logo.jpeg" alt="Logo" />
-    <h1 style="margin:0">Repertorio Worship</h1>
+    <h1 style="margin:0">Repertorio ✟</h1>
   </div>
-  <div class="controls">
-    <button onclick="toggleDark()">🌙 / ☀️</button>
+  
+  <!-- =========================
+     🛠️ HERRAMIENTAS
+========================= -->
+
+<div id="herramientas-wrapper">
+
+  <button
+    id="herramientas-toggle"
+    type="button"
+    onclick="toggleHerramientas()"
+    aria-expanded="false"
+    aria-controls="herramientas-panel"
+  >
+    🛠️ Herramientas
+    <span id="herramientas-flecha">▼</span>
+  </button>
+
+  <div
+    id="herramientas-panel"
+    aria-hidden="true"
+  >
+
+    <!-- =================================
+         PEGA AQUÍ TUS 9 BOTONES ACTUALES
+         SIN MODIFICARLOS
+    ================================== -->
+
+  <button onclick="toggleDark()">🌙 / ☀️</button>
     <button onclick="activarEdicion()">✏️ Editar</button>
     <button onclick="abrirMetronomo()">🕒 Metrónomo</button>
     <button id="toggleCancionesBtn" onclick="toggleCanciones()">🎵Mostrar lista</button>
     <button onclick="toggleListadoMensual()">📅 Listado mensual</button>
+    <button style="background:var(--accent);" onclick="toggleRegistro()">📊 Registro de canciones</button>
+    <button onclick="toggleAnalisisReal()">📈 Análisis real</button>
+    <button onclick="window.open('https://drive.google.com/drive/folders/1RxOwnOCtt7Oa_J6rUzG1jC242md5MT1-', '_blank')">
+  🎧 Recursos </button>
+  <button onclick="toggleAusencias()">
+  📅 Ausencias
+</button>
   </div>
 </header>
 
@@ -677,10 +909,12 @@ body.dark .proximo-label {
 ===================================================== -->
 
   <div id="registro-canciones-container" style="margin-top:12px;">
-    <button style="background:var(--accent);" onclick="toggleRegistro()">📊 Registro de canciones</button>
-    <button onclick="toggleAnalisisReal()">📈 Análisis real</button>
-    <button onclick="window.open('https://drive.google.com/drive/folders/1RxOwnOCtt7Oa_J6rUzG1jC242md5MT1-', '_blank')">
-  🎧 Recursos </button>
+
+<div
+  id="ausencias"
+  class="section"
+  style="display:none;"
+></div>
     <div id="analisis-real" class="section" style="display:none;"></div>
     <div id="analisis-mensual" class="section" style="display:none;"></div>
     <div id="registro-canciones" class="section" style="display:none;">
@@ -792,6 +1026,929 @@ let ordenActual = { campo: 'titulo', sentido: 'desc' };
 /* =====================================================
    🛠️ UTILIDADES
 ===================================================== */
+
+/* =====================================================
+   📅 REGISTRO DE AUSENCIAS
+   Firestore -> colección "ausencias"
+
+   MODO EDICIÓN:
+   - Permite marcar/desmarcar integrantes
+   - Permite guardar las ausencias
+
+   MODO NORMAL:
+   - NO permite modificar nada
+   - Solo muestra quién falta
+   - Si nadie falta:
+     "sin ausencias registradas 🥳"
+===================================================== */
+
+const INTEGRANTES_AUSENCIAS = [
+  "Milly",
+  "Carolina",
+  "Yarina" ,
+  "Misael" ,
+  "Albert" ,
+  "Jhonsy" ,
+  "Daiana" 
+];
+
+
+/* =====================================================
+   ABRIR / CERRAR SECCIÓN
+===================================================== */
+
+function toggleAusencias() {
+
+  const el = document.getElementById("ausencias");
+
+  if (!el) return;
+
+
+  el.style.display =
+    el.style.display === "block"
+      ? "none"
+      : "block";
+
+
+  if (el.style.display === "block") {
+    cargarAusencias();
+  }
+
+}
+
+
+/* =====================================================
+   OBTENER CLAVE DEL MES
+   Ejemplo: 2026-08
+===================================================== */
+
+function obtenerClaveMesAusencias(date) {
+
+  return `${date.getFullYear()}-${String(
+    date.getMonth() + 1
+  ).padStart(2, "0")}`;
+
+}
+
+
+/* =====================================================
+   OBTENER TODOS LOS DOMINGOS DEL MES
+===================================================== */
+
+function obtenerDomingosDelMesAusencias(mesKey) {
+
+  const [year, month] =
+    mesKey.split("-").map(Number);
+
+
+  const domingos = [];
+
+
+  const fecha =
+    new Date(year, month - 1, 1);
+
+
+  while (
+    fecha.getMonth() === month - 1
+  ) {
+
+    if (fecha.getDay() === 0) {
+
+      domingos.push(
+
+        `${fecha.getFullYear()}-${String(
+          fecha.getMonth() + 1
+        ).padStart(2, "0")}-${String(
+          fecha.getDate()
+        ).padStart(2, "0")}`
+
+      );
+
+    }
+
+
+    fecha.setDate(
+      fecha.getDate() + 1
+    );
+
+  }
+
+
+  return domingos;
+
+}
+
+
+/* =====================================================
+   FORMATEAR MES
+===================================================== */
+
+function formatearMesAusencias(mesKey) {
+
+  const [year, month] =
+    mesKey.split("-").map(Number);
+
+
+  return new Intl.DateTimeFormat(
+    "es-ES",
+    {
+      month: "long",
+      year: "numeric"
+    }
+  ).format(
+    new Date(year, month - 1, 1)
+  );
+
+}
+
+
+/* =====================================================
+   FORMATEAR FECHA
+===================================================== */
+
+function formatearFechaAusencia(
+  fechaISO
+) {
+
+  const [year, month, day] =
+    fechaISO.split("-").map(Number);
+
+
+  return new Intl.DateTimeFormat(
+    "es-ES",
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long"
+    }
+  ).format(
+    new Date(
+      year,
+      month - 1,
+      day
+    )
+  );
+
+}
+
+
+/* =====================================================
+   CAMBIAR MES
+===================================================== */
+
+function cambiarMesAusencias(delta) {
+
+  const input =
+    document.getElementById("ausencias-mes");
+
+  if (!input) return;
+
+
+  const [year, month] =
+    input.value
+      .split("-")
+      .map(Number);
+
+
+  const nuevaFecha =
+    new Date(
+      year,
+      month - 1 + delta,
+      1
+    );
+
+
+  const nuevoMes =
+    obtenerClaveMesAusencias(
+      nuevaFecha
+    );
+
+
+  cargarAusencias(nuevoMes);
+
+}
+
+/* =====================================================
+   CARGAR AUSENCIAS
+===================================================== */
+async function cargarAusencias(mesSolicitado = null) {
+
+  const cont =
+    document.getElementById("ausencias");
+
+  if (!cont) return;
+
+
+  /* =================================================
+     DETERMINAR QUÉ MES MOSTRAR
+
+     Si recibimos un mes desde los botones
+     ◀️ / ▶️, utilizamos ese mes.
+
+     Si no, intentamos conservar el mes
+     que ya estaba seleccionado.
+
+     Si tampoco existe, usamos el mes actual.
+  ================================================= */
+
+  let mesKey = mesSolicitado;
+
+
+  if (!mesKey) {
+
+    const inputExistente =
+      document.getElementById(
+        "ausencias-mes"
+      );
+
+
+    if (
+      inputExistente &&
+      inputExistente.value
+    ) {
+
+      mesKey =
+        inputExistente.value;
+
+    }
+
+  }
+
+
+  if (!mesKey) {
+
+    const hoy =
+      new Date();
+
+    mesKey =
+      obtenerClaveMesAusencias(
+        hoy
+      );
+
+  }
+
+
+  /* =================================================
+     SABER SI ESTAMOS EN MODO EDICIÓN
+  ================================================= */
+
+  const edicion =
+    typeof modoEdicion !== "undefined"
+      ? modoEdicion
+      : false;
+
+
+  /* =================================================
+     CREAR CABECERA
+
+     IMPORTANTE:
+     Ahora utilizamos mesKey y NO el mes actual.
+  ================================================= */
+
+  cont.innerHTML = `
+
+    <div
+      class="card"
+      style="margin-top:12px;"
+    >
+
+      <h2>
+        📅 Ausencias de integrantes
+      </h2>
+
+
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:8px;
+          margin:12px 0;
+          flex-wrap:wrap;
+        "
+      >
+
+        <button
+          onclick="cambiarMesAusencias(-1)"
+        >
+          ◀️
+        </button>
+
+
+        <input
+          type="month"
+          id="ausencias-mes"
+          value="${mesKey}"
+          onchange="cargarAusencias(this.value)"
+          class="edit-input"
+          style="
+            width:auto;
+            margin:0;
+          "
+        />
+
+
+        <button
+          onclick="cambiarMesAusencias(1)"
+        >
+          ▶️
+        </button>
+
+      </div>
+
+
+      <div
+        id="ausencias-contenido"
+      ></div>
+
+    </div>
+
+  `;
+
+
+  const contenido =
+    document.getElementById(
+      "ausencias-contenido"
+    );
+
+
+  try {
+
+    /* =================================================
+       OBTENER DATOS DEL MES DESDE FIRESTORE
+    ================================================= */
+
+    const snap =
+      await getDoc(
+        doc(
+          db,
+          "ausencias",
+          mesKey
+        )
+      );
+
+
+    const datos =
+      snap.exists()
+        ? snap.data()
+        : {};
+
+
+    const fechasGuardadas =
+      datos.fechas || {};
+
+
+    /* =================================================
+       OBTENER DOMINGOS DEL MES
+    ================================================= */
+
+    const domingos =
+      obtenerDomingosDelMesAusencias(
+        mesKey
+      );
+
+
+    if (!domingos.length) {
+
+      contenido.innerHTML = `
+        <p>
+          No hay domingos en este mes.
+        </p>
+      `;
+
+      return;
+
+    }
+
+
+    /* =================================================
+       CREAR CADA DOMINGO
+    ================================================= */
+
+    contenido.innerHTML = domingos
+      .map(fecha => {
+
+        const ausentes =
+          Array.isArray(
+            fechasGuardadas[fecha]
+          )
+            ? fechasGuardadas[fecha]
+            : [];
+
+
+        /* =============================================
+           MODO NORMAL
+        ============================================= */
+
+        if (!edicion) {
+
+          return `
+
+            <div
+              class="card"
+              style="
+                margin:12px 0;
+                padding:14px;
+              "
+            >
+
+              <h3
+                style="
+                  margin-top:0;
+                  text-transform:capitalize;
+                "
+              >
+
+                ${formatearFechaAusencia(
+                  fecha
+                )}
+
+              </h3>
+
+
+              ${
+                ausentes.length > 0
+
+                  ? `
+
+                    <div
+                      style="
+                        display:flex;
+                        flex-direction:column;
+                        gap:6px;
+                      "
+                    >
+
+                      ${ausentes
+                        .map(
+                          integrante => `
+                            <div>
+                              👤 ${integrante}
+                            </div>
+                          `
+                        )
+                        .join("")}
+
+                    </div>
+
+                  `
+
+                  : `
+
+                    <p
+                      style="
+                        font-style:italic;
+                        margin:0;
+                      "
+                    >
+                      sin ausencias registradas 🥳
+                    </p>
+
+                  `
+              }
+
+            </div>
+
+          `;
+
+        }
+
+
+        /* =============================================
+           MODO EDICIÓN
+        ============================================= */
+
+        return `
+
+          <div
+            class="card"
+            style="
+              margin:12px 0;
+              padding:14px;
+            "
+          >
+
+            <h3
+              style="
+                margin-top:0;
+                text-transform:capitalize;
+              "
+            >
+
+              ${formatearFechaAusencia(
+                fecha
+              )}
+
+            </h3>
+
+
+            <div
+              style="
+                display:flex;
+                flex-direction:column;
+                gap:10px;
+              "
+            >
+
+              ${INTEGRANTES_AUSENCIAS
+                .map(integrante => `
+
+                  <label
+                    style="
+                      display:flex;
+                      align-items:center;
+                      gap:10px;
+                      cursor:pointer;
+                    "
+                  >
+
+                    <input
+                      type="checkbox"
+
+                      class="ausencia-checkbox"
+
+                      data-fecha="${fecha}"
+
+                      data-integrante="${integrante}"
+
+                      ${
+                        ausentes.includes(
+                          integrante
+                        )
+                          ? "checked"
+                          : ""
+                      }
+
+                      style="
+                        width:20px;
+                        height:20px;
+                      "
+                    >
+
+                    <span>
+                      ${integrante}
+                    </span>
+
+                  </label>
+
+                `)
+                .join("")}
+
+            </div>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+
+
+    /* =================================================
+       BOTÓN GUARDAR — SOLO EDICIÓN
+    ================================================= */
+
+    if (edicion) {
+
+      contenido.innerHTML += `
+
+        <button
+          id="guardar-ausencias-btn"
+
+          style="
+            background:var(--accent);
+            margin-top:8px;
+          "
+
+          onclick="guardarAusencias()"
+        >
+
+          💾 Guardar ausencias
+
+        </button>
+
+      `;
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Error cargando ausencias:",
+      error
+    );
+
+
+    contenido.innerHTML = `
+
+      <p>
+        ❌ No se pudieron cargar
+        las ausencias.
+      </p>
+
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   GUARDAR AUSENCIAS
+   SOLO SE PUEDE EJECUTAR EN MODO EDICIÓN
+===================================================== */
+
+async function guardarAusencias() {
+
+  /* ===============================================
+     SEGURIDAD EXTRA
+     Aunque alguien intente ejecutar la función
+     manualmente, no permitirá guardar en modo normal.
+  =============================================== */
+
+  if (
+    typeof modoEdicion === "undefined" ||
+    !modoEdicion
+  ) {
+
+    alert(
+      "⚠️ Debes activar el Modo edición para modificar las ausencias."
+    );
+
+    return;
+
+  }
+
+
+  const inputMes =
+    document.getElementById(
+      "ausencias-mes"
+    );
+
+
+  if (!inputMes) return;
+
+
+  const mesKey =
+    inputMes.value;
+
+
+  const fechas = {};
+
+
+  /* ===============================================
+     RECOGER CHECKBOXES
+  =============================================== */
+
+  document
+    .querySelectorAll(
+      ".ausencia-checkbox"
+    )
+    .forEach(checkbox => {
+
+      const fecha =
+        checkbox.dataset.fecha;
+
+
+      const integrante =
+        checkbox.dataset.integrante;
+
+
+      if (!fechas[fecha]) {
+
+        fechas[fecha] = [];
+
+      }
+
+
+      if (checkbox.checked) {
+
+        fechas[fecha].push(
+          integrante
+        );
+
+      }
+
+    });
+
+
+  try {
+
+    /* ===============================================
+       GUARDAR EN FIRESTORE
+    =============================================== */
+
+    await setDoc(
+
+      doc(
+        db,
+        "ausencias",
+        mesKey
+      ),
+
+      {
+
+        mes: mesKey,
+
+        fechas: fechas,
+
+        actualizado:
+          new Date().toISOString()
+
+      },
+
+      {
+        merge: true
+      }
+
+    );
+
+
+    alert(
+      `✅ Ausencias de ${
+        formatearMesAusencias(
+          mesKey
+        )
+      } guardadas`
+    );
+
+
+    /* ===============================================
+       RECARGAR
+    =============================================== */
+
+    await cargarAusencias();
+
+
+  } catch (error) {
+
+    console.error(
+      "Error guardando ausencias:",
+      error
+    );
+
+
+    alert(
+      "❌ No se pudieron guardar las ausencias"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   FUNCIONES GLOBALES
+===================================================== */
+
+window.toggleAusencias =
+  toggleAusencias;
+
+window.cargarAusencias =
+  cargarAusencias;
+
+window.guardarAusencias =
+  guardarAusencias;
+
+window.cambiarMesAusencias =
+  cambiarMesAusencias;
+////////////////////
+
+
+
+/* =====================================================
+   🛠️ HERRAMIENTAS
+   ABRIR / CERRAR
+===================================================== */
+
+function toggleHerramientas() {
+
+  const panel =
+    document.getElementById(
+      "herramientas-panel"
+    );
+
+  const button =
+    document.getElementById(
+      "herramientas-toggle"
+    );
+
+  if (
+    !panel ||
+    !button
+  ) {
+
+    return;
+
+  }
+
+
+  const abierto =
+    panel.classList.toggle(
+      "abierto"
+    );
+
+
+  button.classList.toggle(
+    "abierto",
+    abierto
+  );
+
+
+  button.setAttribute(
+    "aria-expanded",
+    abierto
+      ? "true"
+      : "false"
+  );
+
+
+  panel.setAttribute(
+    "aria-hidden",
+    abierto
+      ? "false"
+      : "true"
+  );
+
+}
+
+/* =====================================================
+   CERRAR AL PULSAR FUERA
+===================================================== */
+
+document.addEventListener(
+  "click",
+  function(event) {
+
+    const wrapper =
+      document.getElementById(
+        "herramientas-wrapper"
+      );
+
+    const panel =
+      document.getElementById(
+        "herramientas-panel"
+      );
+
+    const button =
+      document.getElementById(
+        "herramientas-toggle"
+      );
+
+
+    if (
+      !wrapper ||
+      !panel ||
+      !button
+    ) {
+
+      return;
+
+    }
+
+
+    /* Si el menú está abierto
+       y pulsamos fuera */
+
+    if (
+      panel.classList.contains(
+        "abierto"
+      ) &&
+      !wrapper.contains(
+        event.target
+      )
+    ) {
+
+      panel.classList.remove(
+        "abierto"
+      );
+
+      button.classList.remove(
+        "abierto"
+      );
+
+      button.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+
+      panel.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+    }
+
+  }
+);
+
+
+window.toggleHerramientas =
+  toggleHerramientas;
+  
+
+
 
 function normalizar(t){ return (t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(); }
 function resaltar(t,q){ if(!q) return t; try{ const r=new RegExp(`(${q})`,"gi"); return t.replace(r,"<mark>$1</mark>"); }catch(e){return t;} }
@@ -1640,6 +2797,8 @@ document.querySelectorAll(`.eval-input[data-mes="${mes}"]`).forEach(i=>{
   alert("✅ Análisis mensual guardado");
 }
 
+
+
 /* =========================
   FUNCIONES METRÓNOMO
 ========================= */
@@ -1648,212 +2807,678 @@ let beatCount = 0; // para acento en el 1 (4/4)
 let audioCtx;
 let metronomeInterval = null;
 let isRunning = false;
-let currentBpm = Number(localStorage.getItem("metroBpm")) || 80;
 
-///////////////////////////////
-// TAP TEMPO
-///////////////////////////////
+let currentBpm =
+  Number(localStorage.getItem("metroBpm")) || 80;
+
+
+/* =====================================================
+   ELEMENTOS DEL METRÓNOMO
+===================================================== */
+
+const bpmSlider = () =>
+  document.getElementById("bpmSlider");
+
+const bpmValue = () =>
+  document.getElementById("bpmValue");
+
+const metroBtn = () =>
+  document.getElementById("metroToggle");
+
+
+/* =====================================================
+   TAP TEMPO
+===================================================== */
 
 let tapTimes = [];
 let lastTap = 0;
 
-const MAX_TAPS = 16;     // más taps para mayor precisión
-const RESET_TIME = 2000; // reinicia si pasan 2s sin taps
-const MIN_INTERVAL = 80; // ignora taps demasiado rápidos (doble click)
 
-const bpmSlider = () => document.getElementById("bpmSlider");
-const bpmValue  = () => document.getElementById("bpmValue");
-const metroBtn  = () => document.getElementById("metroToggle");
+// Máximo de taps que conservamos
+const MAX_TAPS = 6;
+
+
+// Si pasan más de 2 segundos sin tocar,
+// empezamos una nueva medición
+const RESET_TIME = 2000;
+
+
+// Evita dobles registros accidentales.
+// 45 ms permite taps bastante rápidos.
+const MIN_INTERVAL = 45;
+
+
+// Número de intervalos recientes utilizados
+// para calcular el BPM.
+const TAP_INTERVALS_TO_USE = 3;
+
+
+/* =====================================================
+   INICIALIZAR AUDIO
+===================================================== */
 
 function initMetronome(){
+
   if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    audioCtx =
+      new (
+        window.AudioContext ||
+        window.webkitAudioContext
+      )();
+
   }
 
-  if(audioCtx.state === "suspended"){
+
+  if(
+    audioCtx.state === "suspended"
+  ){
+
     audioCtx.resume();
+
   }
+
 }
 
-function playClick(){
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
 
-  const isAccent = beatCount === 0;
+/* =====================================================
+   SONIDO DEL CLICK
+===================================================== */
+
+function playClick(){
+
+  const osc =
+    audioCtx.createOscillator();
+
+  const gain =
+    audioCtx.createGain();
+
+
+  const isAccent =
+    beatCount === 0;
+
 
   // 🌲 Wood click
   osc.type = "triangle";
-  osc.frequency.value = isAccent ? 1200 : 800;
 
-  const now = audioCtx.currentTime;
+  osc.frequency.value =
+    isAccent
+      ? 1200
+      : 800;
 
-  gain.gain.setValueAtTime(0.0001, now);
+
+  const now =
+    audioCtx.currentTime;
+
+
+  gain.gain.setValueAtTime(
+    0.0001,
+    now
+  );
+
 
   gain.gain.exponentialRampToValueAtTime(
-    isAccent ? 0.6 : 0.38,
+    isAccent
+      ? 0.6
+      : 0.38,
+
     now + 0.005
   );
+
 
   gain.gain.exponentialRampToValueAtTime(
     0.0001,
     now + 0.04
   );
 
+
   osc.connect(gain);
-  gain.connect(audioCtx.destination);
+
+  gain.connect(
+    audioCtx.destination
+  );
+
 
   osc.start(now);
-  osc.stop(now + 0.05);
 
-  beatCount = (beatCount + 1) % 4;
+  osc.stop(
+    now + 0.05
+  );
+
+
+  beatCount =
+    (beatCount + 1) % 4;
+
 }
 
+
+/* =====================================================
+   INICIAR METRÓNOMO
+===================================================== */
+
 function startMetronome(){
+
   initMetronome();
 
-  const interval = 60000 / currentBpm;
-  
+
+  const interval =
+    60000 / currentBpm;
+
+
   beatCount = 0;
+
 
   playClick();
 
-  metronomeInterval = setInterval(playClick, interval);
+
+  metronomeInterval =
+    setInterval(
+      playClick,
+      interval
+    );
+
 
   isRunning = true;
 
-  metroBtn().textContent = "⏸ Stop";
+
+  const button =
+    metroBtn();
+
+
+  if(button){
+
+    button.textContent =
+      "⏸ Stop";
+
+  }
+
 }
 
+
+/* =====================================================
+   DETENER METRÓNOMO
+===================================================== */
+
 function stopMetronome(){
-  clearInterval(metronomeInterval);
+
+  clearInterval(
+    metronomeInterval
+  );
+
 
   metronomeInterval = null;
 
+
   isRunning = false;
 
-  metroBtn().textContent = "▶️ Start";
+
+  const button =
+    metroBtn();
+
+
+  if(button){
+
+    button.textContent =
+      "▶️ Start";
+
+  }
+
 }
 
-///////////////////////////////
-// TAP TEMPO
-///////////////////////////////
+
+/* =====================================================
+   TAP TEMPO
+===================================================== */
 
 function tapTempo(){
 
   initMetronome();
 
-  const now = performance.now();
 
-  // reset si pasa mucho tiempo
-  if(now - lastTap > RESET_TIME){
+  const now =
+    performance.now();
+
+
+  /* ===================================================
+     SI HAN PASADO MÁS DE 2 SEGUNDOS,
+     COMENZAMOS UNA NUEVA MEDICIÓN
+  =================================================== */
+
+  if(
+    lastTap &&
+    (now - lastTap) > RESET_TIME
+  ){
+
     tapTimes = [];
+
   }
 
-  // ignorar taps demasiado rápidos
-  if(lastTap && (now - lastTap) < MIN_INTERVAL){
+
+  /* ===================================================
+     IGNORAR DOBLE TAP ACCIDENTAL
+  =================================================== */
+
+  if(
+    lastTap &&
+    (now - lastTap) < MIN_INTERVAL
+  ){
+
     return;
+
   }
 
-  lastTap = now;
+
+  /* ===================================================
+     REGISTRAR TAP
+  =================================================== */
 
   tapTimes.push(now);
 
-  if(tapTimes.length > MAX_TAPS){
+  lastTap = now;
+
+
+  /* ===================================================
+     MANTENER SOLO LOS ÚLTIMOS TAPS
+  =================================================== */
+
+  if(
+    tapTimes.length > MAX_TAPS
+  ){
+
     tapTimes.shift();
+
   }
 
-  if(tapTimes.length < 2) return;
 
-  let intervals = [];
+  /* ===================================================
+     NECESITAMOS AL MENOS 2 TAPS
+  =================================================== */
 
-  for(let i = 1; i < tapTimes.length; i++){
-    intervals.push(tapTimes[i] - tapTimes[i-1]);
+  if(
+    tapTimes.length < 2
+  ){
+
+    return;
+
   }
 
-  const avg = intervals.reduce((a,b)=>a+b,0) / intervals.length;
 
-  const bpm = Math.round(60000 / avg);
+  /* ===================================================
+     CALCULAR INTERVALOS
+  =================================================== */
 
-  if(bpm >= 40 && bpm <= 300){
+  const intervals = [];
 
-    currentBpm = bpm;
 
-    bpmSlider().value = bpm;
+  for(
+    let i = 1;
+    i < tapTimes.length;
+    i++
+  ){
 
-    bpmValue().textContent = bpm;
+    intervals.push(
+      tapTimes[i] -
+      tapTimes[i - 1]
+    );
 
-    localStorage.setItem("metroBpm", bpm);
-
-    if(isRunning){
-      stopMetronome();
-      startMetronome();
-    }
   }
+
+
+  /* ===================================================
+     USAR SOLO LOS INTERVALOS MÁS RECIENTES
+
+     Esto permite cambiar rápidamente:
+
+     90 → 90 → 90
+              ↓
+             119
+              ↓
+             119
+              ↓
+             119
+
+     sin que los taps antiguos dominen
+     el resultado.
+  =================================================== */
+
+  const recentIntervals =
+    intervals.slice(
+      -TAP_INTERVALS_TO_USE
+    );
+
+
+  /* ===================================================
+     CALCULAR MEDIA
+  =================================================== */
+
+  const averageInterval =
+    recentIntervals.reduce(
+      (total, interval) =>
+        total + interval,
+      0
+    ) /
+    recentIntervals.length;
+
+
+  /* ===================================================
+     CONVERTIR INTERVALO → BPM
+  =================================================== */
+
+  const bpm =
+    Math.round(
+      60000 /
+      averageInterval
+    );
+
+
+  /* ===================================================
+     COMPROBAR BPM VÁLIDO
+  =================================================== */
+
+  if(
+    bpm < 40 ||
+    bpm > 300
+  ){
+
+    return;
+
+  }
+
+
+  /* ===================================================
+     ACTUALIZAR BPM
+  =================================================== */
+
+  currentBpm =
+    bpm;
+
+
+  const slider =
+    bpmSlider();
+
+  const display =
+    bpmValue();
+
+
+  if(slider){
+
+    slider.value =
+      bpm;
+
+  }
+
+
+  if(display){
+
+    display.textContent =
+      bpm;
+
+  }
+
+
+  /* ===================================================
+     GUARDAR BPM
+  =================================================== */
+
+  localStorage.setItem(
+    "metroBpm",
+    bpm
+  );
+
+
+  /* ===================================================
+     SI EL METRÓNOMO ESTÁ FUNCIONANDO,
+     ACTUALIZAR SU VELOCIDAD
+  =================================================== */
+
+  if(isRunning){
+
+    stopMetronome();
+
+    startMetronome();
+
+  }
+
 }
+
+
+/* =====================================================
+   TOGGLE METRÓNOMO
+===================================================== */
 
 function toggleMetronome(){
-  isRunning ? stopMetronome() : startMetronome();
+
+  if(isRunning){
+
+    stopMetronome();
+
+  }else{
+
+    startMetronome();
+
+  }
+
 }
+
+
+/* =====================================================
+   ABRIR METRÓNOMO
+===================================================== */
 
 function abrirMetronomo(){
-  document.getElementById("modal-metronomo").style.display = "flex";
 
-  bpmSlider().value = currentBpm;
-  bpmValue().textContent = currentBpm;
+  const modal =
+    document.getElementById(
+      "modal-metronomo"
+    );
+
+
+  if(!modal){
+
+    return;
+
+  }
+
+
+  modal.style.display =
+    "flex";
+
+
+  const slider =
+    bpmSlider();
+
+  const display =
+    bpmValue();
+
+
+  if(slider){
+
+    slider.value =
+      currentBpm;
+
+  }
+
+
+  if(display){
+
+    display.textContent =
+      currentBpm;
+
+  }
+
 }
+
+
+/* =====================================================
+   CERRAR METRÓNOMO
+===================================================== */
 
 function cerrarMetronomo(){
+
   stopMetronome();
-  document.getElementById("modal-metronomo").style.display = "none";
+
+
+  const modal =
+    document.getElementById(
+      "modal-metronomo"
+    );
+
+
+  if(modal){
+
+    modal.style.display =
+      "none";
+
+  }
+
 }
 
-/* Eventos */
-document.addEventListener("input", e => {
-  if(e.target.id === "bpmSlider"){
-    currentBpm = Number(e.target.value);
-    bpmValue().textContent = currentBpm;
-    localStorage.setItem("metroBpm", currentBpm);
 
-    if(isRunning){
-      stopMetronome();
-      startMetronome();
+/* =====================================================
+   EVENTO DEL SLIDER BPM
+===================================================== */
+
+document.addEventListener(
+  "input",
+  e => {
+
+    if(
+      e.target.id ===
+      "bpmSlider"
+    ){
+
+      currentBpm =
+        Number(
+          e.target.value
+        );
+
+
+      const display =
+        bpmValue();
+
+
+      if(display){
+
+        display.textContent =
+          currentBpm;
+
+      }
+
+
+      localStorage.setItem(
+        "metroBpm",
+        currentBpm
+      );
+
+
+      if(isRunning){
+
+        stopMetronome();
+
+        startMetronome();
+
+      }
+
     }
+
   }
-});
-
-document.addEventListener("click", e => {
-  if(e.target.id === "metroToggle"){
-    toggleMetronome();
-  }
-});
-
-document.getElementById("tapTempo").addEventListener("click", tapTempo);
+);
 
 
-// 🔊 Reactivar audio al volver a la app (iOS / PWA)
-document.addEventListener("visibilitychange", ()=>{
-  if(document.visibilityState === "visible" && audioCtx){
-    audioCtx.resume();
-  }
-});
+/* =====================================================
+   BOTÓN START / STOP
+===================================================== */
 
-window.addEventListener("pageshow", ()=>{
-  if (audioCtx) {
-    audioCtx.resume();
-  }
-});
+document.addEventListener(
+  "click",
+  e => {
 
-let lastTouchEnd = 0;
+    if(
+      e.target.id ===
+      "metroToggle"
+    ){
 
-document.addEventListener("touchend", function (event) {
-  const now = Date.now();
-  if (now - lastTouchEnd <= 300) {
-    if (event.target.closest("#tapTempo")) {
-      event.preventDefault();
+      toggleMetronome();
+
     }
+
   }
-  lastTouchEnd = now;
-}, { passive: false });
+);
+
+
+/* =====================================================
+   TAP TEMPO
+
+   Utilizamos pointerdown mediante
+   delegación de eventos.
+
+   Esto funciona aunque #tapTempo
+   se cree después de cargar la página
+   y responde inmediatamente al toque.
+===================================================== */
+
+document.addEventListener(
+  "pointerdown",
+  e => {
+
+    const tapButton =
+      e.target.closest(
+        "#tapTempo"
+      );
+
+
+    if(!tapButton){
+
+      return;
+
+    }
+
+
+    e.preventDefault();
+
+
+    tapTempo();
+
+  }
+);
+
+
+/* =====================================================
+   REACTIVAR AUDIO AL VOLVER A LA APP
+   iOS / PWA
+===================================================== */
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if(
+      document.visibilityState ===
+      "visible" &&
+      audioCtx
+    ){
+
+      audioCtx.resume();
+
+    }
+
+  }
+);
+
+
+window.addEventListener(
+  "pageshow",
+  () => {
+
+    if(audioCtx){
+
+      audioCtx.resume();
+
+    }
+
+  }
+);
+
 
 /* BOOT */
 
