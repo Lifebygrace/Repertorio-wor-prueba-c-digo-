@@ -10,7 +10,7 @@
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Repertorio Worship</title>
+  <title>Repertorio</title>
 
 <!-- 📱 Configuración para iOS (icono pantalla de inicio) -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -550,6 +550,204 @@ body.dark .proximo-label {
   text-decoration: underline;
 }
 
+
+/* =====================================================
+   🛠️ HERRAMIENTAS
+===================================================== */
+
+#herramientas-wrapper {
+  width: 100%;
+  margin: 12px auto;
+  text-align: center;
+}
+
+
+/* =========================
+   BOTÓN PRINCIPAL
+========================= */
+
+#herramientas-toggle {
+
+  width: 100%;
+  max-width: 900px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  margin: 0 auto;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+
+}
+
+
+/* Efecto al pulsar */
+
+#herramientas-toggle:active {
+
+  transform:
+    scale(0.97);
+
+}
+
+
+/* Flecha */
+
+#herramientas-flecha {
+
+  display: inline-block;
+
+  transition:
+    transform 0.25s ease;
+
+}
+
+
+/* Girar flecha */
+
+#herramientas-toggle.abierto
+#herramientas-flecha {
+
+  transform:
+    rotate(180deg);
+
+}
+
+
+/* =========================
+   PANEL
+========================= */
+
+#herramientas-panel {
+
+  width: 100%;
+
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 10px;
+
+  padding: 0;
+
+  max-height: 0;
+
+  overflow: hidden;
+
+  opacity: 0;
+
+  transform:
+    translateY(-8px);
+
+  transition:
+
+    max-height 0.3s ease,
+
+    opacity 0.2s ease,
+
+    padding 0.3s ease,
+
+    transform 0.3s ease;
+
+}
+
+
+/* =========================
+   PANEL ABIERTO
+========================= */
+
+#herramientas-panel.abierto {
+
+  max-height: 1000px;
+
+  opacity: 1;
+
+  padding:
+    12px 0 6px;
+
+  transform:
+    translateY(0);
+
+}
+
+
+/* =========================
+   BOTONES DENTRO
+========================= */
+
+#herramientas-panel button {
+
+  width: 100%;
+
+  margin: 0;
+
+  min-height: 44px;
+
+}
+
+
+/* =========================
+   TABLET / ESCRITORIO
+========================= */
+
+@media (min-width: 700px) {
+
+  #herramientas-panel {
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+  }
+
+}
+
+
+/* =========================
+   MÓVIL PEQUEÑO
+========================= */
+
+@media (max-width: 380px) {
+
+  #herramientas-panel {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+}
+
+
+/* =========================
+   MODO OSCURO
+========================= */
+
+body.dark #herramientas-panel {
+
+  /* Los botones conservan
+     automáticamente tus estilos
+     actuales */
+
+}
   </style>
 </head>
 
@@ -567,14 +765,66 @@ body.dark .proximo-label {
 <header>
   <div class="logo">
     <img src="https://raw.githubusercontent.com/Lifebygrace/Repertorio-worship/main/logo.jpeg" alt="Logo" />
-    <h1 style="margin:0">Repertorio Worship</h1>
+    <h1 style="margin:0">Repertorio ✟</h1>
   </div>
-  <div class="controls">
-    <button onclick="toggleDark()">🌙 / ☀️</button>
+  
+  <!-- =========================
+     🛠️ HERRAMIENTAS
+========================= -->
+
+<div id="herramientas-wrapper">
+
+  <button
+    id="herramientas-toggle"
+    type="button"
+    onclick="toggleHerramientas()"
+    aria-expanded="false"
+    aria-controls="herramientas-panel"
+  >
+    🛠️ Herramientas
+    <span id="herramientas-flecha">▼</span>
+  </button>
+
+  <div
+    id="herramientas-panel"
+    aria-hidden="true"
+  >
+
+    <!-- =================================
+         PEGA AQUÍ TUS 9 BOTONES ACTUALES
+         SIN MODIFICARLOS
+    ================================== -->
+
+  <button onclick="toggleDark()">🌙 / ☀️</button>
     <button onclick="activarEdicion()">✏️ Editar</button>
     <button onclick="abrirMetronomo()">🕒 Metrónomo</button>
     <button id="toggleCancionesBtn" onclick="toggleCanciones()">🎵Mostrar lista</button>
     <button onclick="toggleListadoMensual()">📅 Listado mensual</button>
+<button
+  id="btn-herramienta-registro"
+  style="background:var(--accent);"
+  onclick="herramientaRegistro()"
+>
+  📊 Registro de canciones
+</button>
+
+<button
+  id="btn-herramienta-analisis"
+  onclick="herramientaAnalisisReal()"
+>
+  📈 Análisis real
+</button>
+
+<button onclick="window.open('https://drive.google.com/drive/folders/1RxOwnOCtt7Oa_J6rUzG1jC242md5MT1-', '_blank')">
+  🎧 Recursos </button>
+
+<button
+  id="btn-herramienta-ausencias"
+  onclick="herramientaAusencias()"
+>
+  📅 Ausencias
+</button>
+
   </div>
 </header>
 
@@ -677,14 +927,7 @@ body.dark .proximo-label {
 ===================================================== -->
 
   <div id="registro-canciones-container" style="margin-top:12px;">
-    <button style="background:var(--accent);" onclick="toggleRegistro()">📊 Registro de canciones</button>
-    <button onclick="toggleAnalisisReal()">📈 Análisis real</button>
-    <button onclick="window.open('https://drive.google.com/drive/folders/1RxOwnOCtt7Oa_J6rUzG1jC242md5MT1-', '_blank')">
-  🎧 Recursos </button>
-<button onclick="toggleAusencias()">
 
-  📅 Ausencias
-</button>
 <div
   id="ausencias"
   class="section"
@@ -1592,6 +1835,395 @@ window.cambiarMesAusencias =
 
 
 
+/* =====================================================
+   📊 REGISTRO DESDE HERRAMIENTAS
+===================================================== */
+
+function herramientaRegistro() {
+
+  const seccion =
+    document.getElementById(
+      "registro-canciones"
+    );
+
+  if (!seccion) return;
+
+
+  /* Si está cerrado → abrir */
+
+  if (seccion.style.display !== "block") {
+
+    toggleRegistro();
+
+    cerrarHerramientas();
+
+    setTimeout(() => {
+
+      seccion.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }, 200);
+
+    return;
+  }
+
+
+  /* Si ya está abierto → cerrar */
+
+  toggleRegistro();
+
+}
+
+window.herramientaRegistro =
+  herramientaRegistro;
+  
+  
+  /* =====================================================
+   📈 ANÁLISIS REAL DESDE HERRAMIENTAS
+===================================================== */
+
+function herramientaAnalisisReal() {
+
+  const seccion =
+    document.getElementById(
+      "analisis-real"
+    );
+
+  if (!seccion) return;
+
+
+  /* Si está cerrado → abrir */
+
+  if (seccion.style.display !== "block") {
+
+    toggleAnalisisReal();
+
+    cerrarHerramientas();
+
+    setTimeout(() => {
+
+      seccion.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }, 250);
+
+    return;
+  }
+
+
+  /* Si ya está abierto → cerrar */
+
+  toggleAnalisisReal();
+
+}
+
+window.herramientaAnalisisReal =
+  herramientaAnalisisReal;
+  
+  
+  /* =====================================================
+   📅 AUSENCIAS DESDE HERRAMIENTAS
+===================================================== */
+
+function herramientaAusencias() {
+
+  const seccion =
+    document.getElementById(
+      "ausencias"
+    );
+
+  if (!seccion) return;
+
+
+  /* Si está cerrado → abrir */
+
+  if (seccion.style.display !== "block") {
+
+    toggleAusencias();
+
+    cerrarHerramientas();
+
+    setTimeout(() => {
+
+      seccion.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }, 200);
+
+    return;
+  }
+
+
+  /* Si ya está abierto → cerrar */
+
+  toggleAusencias();
+
+}
+
+window.herramientaAusencias =
+  herramientaAusencias;
+
+/* =====================================================
+   🛠️ HERRAMIENTAS
+   ABRIR / CERRAR
+===================================================== */
+
+
+function toggleHerramientas() {
+
+  const panel =
+    document.getElementById(
+      "herramientas-panel"
+    );
+
+  const button =
+    document.getElementById(
+      "herramientas-toggle"
+    );
+
+  if (!panel || !button) {
+    return;
+  }
+
+  const abierto =
+    panel.classList.toggle(
+      "abierto"
+    );
+
+  button.classList.toggle(
+    "abierto",
+    abierto
+  );
+
+  button.setAttribute(
+    "aria-expanded",
+    abierto
+      ? "true"
+      : "false"
+  );
+
+  panel.setAttribute(
+    "aria-hidden",
+    abierto
+      ? "false"
+      : "true"
+  );
+}
+
+
+/* =====================================================
+   HACER LA FUNCIÓN ACCESIBLE DESDE HTML
+===================================================== */
+
+window.toggleHerramientas =
+  toggleHerramientas;
+
+
+/* =====================================================
+   CERRAR HERRAMIENTAS
+===================================================== */
+
+function cerrarHerramientas() {
+
+  const panel =
+    document.getElementById(
+      "herramientas-panel"
+    );
+
+  const button =
+    document.getElementById(
+      "herramientas-toggle"
+    );
+
+  if (!panel || !button) {
+    return;
+  }
+
+  panel.classList.remove(
+    "abierto"
+  );
+
+  button.classList.remove(
+    "abierto"
+  );
+
+  button.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+  panel.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+}
+
+
+/* =====================================================
+   IR A UNA SECCIÓN DESDE HERRAMIENTAS
+===================================================== */
+
+function herramientaIrA(idSeccion) {
+
+  /* ================================================
+     IDENTIFICAR QUÉ SECCIÓN SE HA PULSADO
+  ================================================= */
+
+  if (idSeccion === "registro-canciones") {
+
+    if (
+      typeof window.toggleRegistro === "function"
+    ) {
+
+      window.toggleRegistro();
+
+    }
+
+  }
+
+
+  else if (idSeccion === "analisis-real") {
+
+    if (
+      typeof window.toggleAnalisisReal === "function"
+    ) {
+
+      window.toggleAnalisisReal();
+
+    }
+
+  }
+
+
+  else if (idSeccion === "ausencias") {
+
+    if (
+      typeof window.toggleAusencias === "function"
+    ) {
+
+      window.toggleAusencias();
+
+    }
+
+  }
+
+
+  /* ================================================
+     CERRAR HERRAMIENTAS
+  ================================================= */
+
+  cerrarHerramientas();
+
+
+  /* ================================================
+     ESPERAR A QUE LA SECCIÓN APAREZCA
+  ================================================= */
+
+  setTimeout(function() {
+
+    const seccion =
+      document.getElementById(idSeccion);
+
+
+    if (!seccion) {
+
+      console.error(
+        "No se encontró la sección:",
+        idSeccion
+      );
+
+      return;
+
+    }
+
+
+    /* ==============================================
+       SCROLL SUAVE
+    ============================================== */
+
+    seccion.scrollIntoView({
+
+      behavior: "smooth",
+
+      block: "start"
+
+    });
+
+
+  }, 200);
+
+}
+
+
+/* Hacerla accesible desde los botones HTML */
+
+window.herramientaIrA =
+  herramientaIrA;
+
+
+/* =====================================================
+   CERRAR AL PULSAR FUERA
+===================================================== */
+
+document.addEventListener(
+  "click",
+  function(event) {
+
+    const wrapper =
+      document.getElementById(
+        "herramientas-wrapper"
+      );
+
+    const panel =
+      document.getElementById(
+        "herramientas-panel"
+      );
+
+    const button =
+      document.getElementById(
+        "herramientas-toggle"
+      );
+
+    if (
+      !wrapper ||
+      !panel ||
+      !button
+    ) {
+
+      return;
+
+    }
+
+    if (
+      panel.classList.contains(
+        "abierto"
+      ) &&
+      !wrapper.contains(
+        event.target
+      )
+    ) {
+
+      cerrarHerramientas();
+
+    }
+
+  }
+);
+
+
+
+window.toggleHerramientas =
+  toggleHerramientas;
+  
+
+
+
 function normalizar(t){ return (t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(); }
 function resaltar(t,q){ if(!q) return t; try{ const r=new RegExp(`(${q})`,"gi"); return t.replace(r,"<mark>$1</mark>"); }catch(e){return t;} }
 function pad(n){ return String(n).padStart(2,'0'); }
@@ -1692,45 +2324,338 @@ function construirCard(d){
   const div = document.createElement("div");
   div.className = "card fade-apple";
 
-  // título (editable en modo edición)
-  const q = document.getElementById("search").value || "";
-  const tituloHtml = modoEdicion 
-    ? `<input type="text" class="edit-titulo edit-input" value="${(d.titulo||'').replace(/"/g,'&quot;')}" />`
-    : `<h2>${resaltar(d.titulo||'', q)}</h2>`;
 
-  // meta-line (vecestocada / última) justo debajo del título
-  const metaHtml = `
-    <div class="meta-line">
-      <span class="plays" id="plays-${d.id}">🎵 Veces tocada: —</span>
-      <span class="last" id="last-${d.id}">| Última vez: —</span>
-      ${modoEdicion ? `<button class="tocada-btn" id="tocadaBtn-${d.id}">Tocada +1</button>` : ''}
+/* =====================================================
+   🎵 TARJETA NORMAL DE CANCIÓN
+   En modo edición se mantiene visualmente normal
+   hasta que el usuario pulse la tarjeta.
+===================================================== */
+
+const q =
+  document.getElementById(
+    "search"
+  ).value || "";
+
+
+/* Título */
+
+const tituloHtml =
+  `<h2>${resaltar(
+    d.titulo || "",
+    q
+  )}</h2>`;
+
+
+/* Meta */
+
+const metaHtml = `
+  <div class="meta-line">
+
+    <span
+      class="plays"
+      id="plays-${d.id}"
+    >
+      🎵 Veces tocada: —
+    </span>
+
+    <span
+      class="last"
+      id="last-${d.id}"
+    >
+      | Última vez: —
+    </span>
+
+  </div>
+`;
+
+
+/* Acordes */
+
+const acordesHtml =
+  `<p>${d.acordes || ""}</p>`;
+
+
+/* Imágenes */
+
+const imagenesHtml =
+  `<div>
+    ${(d.imagenes || [])
+      .map(
+        u =>
+          `<img
+            src="${u}"
+            style="
+              width:100%;
+              margin-top:8px;
+              border-radius:8px;
+            "
+          >`
+      )
+      .join("")}
+  </div>`;
+
+
+/* Audio */
+
+const audioHtml =
+  d.audio
+    ? `<a
+        class="link-btn"
+        href="${d.audio}"
+        target="_blank"
+      >
+        🎧 Escuchar
+      </a>`
+    : "";
+
+
+/* YouTube */
+
+const youtubeHtml =
+  d.youtube
+    ? `<a
+        class="link-btn"
+        href="${d.youtube}"
+        target="_blank"
+      >
+        📺 YouTube
+      </a>`
+    : "";
+
+
+/* Render normal */
+
+div.innerHTML =
+
+  tituloHtml +
+
+  metaHtml +
+
+  acordesHtml +
+
+  `<div style="margin-top:8px">
+    ${imagenesHtml}
+  </div>` +
+
+  `<div style="margin-top:8px">
+    ${audioHtml}
+    ${youtubeHtml}
+  </div>`;
+  
+  /* =====================================================
+   ✏️ ABRIR EDITOR DE UNA CANCIÓN
+===================================================== */
+
+function abrirEditorCancion(
+  d,
+  div
+) {
+
+  if (!modoEdicion) {
+    return;
+  }
+
+
+  /* Evitar volver a abrirlo */
+
+  if (
+    div.dataset.editando === "true"
+  ) {
+    return;
+  }
+
+
+  div.dataset.editando =
+    "true";
+
+
+  div.innerHTML = `
+
+    <input
+      type="text"
+      class="edit-titulo edit-input"
+      value="${(d.titulo || "")
+        .replace(/"/g, "&quot;")}"
+      placeholder="Título"
+    >
+
+
+    <textarea
+      class="edit-acordes edit-input"
+      placeholder="Acordes"
+    >${d.acordes || ""}</textarea>
+
+
+    <textarea
+      class="edit-imagenes edit-input"
+      data-id="${d.id}"
+      placeholder="Una imagen por línea"
+    >${(d.imagenes || []).join("\n")}</textarea>
+
+
+    <div
+      id="preview-${d.id}"
+      class="preview-edicion"
+    >
+      ${(d.imagenes || [])
+        .map(
+          u =>
+            `<img
+              class="preview-img"
+              src="${u}"
+            />`
+        )
+        .join("")}
     </div>
+
+
+    <input
+      type="text"
+      class="edit-audio edit-input"
+      value="${(d.audio || "")
+        .replace(/"/g, "&quot;")}"
+      placeholder="Link de audio"
+    >
+
+
+    <input
+      type="text"
+      class="edit-youtube edit-input"
+      value="${(d.youtube || "")
+        .replace(/"/g, "&quot;")}"
+      placeholder="Link de YouTube"
+    >
+
+
+    <div
+      style="
+        margin-top:10px;
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+      "
+    >
+
+      <button
+        onclick="
+          guardarEdicion('${d.id}', this)
+        "
+      >
+        💾 Guardar
+      </button>
+
+
+      <button
+        onclick="
+          cancelarEdicionCancion('${d.id}')
+        "
+      >
+        ✖️ Cancelar
+      </button>
+
+
+      <button
+        class="delete-btn"
+        onclick="
+          borrarCancion('${d.id}')
+        "
+      >
+        🗑️ Borrar
+      </button>
+
+    </div>
+
   `;
 
-  // acordes
-  const acordesHtml = modoEdicion 
-    ? `<textarea class="edit-acordes edit-input">${(d.acordes||'')}</textarea>`
-    : `<p>${(d.acordes||'')}</p>`;
 
-  // imágenes: en edición mostramos textarea para URLs + preview div; fuera de edición mostramos imgs
-  const imagenesHtml = modoEdicion
-    ? `<textarea class="edit-imagenes edit-input" data-id="${d.id}">${(d.imagenes||[]).join("\n")}</textarea><div id="preview-${d.id}">${(d.imagenes||[]).map(u=>`<img class="preview-img" src="${u}" />`).join("")}</div>`
-    : `<div>${(d.imagenes||[]).map(u=>`<img src="${u}" style="width:100%;margin-top:8px;border-radius:8px;">`).join("")}</div>`;
+  /* Preview de imágenes */
 
-  // audio / youtube fields
-  const audioHtml = modoEdicion ? `<input type="text" class="edit-audio edit-input" value="${(d.audio||'').replace(/"/g,'&quot;')}" placeholder="Link de audio">` : (d.audio ? `<a class="link-btn" href="${d.audio}" target="_blank">🎧 Escuchar</a>` : "");
-  const youtubeHtml = modoEdicion ? `<input type="text" class="edit-youtube edit-input" value="${(d.youtube||'').replace(/"/g,'&quot;')}" placeholder="Link de YouTube">` : (d.youtube ? `<a class="link-btn" href="${d.youtube}" target="_blank">📺 YouTube</a>` : "");
+  const area =
+    div.querySelector(
+      ".edit-imagenes"
+    );
 
-  // edit buttons
-const editButtons = modoEdicion 
-  ? `<div style="margin-top:10px">
-       <button onclick="guardarEdicion('${d.id}', this)">💾 Guardar</button> 
-       <button class="delete-btn" onclick="borrarCancion('${d.id}')">🗑️ Borrar</button>
-     </div>` 
-  : "";
+  const preview =
+    div.querySelector(
+      `#preview-${d.id}`
+    );
 
-  div.innerHTML = tituloHtml + metaHtml + acordesHtml + `<div style="margin-top:8px">${imagenesHtml}</div>` + `<div style="margin-top:8px">${audioHtml} ${youtubeHtml}</div>` + editButtons;
 
+  if (
+    area &&
+    preview
+  ) {
+
+    area.addEventListener(
+      "input",
+      () => {
+
+        const urls =
+          area.value
+            .split("\n")
+            .map(
+              s => s.trim()
+            )
+            .filter(Boolean);
+
+
+        preview.innerHTML =
+          urls
+            .map(
+              u =>
+                `<img
+                  class="preview-img"
+                  src="${u}"
+                />`
+            )
+            .join("");
+
+      }
+    );
+
+  }
+
+
+  /* Hacer que la tarjeta se mantenga
+     visible en pantalla */
+
+  div.scrollIntoView({
+
+    behavior: "smooth",
+
+    block: "nearest"
+
+  });
+
+}
+
+/* =====================================================
+   ✖️ CANCELAR EDICIÓN DE CANCIÓN
+===================================================== */
+
+function cancelarEdicionCancion(id) {
+
+  const cancion =
+    cancionesCache.find(
+      c => c.id === id
+    );
+
+  if (!cancion) {
+    return;
+  }
+
+
+  cargarCanciones();
+
+}
+
+window.abrirEditorCancion =
+  abrirEditorCancion;
+
+window.cancelarEdicionCancion =
+  cancelarEdicionCancion;
+  
+  
   // actualizar data de registro en la tarjeta
   actualizarRegistroCard(d.id);
 
@@ -1751,6 +2676,45 @@ const editButtons = modoEdicion
         });
       }
     },0);
+  }
+  /* =====================================================
+     👆 TOCAR TARJETA → ABRIR EDITOR
+     
+     Solo funciona cuando estamos en modo edición.
+     Los botones, enlaces, inputs y textarea quedan
+     excluidos para que no interfiera con ellos.
+  ===================================================== */
+
+  if (modoEdicion) {
+
+    div.style.cursor = "pointer";
+
+    div.addEventListener(
+      "click",
+      function(event) {
+
+        /* No abrir el editor si hemos pulsado
+           un elemento interactivo */
+
+        if (
+          event.target.closest(
+            "button, a, input, textarea, select"
+          )
+        ) {
+          return;
+        }
+
+
+        /* Abrir el editor de ESTA canción */
+
+        abrirEditorCancion(
+          d,
+          div
+        );
+
+      }
+    );
+
   }
 
   return div;
@@ -1968,13 +2932,26 @@ async function cargarSeccion(tipo){
       if(modoEdicion && notasEdit) notasEdit.value = "";
     }
 
-    const contenedor = document.getElementById(`contenedor-${tipo}`);
-    if(contenedor) contenedor.style.display = modoEdicion ? "block" : "none";
+const contenedor =
+  document.getElementById(
+    `contenedor-${tipo}`
+  );
+
+if (contenedor) {
+
+  /* El formulario permanece cerrado
+     aunque estemos en modo edición */
+
+  contenedor.style.display = "none";
+
+}
 
   } catch(e){
     console.error("Error en cargarSeccion:", e);
   }
 }
+
+
 
 // Toggle notas
 /* =====================================================
@@ -2017,6 +2994,128 @@ async function guardarSeccion(tipo){
   alert("✅ Sección guardada");
   cargarSeccion(tipo);
 }
+
+
+
+/* =====================================================
+   ✏️ EDITAR SECCIÓN DESDE SU PROPIA TARJETA
+===================================================== */
+
+function abrirEditorSeccion(tipo) {
+
+  if (!modoEdicion) {
+    return;
+  }
+
+  const contenedor =
+    document.getElementById(
+      `contenedor-${tipo}`
+    );
+
+  if (!contenedor) {
+    return;
+  }
+
+
+  const abierto =
+    contenedor.style.display === "block";
+
+
+  if (abierto) {
+
+    contenedor.style.display = "none";
+
+    return;
+
+  }
+
+
+  contenedor.style.display = "block";
+
+
+  /* Llevar ligeramente el formulario a la vista */
+
+  setTimeout(() => {
+
+    contenedor.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    });
+
+  }, 50);
+
+}
+
+window.abrirEditorSeccion =
+  abrirEditorSeccion;
+  
+  
+  /* =====================================================
+   👆 HACER LAS SECCIONES EDITABLES AL TOCARLAS
+===================================================== */
+
+function activarClickEdicionSecciones() {
+
+  const tipos = [
+    "semana",
+    "mes"
+  ];
+
+
+  tipos.forEach(tipo => {
+
+    const cont =
+      document.getElementById(
+        `mostrar-${tipo}`
+      );
+
+    if (!cont) {
+      return;
+    }
+
+
+    if (
+      cont.dataset.editorActivo === "true"
+    ) {
+      return;
+    }
+
+
+    cont.dataset.editorActivo =
+      "true";
+
+
+    cont.addEventListener(
+      "click",
+      function(event) {
+
+        if (!modoEdicion) {
+          return;
+        }
+
+
+        /* No abrir el editor si se ha pulsado
+           un enlace, botón, select o formulario */
+
+        if (
+          event.target.closest(
+            "button, a, input, textarea, select"
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        abrirEditorSeccion(tipo);
+      }
+    );
+  });
+}
+
+activarClickEdicionSecciones();
+
 
 /* MODO EDICIÓN con PIN 2025 */
 /* =========================
@@ -3120,7 +4219,135 @@ window.addEventListener(
 
   }
 );
+/* =====================================================
+   👆 DOBLE TOQUE PARA CERRAR SECCIONES
+===================================================== */
 
+function activarDobleToqueCabecera(
+  idSeccion,
+  funcionCerrar
+) {
+
+  const seccion =
+    document.getElementById(
+      idSeccion
+    );
+
+  if (!seccion) return;
+
+  const cabecera =
+    seccion.querySelector(
+      "h2"
+    );
+
+  if (!cabecera) return;
+
+  /* Evitar añadir el listener
+     más de una vez */
+
+  if (
+    cabecera.dataset.dobleToqueActivo === "true"
+  ) {
+    return;
+  }
+
+  cabecera.dataset.dobleToqueActivo =
+    "true";
+
+
+  let ultimoToque = 0;
+
+
+  cabecera.addEventListener(
+    "pointerup",
+    function(event) {
+
+      const ahora =
+        performance.now();
+
+
+      if (
+        ahora - ultimoToque >= 80 &&
+        ahora - ultimoToque <= 400
+      ) {
+
+        if (
+          typeof funcionCerrar ===
+          "function"
+        ) {
+
+          funcionCerrar();
+
+        }
+
+        ultimoToque = 0;
+
+        return;
+      }
+
+
+      ultimoToque = ahora;
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   REGISTRO
+===================================================== */
+
+function activarDobleToqueRegistro() {
+
+  activarDobleToqueCabecera(
+    "registro-canciones",
+    toggleRegistro
+  );
+
+}
+
+
+/* =====================================================
+   ANÁLISIS REAL
+===================================================== */
+
+function activarDobleToqueAnalisisReal() {
+
+  activarDobleToqueCabecera(
+    "analisis-real",
+    toggleAnalisisReal
+  );
+
+}
+
+
+/* =====================================================
+   AUSENCIAS
+===================================================== */
+
+function activarDobleToqueAusencias() {
+
+  activarDobleToqueCabecera(
+    "ausencias",
+    toggleAusencias
+  );
+
+}
+
+/* =====================================================
+   COMPROBAR CABECERAS DINÁMICAS
+===================================================== */
+
+setInterval(function() {
+
+  activarDobleToqueRegistro();
+
+  activarDobleToqueAnalisisReal();
+
+  activarDobleToqueAusencias();
+
+}, 500);
 
 /* BOOT */
 
