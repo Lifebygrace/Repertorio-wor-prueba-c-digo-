@@ -748,6 +748,7 @@ body.dark #herramientas-panel {
      actuales */
 
 }
+
   </style>
 </head>
 
@@ -6018,13 +6019,10 @@ async function mostrarWorshipPack(tipo) {
 }
 
 /* =====================================================
-   🎼 LETRA + ACORDES
-   PASO 1 — ABRIR / CERRAR MODAL
-===================================================== */
+   🎼 ABRIR LETRA + ACORDES
 
-/* =====================================================
-   🎼 EDITOR LETRA + ACORDES
-   PASO 3 — EDITOR VISUAL
+   MODO NORMAL  → VISOR
+   MODO EDICIÓN → EDITOR
 ===================================================== */
 
 function abrirLetraAcordes(id) {
@@ -6042,6 +6040,7 @@ function abrirLetraAcordes(id) {
       c => c.id === id
     );
 
+
   if (!cancion) {
 
     console.warn(
@@ -6050,22 +6049,27 @@ function abrirLetraAcordes(id) {
     );
 
     return;
+
   }
 
 
-  /* Guardar canción seleccionada
-     temporalmente */
+  /* =================================================
+     GUARDAR CANCIÓN SELECCIONADA
+  ================================================= */
 
   window.cancionLetraAcordes =
     cancion;
 
 
-  /* Título */
+  /* =================================================
+     TÍTULO
+  ================================================= */
 
   const titulo =
     document.getElementById(
       "letra-acordes-titulo"
     );
+
 
   if (titulo) {
 
@@ -6075,37 +6079,155 @@ function abrirLetraAcordes(id) {
   }
 
 
-  /* Tono inicial */
+  /* =================================================
+     TONO INICIAL
+  ================================================= */
 
   const tono =
     document.getElementById(
       "la-tono-actual"
     );
 
+
   if (tono) {
 
-    tono.textContent =
+    const tonoInicial =
       cancion.letraAcordes?.tonoOriginal ||
       cancion.acordes ||
-      "A";
+      "-";
+
+
+    tono.textContent =
+      tonoInicial;
 
   }
 
 
-  /* Crear editor */
+  /* =================================================
+     CONTENEDORES
+  ================================================= */
 
-  crearEditorLetraAcordes();
+  const editor =
+    document.getElementById(
+      "la-editor-container"
+    );
 
 
-  /* Mostrar modal */
+  const visor =
+    document.getElementById(
+      "la-visor-container"
+    );
+
+
+  const controlesEditor =
+    document.getElementById(
+      "la-controles-editor"
+    );
+
+
+  if (!editor || !visor) {
+
+    console.warn(
+      "No se encontraron los contenedores del editor/visor."
+    );
+
+    return;
+
+  }
+
+
+  /* =================================================
+     MODO EDICIÓN
+  ================================================= */
+
+  if (modoEdicion) {
+
+    /* Crear/cargar editor */
+
+    crearEditorLetraAcordes();
+
+
+    editor.style.display =
+      "block";
+
+
+    visor.style.display =
+      "none";
+
+
+    /* Mostrar controles de edición */
+
+    if (controlesEditor) {
+
+      controlesEditor.style.display =
+        "flex";
+
+    }
+
+
+  }
+
+  /* =================================================
+     MODO NORMAL → VISOR
+  ================================================= */
+
+  else {
+
+    /* Crear visor */
+
+    crearVisorLetraAcordes();
+
+
+    editor.style.display =
+      "none";
+
+
+    visor.style.display =
+      "block";
+
+
+    /* Ocultar controles de edición */
+
+    if (controlesEditor) {
+
+      controlesEditor.style.display =
+        "none";
+
+    }
+
+  }
+
+
+  /* =================================================
+     OCULTAR BOTÓN ANTIGUO
+     👁️ Ver canción / ✏️ Volver a editar
+  ================================================= */
+
+  const botonVer =
+    document.getElementById(
+      "la-ver-cancion"
+    );
+
+
+  if (botonVer) {
+
+    botonVer.style.display =
+      "none";
+
+  }
+
+
+  /* =================================================
+     MOSTRAR MODAL
+  ================================================= */
 
   modal.style.display =
     "flex";
 
 }
-
 /* =====================================================
    CREAR EDITOR
+   CARGA DATOS GUARDADOS SI EXISTEN
 ===================================================== */
 
 function crearEditorLetraAcordes() {
@@ -6121,9 +6243,59 @@ function crearEditorLetraAcordes() {
   contenedor.innerHTML = "";
 
 
-  /* ===============================
-     SECCIÓN INICIAL
-  =============================== */
+  const cancion =
+    window.cancionLetraAcordes;
+
+
+  /* =================================================
+     SI EXISTEN DATOS GUARDADOS
+  ================================================= */
+
+  if (
+    cancion &&
+    cancion.letraAcordes &&
+    Array.isArray(
+      cancion.letraAcordes.secciones
+    ) &&
+    cancion.letraAcordes.secciones.length > 0
+  ) {
+
+    cancion.letraAcordes.secciones
+      .forEach(
+        datosSeccion => {
+
+          crearSeccionEditor(
+            contenedor,
+            datosSeccion
+          );
+
+        }
+      );
+
+
+    return;
+
+  }
+
+
+  /* =================================================
+     SI NO EXISTEN DATOS → CREAR EDITOR VACÍO
+  ================================================= */
+
+  crearSeccionEditor(
+    contenedor
+  );
+
+}
+
+/* =====================================================
+   CREAR SECCIÓN DEL EDITOR
+===================================================== */
+
+function crearSeccionEditor(
+  contenedor,
+  datos = null
+) {
 
   const seccion =
     document.createElement("div");
@@ -6135,12 +6307,15 @@ function crearEditorLetraAcordes() {
     "20px";
 
 
-  /* Nombre de sección */
+  /* =================================================
+     NOMBRE DE LA SECCIÓN
+  ================================================= */
 
   const nombre =
     document.createElement("input");
 
-  nombre.type = "text";
+  nombre.type =
+    "text";
 
   nombre.placeholder =
     "Nombre de sección (ej. ESTROFA 1)";
@@ -6161,12 +6336,54 @@ function crearEditorLetraAcordes() {
     "700";
 
 
+  if (datos) {
+
+    nombre.value =
+      datos.nombre || "";
+
+  }
+
+
   seccion.appendChild(
     nombre
   );
 
 
-  /* Contenedor de líneas */
+  /* =================================================
+     BOTÓN ELIMINAR SECCIÓN
+  ================================================= */
+
+  const eliminarSeccion =
+    document.createElement("button");
+
+  eliminarSeccion.type =
+    "button";
+
+  eliminarSeccion.textContent =
+    "🗑️ Eliminar sección";
+
+  eliminarSeccion.style.marginBottom =
+    "8px";
+
+
+  eliminarSeccion.addEventListener(
+    "click",
+    function() {
+
+      seccion.remove();
+
+    }
+  );
+
+
+  seccion.appendChild(
+    eliminarSeccion
+  );
+
+
+  /* =================================================
+     CONTENEDOR DE LÍNEAS
+  ================================================= */
 
   const lineas =
     document.createElement("div");
@@ -6185,11 +6402,38 @@ function crearEditorLetraAcordes() {
   );
 
 
-  /* Primera línea */
+  /* =================================================
+     CARGAR LÍNEAS GUARDADAS
+  ================================================= */
 
-  crearLineaEditor(
-    lineas
-  );
+  if (
+    datos &&
+    Array.isArray(
+      datos.lineas
+    ) &&
+    datos.lineas.length > 0
+  ) {
+
+    datos.lineas.forEach(
+      linea => {
+
+        crearLineaEditor(
+          lineas,
+          linea
+        );
+
+      }
+    );
+
+  } else {
+
+    /* Primera línea vacía */
+
+    crearLineaEditor(
+      lineas
+    );
+
+  }
 
 }
 
@@ -6198,7 +6442,10 @@ function crearEditorLetraAcordes() {
    🎼 CREAR UNA LÍNEA DE CANCIÓN
 ===================================================== */
 
-function crearLineaEditor(contenedor) {
+function crearLineaEditor(
+  contenedor,
+  datos = null
+) {
 
   const fila =
     document.createElement("div");
@@ -6242,7 +6489,12 @@ function crearLineaEditor(contenedor) {
 
   acordes.style.marginBottom =
     "5px";
+    if (datos) {
 
+  acordes.value =
+    datos.acordes || "";
+
+}
 
   /* ===============================
      CONTENEDOR DE LETRA
@@ -6264,7 +6516,12 @@ function crearLineaEditor(contenedor) {
 
   letra.style.boxSizing =
     "border-box";
+    if (datos) {
 
+  letra.value =
+    datos.letra || "";
+
+}
 
   /* ===============================
      BOTÓN ELIMINAR
@@ -6329,6 +6586,250 @@ function crearLineaEditor(contenedor) {
 
   contenedor.appendChild(
     fila
+  );
+
+}
+
+/* =====================================================
+   👁️ CREAR VISOR DE CANCIÓN
+   PASO 13 — VISUAL FINAL
+===================================================== */
+
+function crearVisorLetraAcordes() {
+
+  const contenedor =
+    document.getElementById(
+      "la-visor-container"
+    );
+
+  if (!contenedor) return;
+
+
+  const cancion =
+    window.cancionLetraAcordes;
+
+  if (!cancion) return;
+
+
+  const datos =
+    cancion.letraAcordes;
+
+
+  /* =================================================
+     SIN DATOS
+  ================================================= */
+
+  if (
+    !datos ||
+    !Array.isArray(datos.secciones)
+  ) {
+
+    contenedor.innerHTML = `
+      <div
+        style="
+          text-align:center;
+          padding:30px 10px;
+          opacity:.7;
+        "
+      >
+        🎼 Esta canción todavía no tiene
+        letra y acordes guardados.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  contenedor.innerHTML = "";
+
+
+  /* =================================================
+     CONTENEDOR PRINCIPAL
+  ================================================= */
+
+  const cancionVista =
+    document.createElement("div");
+
+  cancionVista.className =
+    "la-cancion-vista";
+
+  cancionVista.style.width =
+    "100%";
+
+  cancionVista.style.boxSizing =
+    "border-box";
+
+
+  /* =================================================
+     SECCIONES
+  ================================================= */
+
+  datos.secciones.forEach(
+    seccion => {
+
+
+      /* ===============================
+         NOMBRE DE SECCIÓN
+      =============================== */
+
+      if (seccion.nombre) {
+
+        const titulo =
+          document.createElement("h4");
+
+        titulo.textContent =
+          seccion.nombre;
+
+        titulo.style.marginTop =
+          "28px";
+
+        titulo.style.marginBottom =
+          "16px";
+
+        titulo.style.fontWeight =
+          "700";
+
+        titulo.style.fontSize =
+          "16px";
+
+
+        cancionVista.appendChild(
+          titulo
+        );
+
+      }
+
+
+      /* ===============================
+         LÍNEAS
+      =============================== */
+
+      if (
+        !Array.isArray(
+          seccion.lineas
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      seccion.lineas.forEach(
+        linea => {
+
+          const bloque =
+            document.createElement(
+              "div"
+            );
+
+          bloque.className =
+            "la-bloque-linea";
+
+
+          bloque.style.marginBottom =
+            "20px";
+
+
+          /*
+             ACORDES
+          */
+
+          if (linea.acordes) {
+
+            const acordes =
+              document.createElement(
+                "div"
+              );
+
+            acordes.className =
+              "la-acorde-visor";
+
+
+            acordes.textContent =
+              linea.acordes;
+
+
+            acordes.style.fontFamily =
+              "monospace";
+
+            acordes.style.fontWeight =
+              "700";
+
+            acordes.style.fontSize =
+              "15px";
+
+            acordes.style.lineHeight =
+              "1.3";
+
+            acordes.style.whiteSpace =
+              "pre";
+
+            acordes.style.overflowX =
+              "auto";
+
+            acordes.style.paddingLeft =
+              "8px";
+
+
+            bloque.appendChild(
+              acordes
+            );
+
+          }
+
+
+          /*
+             LETRA
+          */
+
+          if (linea.letra) {
+
+            const letra =
+              document.createElement(
+                "div"
+              );
+
+
+            letra.className =
+              "la-letra-visor";
+
+
+            letra.textContent =
+              linea.letra;
+
+
+            letra.style.fontSize =
+              "16px";
+
+            letra.style.lineHeight =
+              "1.5";
+
+            letra.style.whiteSpace =
+              "pre-wrap";
+
+
+            bloque.appendChild(
+              letra
+            );
+
+          }
+
+
+          cancionVista.appendChild(
+            bloque
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+  contenedor.appendChild(
+    cancionVista
   );
 
 }
@@ -6530,6 +7031,32 @@ function transponerEditor(
     );
 
 
+  const visor =
+  document.getElementById(
+    "la-visor-container"
+  );
+
+const editor =
+  document.getElementById(
+    "la-editor-container"
+  );
+
+
+/* =================================================
+   MODO EDITOR
+================================================= */
+
+if (
+  editor &&
+  editor.style.display !== "none"
+) {
+
+  const inputs =
+    editor.querySelectorAll(
+      ".la-acordes-linea"
+    );
+
+
   inputs.forEach(
     input => {
 
@@ -6542,6 +7069,37 @@ function transponerEditor(
     }
   );
 
+}
+
+
+/* =================================================
+   MODO VISOR
+================================================= */
+
+if (
+  visor &&
+  visor.style.display === "block"
+) {
+
+  const acordesVisor =
+    visor.querySelectorAll(
+      ".la-acorde-visor"
+    );
+
+
+  acordesVisor.forEach(
+    acorde => {
+
+      acorde.textContent =
+        transponerLineaAcordes(
+          acorde.textContent,
+          pasos
+        );
+
+    }
+  );
+
+}
 
   /* Actualizar Key */
 
@@ -6578,6 +7136,207 @@ function transponerEditor(
 
 }
 
+/* =====================================================
+   💾 GUARDAR LETRA + ACORDES
+===================================================== */
+
+async function guardarLetraAcordes() {
+
+  const cancion =
+    window.cancionLetraAcordes;
+
+  if (!cancion || !cancion.id) {
+
+    alert("❌ No se ha seleccionado ninguna canción.");
+
+    return;
+
+  }
+
+
+  const secciones = [];
+
+
+  document
+    .querySelectorAll(".la-seccion-editor")
+    .forEach(seccion => {
+
+      const nombreInput =
+        seccion.querySelector(
+          ".la-seccion-nombre"
+        );
+
+      const nombre =
+        nombreInput
+          ? nombreInput.value.trim()
+          : "";
+
+
+      const lineas = [];
+
+
+      seccion
+        .querySelectorAll(".la-linea-editor")
+        .forEach(fila => {
+
+          const acordesInput =
+            fila.querySelector(
+              ".la-acordes-linea"
+            );
+
+          const letraInput =
+            fila.querySelector(
+              ".la-letra-linea"
+            );
+
+
+          const acordes =
+            acordesInput
+              ? acordesInput.value.trim()
+              : "";
+
+
+          const letra =
+            letraInput
+              ? letraInput.value.trim()
+              : "";
+
+
+          /*
+             No guardamos líneas completamente vacías
+          */
+
+          if (acordes || letra) {
+
+            lineas.push({
+              acordes,
+              letra
+            });
+
+          }
+
+        });
+
+
+      /*
+         Solo guardar secciones que tengan
+         nombre o contenido
+      */
+
+      if (
+        nombre ||
+        lineas.length > 0
+      ) {
+
+        secciones.push({
+          nombre,
+          lineas
+        });
+
+      }
+
+    });
+
+
+  const tono =
+    document
+      .getElementById(
+        "la-tono-actual"
+      )
+      ?.textContent
+      .trim() || "";
+
+
+  const letraAcordes = {
+
+    tonoOriginal:
+      cancion.letraAcordes?.tonoOriginal ||
+      tono,
+
+    secciones
+
+  };
+
+
+  try {
+
+    await updateDoc(
+      doc(
+        db,
+        "canciones",
+        cancion.id
+      ),
+      {
+        letraAcordes
+      }
+    );
+
+
+    /*
+       Actualizar la canción en memoria
+       para que no tengamos que recargar
+       toda la página
+    */
+
+    cancion.letraAcordes =
+      letraAcordes;
+
+
+    const indice =
+      cancionesCache.findIndex(
+        c => c.id === cancion.id
+      );
+
+
+    if (indice !== -1) {
+
+      cancionesCache[indice].letraAcordes =
+        letraAcordes;
+
+    }
+
+
+    alert(
+      "✅ Letra y acordes guardados"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Error guardando letra y acordes:",
+      error
+    );
+
+
+    alert(
+      "❌ No se pudo guardar la letra y los acordes."
+    );
+
+  }
+
+}
+
+window.guardarLetraAcordes = guardarLetraAcordes;
+
+/* =====================================================
+   💾 BOTÓN GUARDAR LETRA + ACORDES
+===================================================== */
+
+document.addEventListener(
+  "click",
+  function(event) {
+
+    if (
+      event.target.closest("#la-guardar")
+    ) {
+
+      guardarLetraAcordes();
+
+    }
+
+  }
+);
 
 /* =====================================================
    ◀ BAJAR TONO
@@ -6674,97 +7433,21 @@ document.addEventListener(
       return;
     }
 
+const contenedor =
+  document.getElementById(
+    "la-editor-container"
+  );
 
-    const contenedor =
-      document.getElementById(
-        "la-editor-container"
-      );
-
-    if (!contenedor) return;
-
-
-    const seccion =
-      document.createElement("div");
-
-    seccion.className =
-      "la-seccion-editor";
-
-    seccion.style.marginBottom =
-      "20px";
+if (!contenedor) return;
 
 
-    const nombre =
-      document.createElement("input");
-
-    nombre.type = "text";
-
-    nombre.placeholder =
-      "Nombre de sección (ej. CORO)";
-
-    nombre.className =
-      "la-seccion-nombre";
-
-    nombre.style.width =
-      "100%";
-
-    nombre.style.boxSizing =
-      "border-box";
-
-    nombre.style.marginBottom =
-      "10px";
-
-    nombre.style.fontWeight =
-      "700";
-
-
-    const lineas =
-      document.createElement("div");
-
-    lineas.className =
-      "la-lineas";
-
-
-const eliminarSeccion =
-  document.createElement("button");
-
-eliminarSeccion.type =
-  "button";
-
-eliminarSeccion.textContent =
-  "🗑️ Eliminar sección";
-
-eliminarSeccion.style.marginBottom =
-  "8px";
-
-eliminarSeccion.addEventListener(
-  "click",
-  function() {
-
-    seccion.remove();
+crearSeccionEditor(
+  contenedor
+);
 
   }
 );
 
-    seccion.appendChild(
-      nombre
-    );
-
-    seccion.appendChild(
-      lineas
-    );
-
-
-    contenedor.appendChild(
-      seccion
-    );
-
-
-    crearLineaEditor(
-      lineas
-    );
-
-  }
-);
 
 function cerrarLetraAcordes() {
 
@@ -6895,7 +7578,7 @@ window.addEventListener('load', ()=>{
 
     <div class="la-tono-centro">
       <small>Tono</small>
-      <strong id="la-tono-actual">A</strong>
+      <strong id="la-tono-actual">-</strong>
     </div>
 
     <button
@@ -6915,52 +7598,64 @@ window.addEventListener('load', ()=>{
   >
   </div>
 
+<!-- =================================================
+     👁️ VISOR DE CANCIÓN
+================================================= -->
 
-  <!-- CONTROLES -->
-  <div
-    style="
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-      justify-content:center;
-      margin-top:16px;
-    "
-  >
+<div
+  id="la-visor-container"
+  style="
+    display:none;
+    margin-top:20px;
+  "
+>
+</div>
 
-    <button
-      type="button"
-      id="la-anadir-linea"
-    >
-      ➕ Añadir línea
-    </button>
-
-    <button
-      type="button"
-      id="la-anadir-seccion"
-    >
-      ➕ Añadir sección
-    </button>
-
+  
   </div>
 
+<!-- CONTROLES DE EDICIÓN -->
 
-  <!-- GUARDAR -->
-  <div
-    style="
-      display:flex;
-      justify-content:center;
-      margin-top:16px;
-    "
+<div
+  id="la-controles-editor"
+  style="
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:center;
+    margin-top:16px;
+  "
+>
+
+  <button
+    type="button"
+    id="la-ver-cancion"
   >
+    👁️ Ver canción
+  </button>
 
-    <button
-      type="button"
-      id="la-guardar"
-    >
-      💾 Guardar letra y acordes
-    </button>
+  <button
+    type="button"
+    id="la-anadir-linea"
+  >
+    ➕ Añadir línea
+  </button>
 
-  </div>
+  <button
+    type="button"
+    id="la-anadir-seccion"
+  >
+    ➕ Añadir sección
+  </button>
+
+  <button
+    type="button"
+    id="la-guardar"
+  >
+    💾 Guardar letra y acordes
+  </button>
+
+</div>
 
 </div>
 
