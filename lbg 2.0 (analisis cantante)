@@ -10,7 +10,7 @@
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Repertorio Worship</title>
+  <title>Repertorio</title>
 
 <!-- 📱 Configuración para iOS (icono pantalla de inicio) -->
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -126,27 +126,26 @@ button:active{
   background: #fff8e1; /* fondo cálido */
   border-left: 5px solid var(--accent);
   border-radius: 10px;
-  padding: 14px 18px;
+  padding: 10px 14px;
   margin-top: 12px; /* espacio sobre notas */
   margin-bottom: 12px; /* espacio debajo de notas */
   box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   font-size: 0.95rem;
-  line-height: 1.5;
-  white-space: pre-wrap; /* respeta saltos de línea */
+  line-height: 1.42;
   transition: background 0.25s, color 0.25s;
 }
 .notas-card h3 {
   margin-top: 0;
-  margin-bottom: 8px;
+  margin-bottom: 20px;
   font-size: 1.1rem;
   color: var(--primary); /* modo claro */
 }
 .notas-card ul {
-  padding-left: 20px;
-  margin: 0;
+  margin: 2px 0 0 0; /* top right bottom left */
+  padding-left: 16px;
 }
 .notas-card li {
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 body.dark .notas-card {
   background: #2a2a2a;
@@ -249,6 +248,8 @@ details[open] > *:not(summary){
 details > *{
   will-change: transform, opacity;
 }
+\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+/* Estilos generales del metrónomo */
 
 .metronome-ui{
   display: flex;
@@ -313,9 +314,43 @@ details > *{
 }
 
 #tapTempo{
+  width: 80px;                  /* tamaño reducido a un tercio */
+  height: 80px;                 /* igual que el ancho para ser redondo */
+  border-radius: 50%;            /* círculo perfecto */
+  background: linear-gradient(145deg, #ff7f50, #ff6347); /* degradado atractivo */
+  color: white;                   /* texto legible */
+  font-size: 1.2rem;             /* texto proporcional al tamaño */
+  font-weight: 700;
+  border: none;                  /* quitar borde predeterminado */
+  cursor: pointer;               /* indica que se puede tocar */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25); /* sombra proporcional */
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.3s ease; /* animación al tocar */
   touch-action: manipulation;      /* evita doble-tap zoom */
   -webkit-user-select: none;       /* evita selección */
   user-select: none;
+  animation: pulse 1.2s infinite ease-in-out; /* efecto latido */
+}
+
+#tapTempo:active {
+  transform: scale(0.95);       /* efecto de “presionar” */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+#tapTempo:hover {
+  transform: scale(1.05);       /* efecto sugerente al pasar el mouse */
+  background: linear-gradient(145deg, #ff6347, #ff4500); /* realce al pasar mouse */
+}
+
+/* Animación de latido */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 7px 14px rgba(0,0,0,0.3);
+  }
 }
 
 /* ================================
@@ -504,6 +539,256 @@ body:not(.dark) .proximo-label {
 body.dark .proximo-label {
   color: #bbbbbb; /* gris claro elegante */
 }
+
+.highlight {
+  font-weight: bold;
+  font-size: 1.2em;
+  color:#e67e22; /* puedes cambiarlo */
+}
+
+.underline {
+  text-decoration: underline;
+}
+
+
+/* =====================================================
+   🛠️ HERRAMIENTAS
+===================================================== */
+
+#herramientas-wrapper {
+  width: 100%;
+  margin: 12px auto;
+  text-align: center;
+}
+
+
+/* =========================
+   BOTÓN PRINCIPAL
+========================= */
+
+#herramientas-toggle {
+
+  width: 100%;
+  max-width: 900px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  margin: 0 auto;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+
+}
+
+
+/* Efecto al pulsar */
+
+#herramientas-toggle:active {
+
+  transform:
+    scale(0.97);
+
+}
+
+
+/* Flecha */
+
+#herramientas-flecha {
+
+  display: inline-block;
+
+  transition:
+    transform 0.25s ease;
+
+}
+
+
+/* Girar flecha */
+
+#herramientas-toggle.abierto
+#herramientas-flecha {
+
+  transform:
+    rotate(180deg);
+
+}
+
+
+/* =========================
+   PANEL
+========================= */
+
+#herramientas-panel {
+
+  width: 100%;
+
+  max-width: 900px;
+
+  margin: 0 auto;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap: 10px;
+
+  padding: 0;
+
+  max-height: 0;
+
+  overflow: hidden;
+
+  opacity: 0;
+
+  transform:
+    translateY(-8px);
+
+  transition:
+
+    max-height 0.3s ease,
+
+    opacity 0.2s ease,
+
+    padding 0.3s ease,
+
+    transform 0.3s ease;
+
+}
+
+
+/* =========================
+   PANEL ABIERTO
+========================= */
+
+#herramientas-panel.abierto {
+
+  max-height: 1000px;
+
+  opacity: 1;
+
+  padding:
+    12px 0 6px;
+
+  transform:
+    translateY(0);
+
+}
+
+
+/* =========================
+   BOTONES DENTRO
+========================= */
+
+#herramientas-panel button {
+
+  width: 100%;
+
+  margin: 0;
+
+  min-height: 44px;
+
+}
+
+
+/* =========================
+   TABLET / ESCRITORIO
+========================= */
+
+@media (min-width: 700px) {
+
+  #herramientas-panel {
+
+    grid-template-columns:
+      repeat(
+        3,
+        minmax(0, 1fr)
+      );
+
+  }
+
+}
+
+
+/* =========================
+   MÓVIL PEQUEÑO
+========================= */
+
+@media (max-width: 380px) {
+
+  #herramientas-panel {
+
+    grid-template-columns:
+      1fr;
+
+  }
+
+}
+
+
+/* =========================
+   MODO OSCURO
+========================= */
+
+body.dark #herramientas-panel {
+
+  /* Los botones conservan
+     automáticamente tus estilos
+     actuales */
+
+}
+/* =====================================================
+   🎼 CONTROL DE TONO — CENTRADO
+===================================================== */
+
+.la-tono-control {
+  display: grid;
+  grid-template-columns: 48px 80px 48px;
+  justify-content: center;
+  align-items: center;
+  column-gap: 10px;
+  width: 100%;
+  margin: 15px auto 20px auto;
+}
+
+.la-tono-control > button {
+  width: 48px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.la-tono-centro {
+  width: 80px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.la-tono-centro small {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.la-tono-centro strong {
+  display: block;
+  font-size: 20px;
+  line-height: 1.1;
+}
   </style>
 </head>
 
@@ -521,14 +806,67 @@ body.dark .proximo-label {
 <header>
   <div class="logo">
     <img src="https://raw.githubusercontent.com/Lifebygrace/Repertorio-worship/main/logo.jpeg" alt="Logo" />
-    <h1 style="margin:0">Repertorio Worship</h1>
+    <h1 style="margin:0">Team Manager ✟</h1>
   </div>
-  <div class="controls">
-    <button onclick="toggleDark()">🌙 / ☀️</button>
+  
+  <!-- =========================
+     🛠️ HERRAMIENTAS
+========================= -->
+
+<div id="herramientas-wrapper">
+
+  <button
+    id="herramientas-toggle"
+    type="button"
+    onclick="toggleHerramientas()"
+    aria-expanded="false"
+    aria-controls="herramientas-panel"
+  >
+    🛠️ Herramientas
+    <span id="herramientas-flecha">▼</span>
+  </button>
+
+  <div
+    id="herramientas-panel"
+    aria-hidden="true"
+  >
+
+    <!-- =================================
+         PEGA AQUÍ TUS 9 BOTONES ACTUALES
+         SIN MODIFICARLOS
+    ================================== -->
+
+  <button onclick="toggleDark()">🌙 / ☀️</button>
     <button onclick="activarEdicion()">✏️ Editar</button>
     <button onclick="abrirMetronomo()">🕒 Metrónomo</button>
     <button id="toggleCancionesBtn" onclick="toggleCanciones()">🎵Mostrar lista</button>
     <button onclick="toggleListadoMensual()">📅 Listado mensual</button>
+<button
+  id="btn-herramienta-registro"
+  style="background:var(--accent);"
+  onclick="herramientaRegistro()"
+>
+  📊 Registro de canciones
+</button>
+
+<button
+  id="btn-herramienta-analisis"
+  onclick="herramientaAnalisisReal()"
+>
+  📈 Análisis real
+</button>
+
+<button onclick="window.open('https://drive.google.com/drive/folders/1RxOwnOCtt7Oa_J6rUzG1jC242md5MT1-', '_blank')">
+  🎧 Recursos </button>
+
+<button
+  id="btn-herramienta-ausencias"
+  onclick="herramientaAusencias()"
+>
+  📅 Ausencias
+</button>
+
+
   </div>
 </header>
 
@@ -567,7 +905,7 @@ body.dark .proximo-label {
 </div>
 
 <div class="section">
-  <h2>🆕 Canciones nuevas del mes</h2>
+  <h2>🆕 Canciones nuevas 🔥 </h2>
 
   <!-- Contenedor donde se mostrarán las canciones del mes -->
   <div id="mostrar-mes" style="margin-top:8px"></div>
@@ -631,9 +969,12 @@ body.dark .proximo-label {
 ===================================================== -->
 
   <div id="registro-canciones-container" style="margin-top:12px;">
-    <button style="background:var(--accent);" onclick="toggleRegistro()">📊 Registro de canciones</button>
-    <button onclick="toggleAnalisis()">📊 Análisis mensual</button>
-    <button onclick="toggleAnalisisReal()">📈 Análisis real</button>
+
+<div
+  id="ausencias"
+  class="section"
+  style="display:none;"
+></div>
     <div id="analisis-real" class="section" style="display:none;"></div>
     <div id="analisis-mensual" class="section" style="display:none;"></div>
     <div id="registro-canciones" class="section" style="display:none;">
@@ -746,6 +1087,1185 @@ let ordenActual = { campo: 'titulo', sentido: 'desc' };
    🛠️ UTILIDADES
 ===================================================== */
 
+/* =====================================================
+   📅 REGISTRO DE AUSENCIAS
+   Firestore -> colección "ausencias"
+
+   MODO EDICIÓN:
+   - Permite marcar/desmarcar integrantes
+   - Permite guardar las ausencias
+
+   MODO NORMAL:
+   - NO permite modificar nada
+   - Solo muestra quién falta
+   - Si nadie falta:
+     "sin ausencias registradas 🥳"
+===================================================== */
+
+const INTEGRANTES_AUSENCIAS = [
+  "Milly",
+  "Carolina",
+  "Yarina" ,
+  "Misael" ,
+  "Albert" ,
+  "Jhonsy" ,
+  "Daiana" 
+];
+
+
+/* =====================================================
+   ABRIR / CERRAR SECCIÓN
+===================================================== */
+
+function toggleAusencias() {
+
+  const el = document.getElementById("ausencias");
+
+  if (!el) return;
+
+
+  el.style.display =
+    el.style.display === "block"
+      ? "none"
+      : "block";
+
+
+  if (el.style.display === "block") {
+    cargarAusencias();
+  }
+
+}
+
+
+/* =====================================================
+   OBTENER CLAVE DEL MES
+   Ejemplo: 2026-08
+===================================================== */
+
+function obtenerClaveMesAusencias(date) {
+
+  return `${date.getFullYear()}-${String(
+    date.getMonth() + 1
+  ).padStart(2, "0")}`;
+
+}
+
+
+/* =====================================================
+   OBTENER TODOS LOS DOMINGOS DEL MES
+===================================================== */
+
+function obtenerDomingosDelMesAusencias(mesKey) {
+
+  const [year, month] =
+    mesKey.split("-").map(Number);
+
+
+  const domingos = [];
+
+
+  const fecha =
+    new Date(year, month - 1, 1);
+
+
+  while (
+    fecha.getMonth() === month - 1
+  ) {
+
+    if (fecha.getDay() === 0) {
+
+      domingos.push(
+
+        `${fecha.getFullYear()}-${String(
+          fecha.getMonth() + 1
+        ).padStart(2, "0")}-${String(
+          fecha.getDate()
+        ).padStart(2, "0")}`
+
+      );
+
+    }
+
+
+    fecha.setDate(
+      fecha.getDate() + 1
+    );
+
+  }
+
+
+  return domingos;
+
+}
+
+
+/* =====================================================
+   FORMATEAR MES
+===================================================== */
+
+function formatearMesAusencias(mesKey) {
+
+  const [year, month] =
+    mesKey.split("-").map(Number);
+
+
+  return new Intl.DateTimeFormat(
+    "es-ES",
+    {
+      month: "long",
+      year: "numeric"
+    }
+  ).format(
+    new Date(year, month - 1, 1)
+  );
+
+}
+
+
+/* =====================================================
+   FORMATEAR FECHA
+===================================================== */
+
+function formatearFechaAusencia(
+  fechaISO
+) {
+
+  const [year, month, day] =
+    fechaISO.split("-").map(Number);
+
+
+  return new Intl.DateTimeFormat(
+    "es-ES",
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long"
+    }
+  ).format(
+    new Date(
+      year,
+      month - 1,
+      day
+    )
+  );
+
+}
+
+
+/* =====================================================
+   CAMBIAR MES
+===================================================== */
+
+function cambiarMesAusencias(delta) {
+
+  const input =
+    document.getElementById("ausencias-mes");
+
+  if (!input) return;
+
+
+  const [year, month] =
+    input.value
+      .split("-")
+      .map(Number);
+
+
+  const nuevaFecha =
+    new Date(
+      year,
+      month - 1 + delta,
+      1
+    );
+
+
+  const nuevoMes =
+    obtenerClaveMesAusencias(
+      nuevaFecha
+    );
+
+
+  cargarAusencias(nuevoMes);
+
+}
+
+/* =====================================================
+   CARGAR AUSENCIAS
+===================================================== */
+async function cargarAusencias(mesSolicitado = null) {
+
+  const cont =
+    document.getElementById("ausencias");
+
+  if (!cont) return;
+
+
+  /* =================================================
+     DETERMINAR QUÉ MES MOSTRAR
+
+     Si recibimos un mes desde los botones
+     ◀️ / ▶️, utilizamos ese mes.
+
+     Si no, intentamos conservar el mes
+     que ya estaba seleccionado.
+
+     Si tampoco existe, usamos el mes actual.
+  ================================================= */
+
+  let mesKey = mesSolicitado;
+
+
+  if (!mesKey) {
+
+    const inputExistente =
+      document.getElementById(
+        "ausencias-mes"
+      );
+
+
+    if (
+      inputExistente &&
+      inputExistente.value
+    ) {
+
+      mesKey =
+        inputExistente.value;
+
+    }
+
+  }
+
+
+  if (!mesKey) {
+
+    const hoy =
+      new Date();
+
+    mesKey =
+      obtenerClaveMesAusencias(
+        hoy
+      );
+
+  }
+
+
+  /* =================================================
+     SABER SI ESTAMOS EN MODO EDICIÓN
+  ================================================= */
+
+  const edicion =
+    typeof modoEdicion !== "undefined"
+      ? modoEdicion
+      : false;
+
+
+  /* =================================================
+     CREAR CABECERA
+
+     IMPORTANTE:
+     Ahora utilizamos mesKey y NO el mes actual.
+  ================================================= */
+
+  cont.innerHTML = `
+
+    <div
+      class="card"
+      style="margin-top:12px;"
+    >
+
+      <h2>
+        📅 Ausencias de integrantes
+      </h2>
+
+
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:8px;
+          margin:12px 0;
+          flex-wrap:wrap;
+        "
+      >
+
+        <button
+          onclick="cambiarMesAusencias(-1)"
+        >
+          ◀️
+        </button>
+
+
+        <input
+          type="month"
+          id="ausencias-mes"
+          value="${mesKey}"
+          onchange="cargarAusencias(this.value)"
+          class="edit-input"
+          style="
+            width:auto;
+            margin:0;
+          "
+        />
+
+
+        <button
+          onclick="cambiarMesAusencias(1)"
+        >
+          ▶️
+        </button>
+
+      </div>
+
+
+      <div
+        id="ausencias-contenido"
+      ></div>
+
+    </div>
+
+  `;
+
+
+  const contenido =
+    document.getElementById(
+      "ausencias-contenido"
+    );
+
+
+  try {
+
+    /* =================================================
+       OBTENER DATOS DEL MES DESDE FIRESTORE
+    ================================================= */
+
+    const snap =
+      await getDoc(
+        doc(
+          db,
+          "ausencias",
+          mesKey
+        )
+      );
+
+
+    const datos =
+      snap.exists()
+        ? snap.data()
+        : {};
+
+
+    const fechasGuardadas =
+      datos.fechas || {};
+
+
+    /* =================================================
+       OBTENER DOMINGOS DEL MES
+    ================================================= */
+
+    const domingos =
+      obtenerDomingosDelMesAusencias(
+        mesKey
+      );
+
+
+    if (!domingos.length) {
+
+      contenido.innerHTML = `
+        <p>
+          No hay domingos en este mes.
+        </p>
+      `;
+
+      return;
+
+    }
+
+
+    /* =================================================
+       CREAR CADA DOMINGO
+    ================================================= */
+
+    contenido.innerHTML = domingos
+      .map(fecha => {
+
+        const ausentes =
+          Array.isArray(
+            fechasGuardadas[fecha]
+          )
+            ? fechasGuardadas[fecha]
+            : [];
+
+
+        /* =============================================
+           MODO NORMAL
+        ============================================= */
+
+        if (!edicion) {
+
+          return `
+
+            <div
+              class="card"
+              style="
+                margin:12px 0;
+                padding:14px;
+              "
+            >
+
+              <h3
+                style="
+                  margin-top:0;
+                  text-transform:capitalize;
+                "
+              >
+
+                ${formatearFechaAusencia(
+                  fecha
+                )}
+
+              </h3>
+
+
+              ${
+                ausentes.length > 0
+
+                  ? `
+
+                    <div
+                      style="
+                        display:flex;
+                        flex-direction:column;
+                        gap:6px;
+                      "
+                    >
+
+                      ${ausentes
+                        .map(
+                          integrante => `
+                            <div>
+                              👤 ${integrante}
+                            </div>
+                          `
+                        )
+                        .join("")}
+
+                    </div>
+
+                  `
+
+                  : `
+
+                    <p
+                      style="
+                        font-style:italic;
+                        margin:0;
+                      "
+                    >
+                      sin ausencias registradas 🥳
+                    </p>
+
+                  `
+              }
+
+            </div>
+
+          `;
+
+        }
+
+
+        /* =============================================
+           MODO EDICIÓN
+        ============================================= */
+
+        return `
+
+          <div
+            class="card"
+            style="
+              margin:12px 0;
+              padding:14px;
+            "
+          >
+
+            <h3
+              style="
+                margin-top:0;
+                text-transform:capitalize;
+              "
+            >
+
+              ${formatearFechaAusencia(
+                fecha
+              )}
+
+            </h3>
+
+
+            <div
+              style="
+                display:flex;
+                flex-direction:column;
+                gap:10px;
+              "
+            >
+
+              ${INTEGRANTES_AUSENCIAS
+                .map(integrante => `
+
+                  <label
+                    style="
+                      display:flex;
+                      align-items:center;
+                      gap:10px;
+                      cursor:pointer;
+                    "
+                  >
+
+                    <input
+                      type="checkbox"
+
+                      class="ausencia-checkbox"
+
+                      data-fecha="${fecha}"
+
+                      data-integrante="${integrante}"
+
+                      ${
+                        ausentes.includes(
+                          integrante
+                        )
+                          ? "checked"
+                          : ""
+                      }
+
+                      style="
+                        width:20px;
+                        height:20px;
+                      "
+                    >
+
+                    <span>
+                      ${integrante}
+                    </span>
+
+                  </label>
+
+                `)
+                .join("")}
+
+            </div>
+
+          </div>
+
+        `;
+
+      })
+      .join("");
+
+
+    /* =================================================
+       BOTÓN GUARDAR — SOLO EDICIÓN
+    ================================================= */
+
+    if (edicion) {
+
+      contenido.innerHTML += `
+
+        <button
+          id="guardar-ausencias-btn"
+
+          style="
+            background:var(--accent);
+            margin-top:8px;
+          "
+
+          onclick="guardarAusencias()"
+        >
+
+          💾 Guardar ausencias
+
+        </button>
+
+      `;
+
+    }
+
+
+  } catch (error) {
+
+    console.error(
+      "Error cargando ausencias:",
+      error
+    );
+
+
+    contenido.innerHTML = `
+
+      <p>
+        ❌ No se pudieron cargar
+        las ausencias.
+      </p>
+
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   GUARDAR AUSENCIAS
+   SOLO SE PUEDE EJECUTAR EN MODO EDICIÓN
+===================================================== */
+
+async function guardarAusencias() {
+
+  /* ===============================================
+     SEGURIDAD EXTRA
+     Aunque alguien intente ejecutar la función
+     manualmente, no permitirá guardar en modo normal.
+  =============================================== */
+
+  if (
+    typeof modoEdicion === "undefined" ||
+    !modoEdicion
+  ) {
+
+    alert(
+      "⚠️ Debes activar el Modo edición para modificar las ausencias."
+    );
+
+    return;
+
+  }
+
+
+  const inputMes =
+    document.getElementById(
+      "ausencias-mes"
+    );
+
+
+  if (!inputMes) return;
+
+
+  const mesKey =
+    inputMes.value;
+
+
+  const fechas = {};
+
+
+  /* ===============================================
+     RECOGER CHECKBOXES
+  =============================================== */
+
+  document
+    .querySelectorAll(
+      ".ausencia-checkbox"
+    )
+    .forEach(checkbox => {
+
+      const fecha =
+        checkbox.dataset.fecha;
+
+
+      const integrante =
+        checkbox.dataset.integrante;
+
+
+      if (!fechas[fecha]) {
+
+        fechas[fecha] = [];
+
+      }
+
+
+      if (checkbox.checked) {
+
+        fechas[fecha].push(
+          integrante
+        );
+
+      }
+
+    });
+
+
+  try {
+
+    /* ===============================================
+       GUARDAR EN FIRESTORE
+    =============================================== */
+
+    await setDoc(
+
+      doc(
+        db,
+        "ausencias",
+        mesKey
+      ),
+
+      {
+
+        mes: mesKey,
+
+        fechas: fechas,
+
+        actualizado:
+          new Date().toISOString()
+
+      },
+
+      {
+        merge: true
+      }
+
+    );
+
+
+    alert(
+      `✅ Ausencias de ${
+        formatearMesAusencias(
+          mesKey
+        )
+      } guardadas`
+    );
+
+
+    /* ===============================================
+       RECARGAR
+    =============================================== */
+
+    await cargarAusencias();
+
+
+  } catch (error) {
+
+    console.error(
+      "Error guardando ausencias:",
+      error
+    );
+
+
+    alert(
+      "❌ No se pudieron guardar las ausencias"
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   FUNCIONES GLOBALES
+===================================================== */
+
+window.toggleAusencias =
+  toggleAusencias;
+
+window.cargarAusencias =
+  cargarAusencias;
+
+window.guardarAusencias =
+  guardarAusencias;
+
+window.cambiarMesAusencias =
+  cambiarMesAusencias;
+////////////////////
+
+
+
+/* =====================================================
+   📊 REGISTRO DESDE HERRAMIENTAS
+===================================================== */
+
+function herramientaRegistro() {
+
+  const seccion =
+    document.getElementById(
+      "registro-canciones"
+    );
+
+  if (!seccion) return;
+
+
+  /* Si está cerrado → abrir */
+
+  if (seccion.style.display !== "block") {
+
+    toggleRegistro();
+
+    cerrarHerramientas();
+
+    setTimeout(() => {
+
+      seccion.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }, 200);
+
+    return;
+  }
+
+
+  /* Si ya está abierto → cerrar */
+
+  toggleRegistro();
+
+}
+
+window.herramientaRegistro =
+  herramientaRegistro;
+  
+  
+  /* =====================================================
+   📈 ANÁLISIS REAL DESDE HERRAMIENTAS
+===================================================== */
+
+function herramientaAnalisisReal() {
+
+  const seccion =
+    document.getElementById(
+      "analisis-real"
+    );
+
+  if (!seccion) return;
+
+
+  /* Si está cerrado → abrir */
+
+  if (seccion.style.display !== "block") {
+
+    toggleAnalisisReal();
+
+    cerrarHerramientas();
+
+    setTimeout(() => {
+
+      seccion.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }, 250);
+
+    return;
+  }
+
+
+  /* Si ya está abierto → cerrar */
+
+  toggleAnalisisReal();
+
+}
+
+window.herramientaAnalisisReal =
+  herramientaAnalisisReal;
+  
+  
+  /* =====================================================
+   📅 AUSENCIAS DESDE HERRAMIENTAS
+===================================================== */
+
+function herramientaAusencias() {
+
+  const seccion =
+    document.getElementById(
+      "ausencias"
+    );
+
+  if (!seccion) return;
+
+
+  /* Si está cerrado → abrir */
+
+  if (seccion.style.display !== "block") {
+
+    toggleAusencias();
+
+    cerrarHerramientas();
+
+    setTimeout(() => {
+
+      seccion.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }, 200);
+
+    return;
+  }
+
+
+  /* Si ya está abierto → cerrar */
+
+  toggleAusencias();
+
+}
+
+window.herramientaAusencias =
+  herramientaAusencias;
+
+/* =====================================================
+   🛠️ HERRAMIENTAS
+   ABRIR / CERRAR
+===================================================== */
+
+
+function toggleHerramientas() {
+
+  const panel =
+    document.getElementById(
+      "herramientas-panel"
+    );
+
+  const button =
+    document.getElementById(
+      "herramientas-toggle"
+    );
+
+  if (!panel || !button) {
+    return;
+  }
+
+  const abierto =
+    panel.classList.toggle(
+      "abierto"
+    );
+
+  button.classList.toggle(
+    "abierto",
+    abierto
+  );
+
+  button.setAttribute(
+    "aria-expanded",
+    abierto
+      ? "true"
+      : "false"
+  );
+
+  panel.setAttribute(
+    "aria-hidden",
+    abierto
+      ? "false"
+      : "true"
+  );
+}
+
+
+/* =====================================================
+   HACER LA FUNCIÓN ACCESIBLE DESDE HTML
+===================================================== */
+
+window.toggleHerramientas =
+  toggleHerramientas;
+
+
+/* =====================================================
+   CERRAR HERRAMIENTAS
+===================================================== */
+
+function cerrarHerramientas() {
+
+  const panel =
+    document.getElementById(
+      "herramientas-panel"
+    );
+
+  const button =
+    document.getElementById(
+      "herramientas-toggle"
+    );
+
+  if (!panel || !button) {
+    return;
+  }
+
+  panel.classList.remove(
+    "abierto"
+  );
+
+  button.classList.remove(
+    "abierto"
+  );
+
+  button.setAttribute(
+    "aria-expanded",
+    "false"
+  );
+
+  panel.setAttribute(
+    "aria-hidden",
+    "true"
+  );
+}
+
+
+/* =====================================================
+   IR A UNA SECCIÓN DESDE HERRAMIENTAS
+===================================================== */
+
+function herramientaIrA(idSeccion) {
+
+  /* ================================================
+     IDENTIFICAR QUÉ SECCIÓN SE HA PULSADO
+  ================================================= */
+
+  if (idSeccion === "registro-canciones") {
+
+    if (
+      typeof window.toggleRegistro === "function"
+    ) {
+
+      window.toggleRegistro();
+
+    }
+
+  }
+
+
+  else if (idSeccion === "analisis-real") {
+
+    if (
+      typeof window.toggleAnalisisReal === "function"
+    ) {
+
+      window.toggleAnalisisReal();
+
+    }
+
+  }
+
+
+  else if (idSeccion === "ausencias") {
+
+    if (
+      typeof window.toggleAusencias === "function"
+    ) {
+
+      window.toggleAusencias();
+
+    }
+
+  }
+
+
+  /* ================================================
+     CERRAR HERRAMIENTAS
+  ================================================= */
+
+  cerrarHerramientas();
+
+
+  /* ================================================
+     ESPERAR A QUE LA SECCIÓN APAREZCA
+  ================================================= */
+
+  setTimeout(function() {
+
+    const seccion =
+      document.getElementById(idSeccion);
+
+
+    if (!seccion) {
+
+      console.error(
+        "No se encontró la sección:",
+        idSeccion
+      );
+
+      return;
+
+    }
+
+
+    /* ==============================================
+       SCROLL SUAVE
+    ============================================== */
+
+    seccion.scrollIntoView({
+
+      behavior: "smooth",
+
+      block: "start"
+
+    });
+
+
+  }, 200);
+
+}
+
+
+/* Hacerla accesible desde los botones HTML */
+
+window.herramientaIrA =
+  herramientaIrA;
+
+
+/* =====================================================
+   CERRAR AL PULSAR FUERA
+===================================================== */
+
+document.addEventListener(
+  "click",
+  function(event) {
+
+    const wrapper =
+      document.getElementById(
+        "herramientas-wrapper"
+      );
+
+    const panel =
+      document.getElementById(
+        "herramientas-panel"
+      );
+
+    const button =
+      document.getElementById(
+        "herramientas-toggle"
+      );
+
+    if (
+      !wrapper ||
+      !panel ||
+      !button
+    ) {
+
+      return;
+
+    }
+
+    if (
+      panel.classList.contains(
+        "abierto"
+      ) &&
+      !wrapper.contains(
+        event.target
+      )
+    ) {
+
+      cerrarHerramientas();
+
+    }
+
+  }
+);
+
+
+
+window.toggleHerramientas =
+  toggleHerramientas;
+  
+
+
+
 function normalizar(t){ return (t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase(); }
 function resaltar(t,q){ if(!q) return t; try{ const r=new RegExp(`(${q})`,"gi"); return t.replace(r,"<mark>$1</mark>"); }catch(e){return t;} }
 function pad(n){ return String(n).padStart(2,'0'); }
@@ -841,50 +2361,878 @@ function actualizarContador(){
   el.textContent = `Canciones totales 🎶: ${n}`;
 }
 
+/* =====================================================
+   🎼 VISOR LETRA + ACORDES DENTRO DE LA TARJETA
+   Cada tarjeta tiene su propio tono y transposición
+===================================================== */
+
+function crearVisorTarjetaInline(
+  cancion,
+  contenedor
+) {
+
+  if (!contenedor) return;
+
+
+  const datos =
+    cancion.letraAcordes;
+
+
+/* =================================================
+   SI NO HAY LETRA + ACORDES
+================================================= */
+
+if (
+  !datos ||
+  !Array.isArray(datos.secciones) ||
+  datos.secciones.length === 0
+) {
+
+  contenedor.innerHTML = `
+    <div
+      class="visor-inline"
+      style="
+        padding:20px;
+        text-align:center;
+        opacity:0.85;
+        font-size:1rem;
+      "
+    >
+
+      <div style="margin-bottom:14px;">
+        🎼 Esta canción todavía no tiene
+        letra y acordes guardados.
+      </div>
+
+      ${
+        modoEdicion
+          ? `
+            <button
+              type="button"
+              class="inline-editar-letra"
+            >
+              ✏️ Añadir letra + acordes
+            </button>
+          `
+          : ""
+      }
+
+    </div>
+  `;
+
+
+  /* =================================================
+     ✏️ BOTÓN AÑADIR LETRA + ACORDES
+  ================================================= */
+
+  const botonEditarLetra =
+    contenedor.querySelector(
+      ".inline-editar-letra"
+    );
+
+
+  if (botonEditarLetra) {
+
+    botonEditarLetra.addEventListener(
+      "click",
+      function(event) {
+
+        event.stopPropagation();
+
+        abrirLetraAcordes(
+          cancion.id
+        );
+
+      }
+    );
+
+  }
+
+
+  return;
+
+}
+
+
+  /* =================================================/* =================================================
+   TONO ORIGINAL
+   Acepta "A" o "Key: A"
+================================================= */
+
+const tonoBase =
+  String(
+    datos.tonoOriginal ||
+    cancion.acordes ||
+    "C"
+  )
+  .replace(/^Key:\s*/i, "")
+  .trim();
+
+const tonoOriginal =
+  normalizarNota(
+    tonoBase
+  );
+
+
+  let pasos =
+    0;
+
+
+  /* =================================================
+     ESTRUCTURA
+  ================================================= */
+
+  contenedor.innerHTML = `
+
+    <div
+      class="visor-inline"
+      style="
+        margin-top:8px;
+        padding:18px;
+        border-radius:16px;
+        background:rgba(255,255,255,0.06);
+        box-sizing:border-box;
+      "
+    >
+    
+
+      <!-- CONTROLES DE TONO -->
+
+      <div
+        style="
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          gap:18px;
+          margin-bottom:22px;
+        "
+      >
+
+        <button
+          type="button"
+          class="inline-tono-bajar"
+          style="
+            width:58px;
+            height:58px;
+            min-width:58px;
+            border-radius:14px;
+          "
+        >
+          ◀
+        </button>
+
+
+        <div
+          style="
+            min-width:90px;
+            text-align:center;
+          "
+        >
+
+          <small
+            style="
+              display:block;
+              opacity:.7;
+              margin-bottom:3px;
+            "
+          >
+            Tono
+          </small>
+
+          <strong
+            class="inline-tono-actual"
+            style="
+              display:block;
+              font-size:1.35rem;
+            "
+          >
+          Key: ${tonoOriginal}
+          </strong>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="inline-tono-subir"
+          style="
+            width:58px;
+            height:58px;
+            min-width:58px;
+            border-radius:14px;
+          "
+        >
+          ▶
+        </button>
+
+      </div>
+
+${modoEdicion ? `
+  <div
+    style="
+      display:flex;
+      justify-content:center;
+      margin-bottom:18px;
+    "
+  >
+    <button
+      type="button"
+      class="inline-editar-letra"
+    >
+      ✏️ Editar letra + acordes
+    </button>
+  </div>
+` : ""}
+
+      <!-- LETRA + ACORDES -->
+
+      <div class="inline-letra-contenido"></div>
+
+    </div>
+
+  `;
+  
+  /* =================================================
+   ✏️ EDITAR LETRA + ACORDES
+================================================= */
+
+const botonEditarLetra =
+  contenedor.querySelector(
+    ".inline-editar-letra"
+  );
+
+if (botonEditarLetra) {
+
+  botonEditarLetra.addEventListener(
+    "click",
+    function(event) {
+
+      event.stopPropagation();
+
+      abrirLetraAcordes(
+        cancion.id
+      );
+
+    }
+  );
+
+}
+
+
+  const contenido =
+    contenedor.querySelector(
+      ".inline-letra-contenido"
+    );
+
+
+  const tonoActual =
+    contenedor.querySelector(
+      ".inline-tono-actual"
+    );
+
+
+  /* =================================================
+     RENDERIZAR LETRA
+  ================================================= */
+
+  function renderizar() {
+
+    if (!contenido) return;
+
+
+    contenido.innerHTML = "";
+
+
+    datos.secciones.forEach(
+      seccion => {
+
+        /* Nombre de sección */
+
+        if (seccion.nombre) {
+
+          const titulo =
+            document.createElement(
+              "h3"
+            );
+
+          titulo.textContent =
+            seccion.nombre;
+
+          titulo.style.margin =
+            "22px 0 12px";
+
+          titulo.style.fontSize =
+            "1.05rem";
+
+          titulo.style.fontWeight =
+            "700";
+
+          contenido.appendChild(
+            titulo
+          );
+
+        }
+
+
+        /* Líneas */
+
+        (seccion.lineas || [])
+          .forEach(
+            linea => {
+
+              const bloque =
+                document.createElement(
+                  "div"
+                );
+
+              bloque.style.marginBottom =
+                "14px";
+
+
+              /* Acordes */
+
+              if (linea.acordes) {
+
+                const acordes =
+                  document.createElement(
+                    "div"
+                  );
+
+                acordes.className =
+                  "inline-acordes";
+
+                acordes.style.whiteSpace =
+                  "pre-wrap";
+
+                acordes.style.fontFamily =
+                  "monospace";
+
+                acordes.style.fontWeight =
+                  "700";
+
+                acordes.style.color =
+                  "#4da3ff";
+
+                acordes.style.fontSize =
+                  "0.95rem";
+
+                acordes.textContent =
+                  transponerLineaAcordes(
+                    linea.acordes,
+                    pasos
+                  );
+
+                bloque.appendChild(
+                  acordes
+                );
+
+              }
+
+
+              /* Letra */
+
+              if (linea.letra) {
+
+                const letra =
+                  document.createElement(
+                    "div"
+                  );
+
+                letra.style.whiteSpace =
+                  "pre-wrap";
+
+                letra.style.fontSize =
+                  "1rem";
+
+                letra.style.lineHeight =
+                  "1.5";
+
+                letra.style.marginTop =
+                  "2px";
+
+                letra.textContent =
+                  linea.letra;
+
+                bloque.appendChild(
+                  letra
+                );
+
+              }
+
+
+              contenido.appendChild(
+                bloque
+              );
+
+            }
+          );
+
+      }
+    );
+
+  }
+
+
+  /* Primera carga */
+
+  renderizar();
+
+
+  /* =================================================
+     BAJAR TONO
+  ================================================= */
+
+  const botonBajar =
+    contenedor.querySelector(
+      ".inline-tono-bajar"
+    );
+
+  if (botonBajar) {
+
+    botonBajar.addEventListener(
+      "click",
+      function(event) {
+
+        event.stopPropagation();
+
+        pasos--;
+
+        const nuevoTono =
+          transponerNota(
+            tonoOriginal,
+            pasos
+          );
+
+      if (tonoActual) {
+
+  tonoActual.textContent =
+    `Key: ${nuevoTono}`;
+
+}
+
+        renderizar();
+
+      }
+    );
+
+  }
+
+
+  /* =================================================
+     SUBIR TONO
+  ================================================= */
+
+  const botonSubir =
+    contenedor.querySelector(
+      ".inline-tono-subir"
+    );
+
+  if (botonSubir) {
+
+    botonSubir.addEventListener(
+      "click",
+      function(event) {
+
+        event.stopPropagation();
+
+        pasos++;
+
+        const nuevoTono =
+          transponerNota(
+            tonoOriginal,
+            pasos
+          );
+
+       if (tonoActual) {
+
+  tonoActual.textContent =
+    `Key: ${nuevoTono}`;
+
+}
+
+        renderizar();
+
+      }
+    );
+
+  }
+
+}
+
 /* Construcción de tarjeta — meta debajo del título + edición completa + preview imágenes en edición */
 function construirCard(d){
   const div = document.createElement("div");
   div.className = "card fade-apple";
 
-  // título (editable en modo edición)
-  const q = document.getElementById("search").value || "";
-  const tituloHtml = modoEdicion 
-    ? `<input type="text" class="edit-titulo edit-input" value="${(d.titulo||'').replace(/"/g,'&quot;')}" />`
-    : `<h2>${resaltar(d.titulo||'', q)}</h2>`;
 
-  // meta-line (vecestocada / última) justo debajo del título
-  const metaHtml = `
-    <div class="meta-line">
-      <span class="plays" id="plays-${d.id}">🎵 Veces tocada: —</span>
-      <span class="last" id="last-${d.id}">| Última vez: —</span>
-      ${modoEdicion ? `<button class="tocada-btn" id="tocadaBtn-${d.id}">Tocada +1</button>` : ''}
+/* =====================================================
+   🎵 TARJETA NORMAL DE CANCIÓN
+   En modo edición se mantiene visualmente normal
+   hasta que el usuario pulse la tarjeta.
+===================================================== */
+
+const q =
+  document.getElementById(
+    "search"
+  ).value || "";
+
+
+/* Título */
+
+const tituloHtml =
+  `<h2>${resaltar(
+    d.titulo || "",
+    q
+  )}</h2>`;
+
+
+/* Meta */
+
+const metaHtml = `
+  <div class="meta-line">
+
+    <span
+      class="plays"
+      id="plays-${d.id}"
+    >
+      🎵 Veces tocada: —
+    </span>
+
+    <span
+      class="last"
+      id="last-${d.id}"
+    >
+      | Última vez: —
+    </span>
+
+  </div>
+`;
+
+
+/* Acordes */
+
+const acordesHtml =
+  `<p>${d.acordes || ""}</p>`;
+  
+  
+  /* =====================================================
+   🎼 VISOR LETRA + ACORDES DE LA TARJETA
+===================================================== */
+
+const visorTarjetaHtml = `
+  <div
+    class="visor-tarjeta"
+    data-cancion-id="${d.id}"
+    style="
+      margin-top:12px;
+      padding-top:4px;
+    "
+  >
+  </div>
+`;
+
+
+/* Audio */
+
+const audioHtml =
+  d.audio
+    ? `<a
+        class="link-btn"
+        href="${d.audio}"
+        target="_blank"
+      >
+        🎧 Escuchar
+      </a>`
+    : "";
+
+
+/* YouTube */
+
+const youtubeHtml =
+  d.youtube
+    ? `<a
+        class="link-btn"
+        href="${d.youtube}"
+        target="_blank"
+      >
+        📺 YouTube
+      </a>`
+    : "";
+
+/* =====================================================
+   🎵 BOTÓN TOCADA +1
+   Solo visible en modo edición
+===================================================== */
+
+const tocadaHtml =
+  modoEdicion
+    ? `
+      <div style="
+        margin-top:10px;
+      ">
+        <button
+          id="tocadaBtn-${d.id}"
+          class="tocada-btn"
+          type="button"
+        >
+          🎵 Tocada +1
+        </button>
+      </div>
+    `
+    : "";
+
+
+/* Render normal */
+
+div.innerHTML =
+
+  tituloHtml +
+
+  metaHtml +
+
+acordesHtml +
+
+visorTarjetaHtml +
+
+`<div style="margin-top:8px">
+    ${audioHtml}
+    ${youtubeHtml}
+  </div>` +
+
+  tocadaHtml;
+  
+  /* =====================================================
+   🎼 CARGAR VISOR DE ESTA CANCIÓN
+===================================================== */
+
+const visorContenedor =
+  div.querySelector(
+    ".visor-tarjeta"
+  );
+
+if (visorContenedor) {
+
+  crearVisorTarjetaInline(
+    d,
+    visorContenedor
+  );
+
+}
+  
+  /* =====================================================
+   ✏️ ABRIR EDITOR DE UNA CANCIÓN
+===================================================== */
+
+function abrirEditorCancion(
+  d,
+  div
+) {
+
+  if (!modoEdicion) {
+    return;
+  }
+
+
+  /* Evitar volver a abrirlo */
+
+  if (
+    div.dataset.editando === "true"
+  ) {
+    return;
+  }
+
+
+  div.dataset.editando =
+    "true";
+
+
+  div.innerHTML = `
+
+    <input
+      type="text"
+      class="edit-titulo edit-input"
+      value="${(d.titulo || "")
+        .replace(/"/g, "&quot;")}"
+      placeholder="Título"
+    >
+
+
+    <textarea
+      class="edit-acordes edit-input"
+      placeholder="Acordes"
+    >${d.acordes || ""}</textarea>
+
+
+    <textarea
+      class="edit-imagenes edit-input"
+      data-id="${d.id}"
+      placeholder="Una imagen por línea"
+    >${(d.imagenes || []).join("\n")}</textarea>
+
+
+    <div
+      id="preview-${d.id}"
+      class="preview-edicion"
+    >
+      ${(d.imagenes || [])
+        .map(
+          u =>
+            `<img
+              class="preview-img"
+              src="${u}"
+            />`
+        )
+        .join("")}
     </div>
+
+
+    <input
+      type="text"
+      class="edit-audio edit-input"
+      value="${(d.audio || "")
+        .replace(/"/g, "&quot;")}"
+      placeholder="Link de audio"
+    >
+
+
+    <input
+      type="text"
+      class="edit-youtube edit-input"
+      value="${(d.youtube || "")
+        .replace(/"/g, "&quot;")}"
+      placeholder="Link de YouTube"
+    >
+
+
+    <div
+      style="
+        margin-top:10px;
+        display:flex;
+        gap:8px;
+        flex-wrap:wrap;
+      "
+    >
+
+      <button
+        onclick="
+          guardarEdicion('${d.id}', this)
+        "
+      >
+        💾 Guardar
+      </button>
+
+
+      <button
+        onclick="
+          cancelarEdicionCancion('${d.id}')
+        "
+      >
+        ✖️ Cancelar
+      </button>
+
+
+      <button
+        class="delete-btn"
+        onclick="
+          borrarCancion('${d.id}')
+        "
+      >
+        🗑️ Borrar
+      </button>
+
+    </div>
+
   `;
 
-  // acordes
-  const acordesHtml = modoEdicion 
-    ? `<textarea class="edit-acordes edit-input">${(d.acordes||'')}</textarea>`
-    : `<p>${(d.acordes||'')}</p>`;
 
-  // imágenes: en edición mostramos textarea para URLs + preview div; fuera de edición mostramos imgs
-  const imagenesHtml = modoEdicion
-    ? `<textarea class="edit-imagenes edit-input" data-id="${d.id}">${(d.imagenes||[]).join("\n")}</textarea><div id="preview-${d.id}">${(d.imagenes||[]).map(u=>`<img class="preview-img" src="${u}" />`).join("")}</div>`
-    : `<div>${(d.imagenes||[]).map(u=>`<img src="${u}" style="width:100%;margin-top:8px;border-radius:8px;">`).join("")}</div>`;
+  /* Preview de imágenes */
 
-  // audio / youtube fields
-  const audioHtml = modoEdicion ? `<input type="text" class="edit-audio edit-input" value="${(d.audio||'').replace(/"/g,'&quot;')}" placeholder="Link de audio">` : (d.audio ? `<a class="link-btn" href="${d.audio}" target="_blank">🎧 Escuchar</a>` : "");
-  const youtubeHtml = modoEdicion ? `<input type="text" class="edit-youtube edit-input" value="${(d.youtube||'').replace(/"/g,'&quot;')}" placeholder="Link de YouTube">` : (d.youtube ? `<a class="link-btn" href="${d.youtube}" target="_blank">📺 YouTube</a>` : "");
+  const area =
+    div.querySelector(
+      ".edit-imagenes"
+    );
 
-  // edit buttons
-const editButtons = modoEdicion 
-  ? `<div style="margin-top:10px">
-       <button onclick="guardarEdicion('${d.id}', this)">💾 Guardar</button> 
-       <button class="delete-btn" onclick="borrarCancion('${d.id}')">🗑️ Borrar</button>
-     </div>` 
-  : "";
+  const preview =
+    div.querySelector(
+      `#preview-${d.id}`
+    );
 
-  div.innerHTML = tituloHtml + metaHtml + acordesHtml + `<div style="margin-top:8px">${imagenesHtml}</div>` + `<div style="margin-top:8px">${audioHtml} ${youtubeHtml}</div>` + editButtons;
 
+  if (
+    area &&
+    preview
+  ) {
+
+    area.addEventListener(
+      "input",
+      () => {
+
+        const urls =
+          area.value
+            .split("\n")
+            .map(
+              s => s.trim()
+            )
+            .filter(Boolean);
+
+
+        preview.innerHTML =
+          urls
+            .map(
+              u =>
+                `<img
+                  class="preview-img"
+                  src="${u}"
+                />`
+            )
+            .join("");
+
+      }
+    );
+
+  }
+
+
+  /* Hacer que la tarjeta se mantenga
+     visible en pantalla */
+
+  div.scrollIntoView({
+
+    behavior: "smooth",
+
+    block: "nearest"
+
+  });
+
+}
+
+/* =====================================================
+   ✖️ CANCELAR EDICIÓN DE CANCIÓN
+===================================================== */
+
+function cancelarEdicionCancion(id) {
+
+  const cancion =
+    cancionesCache.find(
+      c => c.id === id
+    );
+
+  if (!cancion) {
+    return;
+  }
+
+
+  cargarCanciones();
+
+}
+
+window.abrirEditorCancion =
+  abrirEditorCancion;
+
+window.cancelarEdicionCancion =
+  cancelarEdicionCancion;
+  
+  
   // actualizar data de registro en la tarjeta
   actualizarRegistroCard(d.id);
 
@@ -905,6 +3253,45 @@ const editButtons = modoEdicion
         });
       }
     },0);
+  }
+  /* =====================================================
+     👆 TOCAR TARJETA → ABRIR EDITOR
+     
+     Solo funciona cuando estamos en modo edición.
+     Los botones, enlaces, inputs y textarea quedan
+     excluidos para que no interfiera con ellos.
+  ===================================================== */
+
+  if (modoEdicion) {
+
+    div.style.cursor = "pointer";
+
+    div.addEventListener(
+      "click",
+      function(event) {
+
+        /* No abrir el editor si hemos pulsado
+           un elemento interactivo */
+
+        if (
+          event.target.closest(
+            "button, a, input, textarea, select"
+          )
+        ) {
+          return;
+        }
+
+
+        /* Abrir el editor de ESTA canción */
+
+        abrirEditorCancion(
+          d,
+          div
+        );
+
+      }
+    );
+
   }
 
   return div;
@@ -1001,19 +3388,28 @@ async function guardarEdicion(id, btn){
 }
 
 /* Borrar canción (y su registro) */
+
 async function borrarCancion(id){
-  if(!confirm("¿Seguro que quieres borrar esta canción?")) return;
-  try{
-    await deleteDoc(doc(db,"canciones",id));
-    // borrar registro histórico también si existe
-    try{ await deleteDoc(doc(db,"registro",id)); } catch(e){ /* ignore if missing */ }
-    // onSnapshot actualizará lista/contador automáticamente
-    if(document.getElementById("registro-canciones").style.display==="block") cargarRegistro();
-  } catch(e){
-    console.error("Error borrarCancion:", e);
-    alert("Error al borrar (ver consola).");
+  if(!confirm("🗑️ ¿Eliminar canción definitivamente?")) return;
+
+  try {
+    // 🔥 borrar canción
+    await deleteDoc(doc(db, "canciones", id));
+
+    // 🔥 borrar registro
+    await deleteDoc(doc(db, "registro", id)).catch(()=>{});
+
+    // 🔥 borrar del análisis real
+    await deleteDoc(doc(db, "analisis_real", id)).catch(()=>{});
+
+    alert("✅ Canción eliminada completamente");
+  } catch (error) {
+    console.error(error);
+    alert("❌ Error al eliminar");
   }
 }
+
+window.borrarCancion = borrarCancion;
 
 /* SECCIONES (semana / mes) */
 /* =====================================================
@@ -1022,18 +3418,322 @@ async function borrarCancion(id){
 
 
 // Función para renderizar notas en lista con emojis
+function escaparHTML(str) {
+  return str.replace(/[&<>"']/g, tag => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  }[tag]));
+}
+
 function renderNotas(texto){
   if(!texto) return "(No hay notas para esta sección)";
 
-  // Agregar emojis según palabras clave
-  texto = texto.replace(/importante/gi, "⚠️ importante")
-               .replace(/ensayar/gi, "🎵 ensayar")
-               .replace(/recordar/gi, "🔔 recordar")
-               .replace(/audio/gi, "🎧 audio");
+  // 🔐 Seguridad
+  texto = escaparHTML(texto);
 
-  // Separar en líneas y convertir en <ul>
-  const lineas = texto.split("\n").filter(l => l.trim());
-  return `<ul>${lineas.map(l => `<li>${l}</li>`).join("")}</ul>`;
+  // 🔥 LIMPIEZA REAL (clave para quitar espacios raros)
+  const lineas = texto
+    .replace(/\r/g, "")              // limpia saltos tipo Windows
+    .split("\n")
+    .map(l => l.trim())             // quita espacios al inicio/final
+    .filter(l => l.length > 0);     // elimina líneas vacías reales
+
+  // ✨ PROCESAR CADA LÍNEA
+  const procesadas = lineas.map(linea => {
+
+    return linea
+      // **texto** → destacado
+      .replace(/\*\*(.*?)\*\*/g, '<span class="highlight">$1</span>')
+      
+      // _texto_ → subrayado
+      .replace(/_(.*?)_/g, '<span class="underline">$1</span>')
+
+      // 🎵 Emojis
+      .replace(/importante/gi, "⚠️ importante")
+      .replace(/ensayar/gi, "🎵 ensayar")
+      .replace(/recordar/gi, "🔔 recordar")
+      .replace(/audio/gi, "🎧 audio");
+  });
+
+  // 🧱 Render limpio
+  return `<ul>${procesadas.map(l => `<li>${l}</li>`).join("")}</ul>`;
+}
+
+/* =====================================================
+   📅 SINCRONIZACIÓN SEMANAL
+   Listado mensual ↔ Canciones para la semana
+===================================================== */
+
+
+/* =====================================================
+   OBTENER DOMINGO DEL SERVICIO ACTUAL
+===================================================== */
+
+function obtenerDomingoServicioActual() {
+
+  const hoy = new Date();
+
+  /*
+    Domingo = 0
+    Lunes   = 1
+    ...
+    Sábado  = 6
+
+    Domingo:
+      utiliza hoy.
+
+    Lunes-Sábado:
+      utiliza el próximo domingo.
+  */
+
+  const dia =
+    hoy.getDay();
+
+  const diasHastaDomingo =
+    dia === 0
+      ? 0
+      : 7 - dia;
+
+  const domingo =
+    new Date(hoy);
+
+  domingo.setDate(
+    hoy.getDate() +
+    diasHastaDomingo
+  );
+
+
+  /*
+    Fecha LOCAL YYYY-MM-DD
+    para evitar problemas de
+    zona horaria.
+  */
+
+  const year =
+    domingo.getFullYear();
+
+  const month =
+    String(
+      domingo.getMonth() + 1
+    ).padStart(2, "0");
+
+  const day =
+    String(
+      domingo.getDate()
+    ).padStart(2, "0");
+
+
+  return `${year}-${month}-${day}`;
+
+}
+
+
+/* =====================================================
+   OBTENER MES DE UNA FECHA
+===================================================== */
+
+function obtenerMesDeFecha(
+  fechaISO
+) {
+
+  return fechaISO.slice(
+    0,
+    7
+  );
+
+}
+
+
+/* =====================================================
+   🔄 SINCRONIZAR SEMANA CON LISTADO MENSUAL
+===================================================== */
+
+async function sincronizarSemanaConListadoMensual() {
+
+  try {
+
+    const fechaServicio =
+      obtenerDomingoServicioActual();
+
+
+    const mes =
+      obtenerMesDeFecha(
+        fechaServicio
+      );
+
+
+    /* -----------------------------------------------
+       Buscar el mes
+    ----------------------------------------------- */
+
+    const listadoSnap =
+      await getDoc(
+        doc(
+          db,
+          "listado_mensual",
+          mes
+        )
+      );
+
+
+    /*
+       Si el mes todavía no existe,
+       no hacemos nada.
+    */
+
+    if (
+      !listadoSnap.exists()
+    ) {
+
+      return;
+
+    }
+
+
+    const listado =
+      listadoSnap.data();
+
+
+    /*
+       Buscar el domingo correspondiente.
+    */
+
+    const domingo =
+      listado[
+        fechaServicio
+      ];
+
+
+    /*
+       Si todavía no hay información
+       para ese domingo, NO modificamos
+       Canciones para la semana.
+    */
+
+    if (!domingo) {
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------
+       Leer la semana actual
+    ----------------------------------------------- */
+
+    const semanaRef =
+      doc(
+        db,
+        "secciones",
+        "semana"
+      );
+
+
+    const semanaSnap =
+      await getDoc(
+        semanaRef
+      );
+
+
+    const semana =
+      semanaSnap.exists()
+        ? semanaSnap.data()
+        : {};
+
+
+    /* -----------------------------------------------
+       IMPORTANTE:
+
+       Las NOTAS vienen de secciones/semana
+       y NO se reemplazan con el listado mensual.
+    ----------------------------------------------- */
+
+    const nuevaSemana = {
+
+      titulo:
+        semana.titulo ||
+        "Canciones para la semana",
+
+      canciones:
+        domingo.canciones ||
+        [],
+
+      cantante:
+        domingo.cantante ||
+        "",
+
+      notas:
+        semana.notas ||
+        "",
+
+      fechaServicio:
+        fechaServicio
+
+    };
+
+
+    /* -----------------------------------------------
+       Evitar escrituras innecesarias
+    ----------------------------------------------- */
+
+    const cancionesActuales =
+      JSON.stringify(
+        semana.canciones || []
+      );
+
+    const cancionesNuevas =
+      JSON.stringify(
+        nuevaSemana.canciones
+      );
+
+
+    const haCambiado =
+      cancionesActuales !==
+        cancionesNuevas ||
+
+      (semana.cantante || "") !==
+        nuevaSemana.cantante ||
+
+      semana.fechaServicio !==
+        fechaServicio;
+
+
+    if (!haCambiado) {
+
+      return;
+
+    }
+
+
+    /* -----------------------------------------------
+       Guardar
+    ----------------------------------------------- */
+
+    await setDoc(
+      semanaRef,
+      nuevaSemana
+    );
+
+
+    console.log(
+      "🔄 Semana sincronizada:",
+      fechaServicio
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "❌ Error sincronizando semana:",
+      error
+    );
+
+  }
+
 }
 
 // Función principal
@@ -1083,13 +3783,26 @@ async function cargarSeccion(tipo){
       if(modoEdicion && notasEdit) notasEdit.value = "";
     }
 
-    const contenedor = document.getElementById(`contenedor-${tipo}`);
-    if(contenedor) contenedor.style.display = modoEdicion ? "block" : "none";
+const contenedor =
+  document.getElementById(
+    `contenedor-${tipo}`
+  );
+
+if (contenedor) {
+
+  /* El formulario permanece cerrado
+     aunque estemos en modo edición */
+
+  contenedor.style.display = "none";
+
+}
 
   } catch(e){
     console.error("Error en cargarSeccion:", e);
   }
 }
+
+
 
 // Toggle notas
 /* =====================================================
@@ -1113,25 +3826,354 @@ function toggleNotas(tipo){
   }
 }
 
+/* =====================================================
+   💾 GUARDAR SECCIÓN
+===================================================== */
+
 async function guardarSeccion(tipo){
-  const titulo = document.getElementById(`titulo-${tipo}`).value.trim();
-  const canciones = document.getElementById(`canciones-${tipo}`).value.trim().split("\n").map(s=>s.trim()).filter(Boolean);
-  const cantante =
-  tipo === "semana"
-    ? document.getElementById("cantante-semana")?.value || ""
-    : undefined;
-  const notas = document.getElementById(`notas-edit-${tipo}`).value.trim();
 
- await setDoc(doc(db, "secciones", tipo), { 
-  titulo, 
-  canciones, 
-  ...(tipo === "semana" && { cantante }),
-  notas 
-});
+  try {
 
-  alert("✅ Sección guardada");
-  cargarSeccion(tipo);
+    const titulo =
+      document
+        .getElementById(`titulo-${tipo}`)
+        .value
+        .trim();
+
+
+    const canciones =
+      document
+        .getElementById(`canciones-${tipo}`)
+        .value
+        .trim()
+        .split("\n")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+
+    const notas =
+      document
+        .getElementById(`notas-edit-${tipo}`)
+        .value
+        .trim();
+
+
+    const cantante =
+      tipo === "semana"
+        ? (
+            document
+              .getElementById("cantante-semana")
+              ?.value || ""
+          )
+        : undefined;
+
+
+    /* =================================================
+       🎶 CANCIONES PARA LA SEMANA
+    ================================================= */
+
+    if (tipo === "semana") {
+
+      const fechaServicio =
+        obtenerDomingoServicioActual();
+
+
+      const mes =
+        obtenerMesDeFecha(
+          fechaServicio
+        );
+
+
+      /* -----------------------------------------------
+         1. Guardar secciones/semana
+
+         Las NOTAS se guardan aquí.
+      ----------------------------------------------- */
+
+      await setDoc(
+        doc(
+          db,
+          "secciones",
+          "semana"
+        ),
+        {
+
+          titulo,
+
+          canciones,
+
+          cantante,
+
+          notas,
+
+          fechaServicio
+
+        }
+      );
+
+
+      /* -----------------------------------------------
+         2. Leer el listado mensual existente
+      ----------------------------------------------- */
+
+      const listadoRef =
+        doc(
+          db,
+          "listado_mensual",
+          mes
+        );
+
+
+      const listadoSnap =
+        await getDoc(
+          listadoRef
+        );
+
+
+      const listado =
+        listadoSnap.exists()
+          ? listadoSnap.data()
+          : {};
+
+
+      /* -----------------------------------------------
+         3. Actualizar SOLO el domingo actual
+
+         NO tocamos ninguna otra fecha.
+      ----------------------------------------------- */
+
+      listado[
+        fechaServicio
+      ] = {
+
+        ...(
+          listado[
+            fechaServicio
+          ] || {}
+        ),
+
+        canciones,
+
+        cantante
+
+      };
+
+
+      /* -----------------------------------------------
+         4. Guardar listado mensual
+      ----------------------------------------------- */
+
+      await setDoc(
+        listadoRef,
+        listado
+      );
+
+
+      alert(
+        "✅ Semana guardada y sincronizada"
+      );
+
+    }
+
+
+    /* =================================================
+       🆕 CANCIONES NUEVAS DEL MES
+    ================================================= */
+
+    else {
+
+      await setDoc(
+        doc(
+          db,
+          "secciones",
+          tipo
+        ),
+        {
+
+          titulo,
+
+          canciones,
+
+          notas
+
+        }
+      );
+
+
+      alert(
+        "✅ Sección guardada"
+      );
+
+    }
+
+
+    /* -----------------------------------------------
+       Actualizar la sección visualmente
+    ----------------------------------------------- */
+
+    await cargarSeccion(
+      tipo
+    );
+
+
+    /* -----------------------------------------------
+       Si el Listado Mensual está abierto,
+       refrescarlo.
+    ----------------------------------------------- */
+
+    const listadoMensual =
+      document.getElementById(
+        "listado-mensual"
+      );
+
+
+    if (
+      listadoMensual &&
+      listadoMensual.style.display ===
+        "block"
+    ) {
+
+      renderListadoMensual();
+
+    }
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "❌ Error guardando sección:",
+      error
+    );
+
+    alert(
+      "❌ No se pudo guardar la sección"
+    );
+
+  }
+
 }
+
+
+/* =====================================================
+   ✏️ EDITAR SECCIÓN DESDE SU PROPIA TARJETA
+===================================================== */
+
+function abrirEditorSeccion(tipo) {
+
+  if (!modoEdicion) {
+    return;
+  }
+
+  const contenedor =
+    document.getElementById(
+      `contenedor-${tipo}`
+    );
+
+  if (!contenedor) {
+    return;
+  }
+
+
+  const abierto =
+    contenedor.style.display === "block";
+
+
+  if (abierto) {
+
+    contenedor.style.display = "none";
+
+    return;
+
+  }
+
+
+  contenedor.style.display = "block";
+
+
+  /* Llevar ligeramente el formulario a la vista */
+
+  setTimeout(() => {
+
+    contenedor.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest"
+    });
+
+  }, 50);
+
+}
+
+window.abrirEditorSeccion =
+  abrirEditorSeccion;
+  
+  
+  /* =====================================================
+   👆 HACER LAS SECCIONES EDITABLES AL TOCARLAS
+===================================================== */
+
+function activarClickEdicionSecciones() {
+
+  const tipos = [
+    "semana",
+    "mes"
+  ];
+
+
+  tipos.forEach(tipo => {
+
+    const cont =
+      document.getElementById(
+        `mostrar-${tipo}`
+      );
+
+    if (!cont) {
+      return;
+    }
+
+
+    if (
+      cont.dataset.editorActivo === "true"
+    ) {
+      return;
+    }
+
+
+    cont.dataset.editorActivo =
+      "true";
+
+
+    cont.addEventListener(
+      "click",
+      function(event) {
+
+        if (!modoEdicion) {
+          return;
+        }
+
+
+        /* No abrir el editor si se ha pulsado
+           un enlace, botón, select o formulario */
+
+        if (
+          event.target.closest(
+            "button, a, input, textarea, select"
+          )
+        ) {
+
+          return;
+
+        }
+
+
+        abrirEditorSeccion(tipo);
+      }
+    );
+  });
+}
+
+activarClickEdicionSecciones();
+
 
 /* MODO EDICIÓN con PIN 2025 */
 /* =========================
@@ -1554,6 +4596,8 @@ document.querySelectorAll(`.eval-input[data-mes="${mes}"]`).forEach(i=>{
   alert("✅ Análisis mensual guardado");
 }
 
+
+
 /* =========================
   FUNCIONES METRÓNOMO
 ========================= */
@@ -1562,176 +4606,806 @@ let beatCount = 0; // para acento en el 1 (4/4)
 let audioCtx;
 let metronomeInterval = null;
 let isRunning = false;
-let currentBpm = Number(localStorage.getItem("metroBpm")) || 80;
-// TAP TEMPO
+
+let currentBpm =
+  Number(localStorage.getItem("metroBpm")) || 80;
+
+
+/* =====================================================
+   ELEMENTOS DEL METRÓNOMO
+===================================================== */
+
+const bpmSlider = () =>
+  document.getElementById("bpmSlider");
+
+const bpmValue = () =>
+  document.getElementById("bpmValue");
+
+const metroBtn = () =>
+  document.getElementById("metroToggle");
+
+
+/* =====================================================
+   TAP TEMPO
+===================================================== */
+
 let tapTimes = [];
 let lastTap = 0;
+
+
+// Máximo de taps que conservamos
 const MAX_TAPS = 6;
 
-const bpmSlider = () => document.getElementById("bpmSlider");
-const bpmValue  = () => document.getElementById("bpmValue");
-const metroBtn  = () => document.getElementById("metroToggle");
+
+// Si pasan más de 2 segundos sin tocar,
+// empezamos una nueva medición
+const RESET_TIME = 2000;
+
+
+// Evita dobles registros accidentales.
+// 45 ms permite taps bastante rápidos.
+const MIN_INTERVAL = 45;
+
+
+// Número de intervalos recientes utilizados
+// para calcular el BPM.
+const TAP_INTERVALS_TO_USE = 3;
+
+
+/* =====================================================
+   INICIALIZAR AUDIO
+===================================================== */
 
 function initMetronome(){
+
   if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    audioCtx =
+      new (
+        window.AudioContext ||
+        window.webkitAudioContext
+      )();
+
   }
 
-  if(audioCtx.state === "suspended"){
+
+  if(
+    audioCtx.state === "suspended"
+  ){
+
     audioCtx.resume();
+
   }
+
 }
 
-function playClick(){
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
 
-  const isAccent = beatCount === 0;
+/* =====================================================
+   SONIDO DEL CLICK
+===================================================== */
+
+function playClick(){
+
+  const osc =
+    audioCtx.createOscillator();
+
+  const gain =
+    audioCtx.createGain();
+
+
+  const isAccent =
+    beatCount === 0;
+
 
   // 🌲 Wood click
   osc.type = "triangle";
-  osc.frequency.value = isAccent ? 1200 : 800;
 
-  // Envolvente corta tipo madera
-  const now = audioCtx.currentTime;
-  gain.gain.setValueAtTime(0.0001, now);
+  osc.frequency.value =
+    isAccent
+      ? 1200
+      : 800;
+
+
+  const now =
+    audioCtx.currentTime;
+
+
+  gain.gain.setValueAtTime(
+    0.0001,
+    now
+  );
+
+
   gain.gain.exponentialRampToValueAtTime(
-    //volumen del click del metronomo 
-    isAccent ? 0.6 : 0.38,
+    isAccent
+      ? 0.6
+      : 0.38,
+
     now + 0.005
   );
+
+
   gain.gain.exponentialRampToValueAtTime(
     0.0001,
     now + 0.04
   );
 
+
   osc.connect(gain);
-  gain.connect(audioCtx.destination);
+
+  gain.connect(
+    audioCtx.destination
+  );
+
 
   osc.start(now);
-  osc.stop(now + 0.05);
 
-  beatCount = (beatCount + 1) % 4; // 4/4
+  osc.stop(
+    now + 0.05
+  );
+
+
+  beatCount =
+    (beatCount + 1) % 4;
+
 }
+
+
+/* =====================================================
+   INICIAR METRÓNOMO
+===================================================== */
 
 function startMetronome(){
+
   initMetronome();
-  const interval = 60000 / currentBpm;
-  
+
+
+  const interval =
+    60000 / currentBpm;
+
+
   beatCount = 0;
+
+
   playClick();
-  metronomeInterval = setInterval(playClick, interval);
+
+
+  metronomeInterval =
+    setInterval(
+      playClick,
+      interval
+    );
+
+
   isRunning = true;
-  metroBtn().textContent = "⏸ Stop";
+
+
+  const button =
+    metroBtn();
+
+
+  if(button){
+
+    button.textContent =
+      "⏸ Stop";
+
+  }
+
 }
+
+
+/* =====================================================
+   DETENER METRÓNOMO
+===================================================== */
 
 function stopMetronome(){
-  clearInterval(metronomeInterval);
+
+  clearInterval(
+    metronomeInterval
+  );
+
+
   metronomeInterval = null;
+
+
   isRunning = false;
-  metroBtn().textContent = "▶️ Start";
+
+
+  const button =
+    metroBtn();
+
+
+  if(button){
+
+    button.textContent =
+      "▶️ Start";
+
+  }
+
 }
+
+
+/* =====================================================
+   TAP TEMPO
+===================================================== */
+
 function tapTempo(){
+
   initMetronome();
 
-  const now = performance.now();
 
-  if(now - lastTap > 2000){
+  const now =
+    performance.now();
+
+
+  /* ===================================================
+     SI HAN PASADO MÁS DE 2 SEGUNDOS,
+     COMENZAMOS UNA NUEVA MEDICIÓN
+  =================================================== */
+
+  if(
+    lastTap &&
+    (now - lastTap) > RESET_TIME
+  ){
+
     tapTimes = [];
+
   }
 
-  lastTap = now;
+
+  /* ===================================================
+     IGNORAR DOBLE TAP ACCIDENTAL
+  =================================================== */
+
+  if(
+    lastTap &&
+    (now - lastTap) < MIN_INTERVAL
+  ){
+
+    return;
+
+  }
+
+
+  /* ===================================================
+     REGISTRAR TAP
+  =================================================== */
+
   tapTimes.push(now);
 
-  if(tapTimes.length > MAX_TAPS){
+  lastTap = now;
+
+
+  /* ===================================================
+     MANTENER SOLO LOS ÚLTIMOS TAPS
+  =================================================== */
+
+  if(
+    tapTimes.length > MAX_TAPS
+  ){
+
     tapTimes.shift();
+
   }
 
-  if(tapTimes.length >= 2){
-    let intervals = [];
-    for(let i = 1; i < tapTimes.length; i++){
-      intervals.push(tapTimes[i] - tapTimes[i-1]);
-    }
 
-    const avg = intervals.reduce((a,b)=>a+b) / intervals.length;
-    const bpm = Math.round(60000 / avg);
+  /* ===================================================
+     NECESITAMOS AL MENOS 2 TAPS
+  =================================================== */
 
-    if(bpm >= 50 && bpm <= 280){
-      currentBpm = bpm;
-      bpmSlider().value = bpm;
-      bpmDisplay().textContent = bpm;
+  if(
+    tapTimes.length < 2
+  ){
 
-      if(isRunning){
-        stopMetronome();
-        startMetronome();
-      }
-    }
+    return;
+
   }
+
+
+  /* ===================================================
+     CALCULAR INTERVALOS
+  =================================================== */
+
+  const intervals = [];
+
+
+  for(
+    let i = 1;
+    i < tapTimes.length;
+    i++
+  ){
+
+    intervals.push(
+      tapTimes[i] -
+      tapTimes[i - 1]
+    );
+
+  }
+
+
+  /* ===================================================
+     USAR SOLO LOS INTERVALOS MÁS RECIENTES
+
+     Esto permite cambiar rápidamente:
+
+     90 → 90 → 90
+              ↓
+             119
+              ↓
+             119
+              ↓
+             119
+
+     sin que los taps antiguos dominen
+     el resultado.
+  =================================================== */
+
+  const recentIntervals =
+    intervals.slice(
+      -TAP_INTERVALS_TO_USE
+    );
+
+
+  /* ===================================================
+     CALCULAR MEDIA
+  =================================================== */
+
+  const averageInterval =
+    recentIntervals.reduce(
+      (total, interval) =>
+        total + interval,
+      0
+    ) /
+    recentIntervals.length;
+
+
+  /* ===================================================
+     CONVERTIR INTERVALO → BPM
+  =================================================== */
+
+  const bpm =
+    Math.round(
+      60000 /
+      averageInterval
+    );
+
+
+  /* ===================================================
+     COMPROBAR BPM VÁLIDO
+  =================================================== */
+
+  if(
+    bpm < 40 ||
+    bpm > 300
+  ){
+
+    return;
+
+  }
+
+
+  /* ===================================================
+     ACTUALIZAR BPM
+  =================================================== */
+
+  currentBpm =
+    bpm;
+
+
+  const slider =
+    bpmSlider();
+
+  const display =
+    bpmValue();
+
+
+  if(slider){
+
+    slider.value =
+      bpm;
+
+  }
+
+
+  if(display){
+
+    display.textContent =
+      bpm;
+
+  }
+
+
+  /* ===================================================
+     GUARDAR BPM
+  =================================================== */
+
+  localStorage.setItem(
+    "metroBpm",
+    bpm
+  );
+
+
+  /* ===================================================
+     SI EL METRÓNOMO ESTÁ FUNCIONANDO,
+     ACTUALIZAR SU VELOCIDAD
+  =================================================== */
+
+  if(isRunning){
+
+    stopMetronome();
+
+    startMetronome();
+
+  }
+
 }
+
+
+/* =====================================================
+   TOGGLE METRÓNOMO
+===================================================== */
 
 function toggleMetronome(){
-  isRunning ? stopMetronome() : startMetronome();
+
+  if(isRunning){
+
+    stopMetronome();
+
+  }else{
+
+    startMetronome();
+
+  }
+
 }
+
+
+/* =====================================================
+   ABRIR METRÓNOMO
+===================================================== */
 
 function abrirMetronomo(){
-  document.getElementById("modal-metronomo").style.display = "flex";
 
-  bpmSlider().value = currentBpm;
-  bpmValue().textContent = currentBpm;
+  const modal =
+    document.getElementById(
+      "modal-metronomo"
+    );
+
+
+  if(!modal){
+
+    return;
+
+  }
+
+
+  modal.style.display =
+    "flex";
+
+
+  const slider =
+    bpmSlider();
+
+  const display =
+    bpmValue();
+
+
+  if(slider){
+
+    slider.value =
+      currentBpm;
+
+  }
+
+
+  if(display){
+
+    display.textContent =
+      currentBpm;
+
+  }
+
 }
+
+
+/* =====================================================
+   CERRAR METRÓNOMO
+===================================================== */
 
 function cerrarMetronomo(){
+
   stopMetronome();
-  document.getElementById("modal-metronomo").style.display = "none";
+
+
+  const modal =
+    document.getElementById(
+      "modal-metronomo"
+    );
+
+
+  if(modal){
+
+    modal.style.display =
+      "none";
+
+  }
+
 }
 
-/* Eventos */
-document.addEventListener("input", e => {
-  if(e.target.id === "bpmSlider"){
-    currentBpm = Number(e.target.value);
-    bpmValue().textContent = currentBpm;
-    localStorage.setItem("metroBpm", currentBpm);
 
-    if(isRunning){
-      stopMetronome();
-      startMetronome();
+/* =====================================================
+   EVENTO DEL SLIDER BPM
+===================================================== */
+
+document.addEventListener(
+  "input",
+  e => {
+
+    if(
+      e.target.id ===
+      "bpmSlider"
+    ){
+
+      currentBpm =
+        Number(
+          e.target.value
+        );
+
+
+      const display =
+        bpmValue();
+
+
+      if(display){
+
+        display.textContent =
+          currentBpm;
+
+      }
+
+
+      localStorage.setItem(
+        "metroBpm",
+        currentBpm
+      );
+
+
+      if(isRunning){
+
+        stopMetronome();
+
+        startMetronome();
+
+      }
+
     }
+
   }
-});
-
-document.addEventListener("click", e => {
-  if(e.target.id === "metroToggle"){
-    toggleMetronome();
-  }
-});
-
-document.getElementById("tapTempo").addEventListener("click", tapTempo);
+);
 
 
-// 🔊 Reactivar audio al volver a la app (iOS / PWA)
-document.addEventListener("visibilitychange", ()=>{
-  if(document.visibilityState === "visible" && audioCtx){
-    audioCtx.resume();
-  }
-});
+/* =====================================================
+   BOTÓN START / STOP
+===================================================== */
 
-window.addEventListener("pageshow", ()=>{
-  if (audioCtx) {
-    audioCtx.resume();
-  }
-});
+document.addEventListener(
+  "click",
+  e => {
 
-let lastTouchEnd = 0;
+    if(
+      e.target.id ===
+      "metroToggle"
+    ){
 
-document.addEventListener("touchend", function (event) {
-  const now = Date.now();
-  if (now - lastTouchEnd <= 300) {
-    if (event.target.closest("#tapTempo")) {
-      event.preventDefault();
+      toggleMetronome();
+
     }
+
   }
-  lastTouchEnd = now;
-}, { passive: false });
+);
+
+
+/* =====================================================
+   TAP TEMPO
+
+   Utilizamos pointerdown mediante
+   delegación de eventos.
+
+   Esto funciona aunque #tapTempo
+   se cree después de cargar la página
+   y responde inmediatamente al toque.
+===================================================== */
+
+document.addEventListener(
+  "pointerdown",
+  e => {
+
+    const tapButton =
+      e.target.closest(
+        "#tapTempo"
+      );
+
+
+    if(!tapButton){
+
+      return;
+
+    }
+
+
+    e.preventDefault();
+
+
+    tapTempo();
+
+  }
+);
+
+
+/* =====================================================
+   REACTIVAR AUDIO AL VOLVER A LA APP
+   iOS / PWA
+===================================================== */
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if(
+      document.visibilityState ===
+      "visible" &&
+      audioCtx
+    ){
+
+      audioCtx.resume();
+
+    }
+
+  }
+);
+
+
+window.addEventListener(
+  "pageshow",
+  () => {
+
+    if(audioCtx){
+
+      audioCtx.resume();
+
+    }
+
+  }
+);
+/* =====================================================
+   👆 DOBLE TOQUE PARA CERRAR SECCIONES
+===================================================== */
+
+function activarDobleToqueCabecera(
+  idSeccion,
+  funcionCerrar
+) {
+
+  const seccion =
+    document.getElementById(
+      idSeccion
+    );
+
+  if (!seccion) return;
+
+  const cabecera =
+    seccion.querySelector(
+      "h2"
+    );
+
+  if (!cabecera) return;
+
+  /* Evitar añadir el listener
+     más de una vez */
+
+  if (
+    cabecera.dataset.dobleToqueActivo === "true"
+  ) {
+    return;
+  }
+
+  cabecera.dataset.dobleToqueActivo =
+    "true";
+
+
+  let ultimoToque = 0;
+
+
+  cabecera.addEventListener(
+    "pointerup",
+    function(event) {
+
+      const ahora =
+        performance.now();
+
+
+      if (
+        ahora - ultimoToque >= 80 &&
+        ahora - ultimoToque <= 400
+      ) {
+
+        if (
+          typeof funcionCerrar ===
+          "function"
+        ) {
+
+          funcionCerrar();
+
+        }
+
+        ultimoToque = 0;
+
+        return;
+      }
+
+
+      ultimoToque = ahora;
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   REGISTRO
+===================================================== */
+
+function activarDobleToqueRegistro() {
+
+  activarDobleToqueCabecera(
+    "registro-canciones",
+    toggleRegistro
+  );
+
+}
+
+
+/* =====================================================
+   ANÁLISIS REAL
+===================================================== */
+
+function activarDobleToqueAnalisisReal() {
+
+  activarDobleToqueCabecera(
+    "analisis-real",
+    toggleAnalisisReal
+  );
+
+}
+
+
+/* =====================================================
+   AUSENCIAS
+===================================================== */
+
+function activarDobleToqueAusencias() {
+
+  activarDobleToqueCabecera(
+    "ausencias",
+    toggleAusencias
+  );
+
+}
+
+/* =====================================================
+   COMPROBAR CABECERAS DINÁMICAS
+===================================================== */
+
+setInterval(function() {
+
+  activarDobleToqueRegistro();
+
+  activarDobleToqueAnalisisReal();
+
+  activarDobleToqueAusencias();
+
+}, 500);
 
 /* BOOT */
 
@@ -1848,34 +5522,241 @@ domingos.forEach(fecha => {
   }
 }
 
+/* =====================================================
+   💾 GUARDAR LISTADO MENSUAL
+   Sincroniza el domingo actual con "Canciones para la semana"
+===================================================== */
+
 window.guardarListadoMensual = async function(){
 
-  const mes = mesListadoActual.toISOString().slice(0,7);
-  const datosGuardar = {};
+  try {
 
-  document.querySelectorAll(".edit-listado").forEach(textarea => {
+    const mes =
+      mesListadoActual
+        .toISOString()
+        .slice(0, 7);
 
-    const fecha = textarea.dataset.fecha;
 
-    const canciones = textarea.value
-      .split("\n")
-      .map(s => s.trim())
-      .filter(Boolean);
+    /* =================================================
+       1️⃣ LEER EL MES QUE YA EXISTE
 
-    const select = document.querySelector(`.cantante-listado[data-fecha="${fecha}"]`);
-    const cantante = select ? select.value : "";
+       Esto es importante porque queremos conservar
+       cualquier información que ya exista.
+    ================================================= */
 
-    datosGuardar[fecha] = {
-      canciones,
-      cantante
-    };
+    const listadoRef =
+      doc(
+        db,
+        "listado_mensual",
+        mes
+      );
 
-  });
+    const listadoSnap =
+      await getDoc(
+        listadoRef
+      );
 
-  await setDoc(doc(db,"listado_mensual",mes), datosGuardar);
+    const datosGuardar =
+      listadoSnap.exists()
+        ? {
+            ...listadoSnap.data()
+          }
+        : {};
 
-  alert("✅ Listado mensual guardado");
-  renderListadoMensual();
+
+    /* =================================================
+       2️⃣ RECORRER LOS DOMINGOS EDITABLES
+    ================================================= */
+
+    document
+      .querySelectorAll(
+        ".edit-listado"
+      )
+      .forEach(
+        textarea => {
+
+          const fecha =
+            textarea.dataset.fecha;
+
+
+          const canciones =
+            textarea.value
+              .split("\n")
+              .map(
+                s => s.trim()
+              )
+              .filter(Boolean);
+
+
+          const select =
+            document.querySelector(
+              `.cantante-listado[data-fecha="${fecha}"]`
+            );
+
+
+          const cantante =
+            select
+              ? select.value
+              : "";
+
+
+          /* -------------------------------------------
+             Conservar cualquier información previa
+             de ese domingo.
+          ------------------------------------------- */
+
+          datosGuardar[
+            fecha
+          ] = {
+
+            ...(
+              datosGuardar[
+                fecha
+              ] || {}
+            ),
+
+            canciones,
+
+            cantante
+
+          };
+
+        }
+      );
+
+
+    /* =================================================
+       3️⃣ GUARDAR EL MES
+    ================================================= */
+
+    await setDoc(
+      listadoRef,
+      datosGuardar
+    );
+
+
+    /* =================================================
+       4️⃣ IDENTIFICAR EL DOMINGO ACTUAL
+    ================================================= */
+
+    const domingoActual =
+      obtenerDomingoServicioActual();
+
+
+    /* =================================================
+       5️⃣ SOLO SI ESTAMOS GUARDANDO EL MES
+          DEL DOMINGO ACTUAL
+    ================================================= */
+
+    if (
+      mes ===
+      obtenerMesDeFecha(
+        domingoActual
+      )
+    ) {
+
+      const infoDomingo =
+        datosGuardar[
+          domingoActual
+        ];
+
+
+      /*
+         Si ese domingo existe en el listado,
+         sincronizamos sus canciones y cantante.
+      */
+
+      if (infoDomingo) {
+
+        const semanaRef =
+          doc(
+            db,
+            "secciones",
+            "semana"
+          );
+
+
+        const semanaSnap =
+          await getDoc(
+            semanaRef
+          );
+
+
+        const semana =
+          semanaSnap.exists()
+            ? semanaSnap.data()
+            : {};
+
+
+        /* -------------------------------------------
+           ACTUALIZAR SEMANA
+
+           ⚠️ Las NOTAS se conservan exactamente
+           como están en secciones/semana.
+        ------------------------------------------- */
+
+        await setDoc(
+          semanaRef,
+          {
+
+            titulo:
+              semana.titulo ||
+              "Canciones para la semana",
+
+            canciones:
+              infoDomingo.canciones ||
+              [],
+
+            cantante:
+              infoDomingo.cantante ||
+              "",
+
+            notas:
+              semana.notas ||
+              "",
+
+            fechaServicio:
+              domingoActual
+
+          }
+        );
+
+      }
+
+    }
+
+
+    /* =================================================
+       6️⃣ ACTUALIZAR INTERFAZ
+    ================================================= */
+
+    alert(
+      "✅ Listado mensual guardado y sincronizado"
+    );
+
+
+    await renderListadoMensual();
+
+
+    await cargarSeccion(
+      "semana"
+    );
+
+  }
+
+  catch (error) {
+
+    console.error(
+      "❌ Error guardando listado mensual:",
+      error
+    );
+
+    alert(
+      "❌ No se pudo guardar el listado mensual"
+    );
+
+  }
+
 };
 
 ///////
@@ -2129,27 +6010,41 @@ function renderEstadisticas(rangoMeses, cantanteFiltro){
       const data = docu.data();
       const fechas = Array.isArray(data.fechas) ? data.fechas : [];
 
-      fechas.forEach(f=>{
+      fechas.forEach(f => {
 
         const fechaObj = new Date(f);
+        if (isNaN(fechaObj)) return;
 
-        // FILTRO RANGO
-        if(rangoMeses > 0){
-          const limite = new Date(hoy.getFullYear(), hoy.getMonth() - rangoMeses, 1);
-          if(fechaObj < limite) return;
+        // Solo domingos
+        if (fechaObj.getDay() !== 0) return;
+
+        // Filtro rango
+        if (rangoMeses > 0) {
+          const limite = new Date(
+            hoy.getFullYear(),
+            hoy.getMonth() - rangoMeses,
+            1
+          );
+
+          if (fechaObj < limite) return;
         }
 
         const analisis = analisisGuardado[f];
-        if(!analisis) return;
-        if(analisis.cantante !== nombre) return;
+        if (!analisis) return;
+        if (analisis.cantante !== nombre) return;
 
         const evaluacion = analisis.evaluaciones?.[docu.id];
-        if(!evaluacion) return;
+        if (!evaluacion) return;
 
-        const cancion = cancionesCache.find(c=>c.id===docu.id);
-        const titulo = cancion?.titulo || docu.id;
+        // 🔥 FILTRO CLAVE: ignorar canciones borradas
+        const cancion = cancionesCache.find(c => c.id === docu.id);
 
-        if(!conteo[evaluacion][titulo]){
+        // 👉 SI NO EXISTE, SE IGNORA (evita "-")
+        if (!cancion || !cancion.titulo) return;
+
+        const titulo = cancion.titulo;
+
+        if (!conteo[evaluacion][titulo]) {
           conteo[evaluacion][titulo] = 0;
         }
 
@@ -2158,6 +6053,10 @@ function renderEstadisticas(rangoMeses, cantanteFiltro){
       });
     });
 
+    // ==============================
+    // UI
+    // ==============================
+
     const bloque = document.createElement("div");
     bloque.className = "bloque-cantante";
     bloque.style.marginTop = "20px";
@@ -2165,9 +6064,7 @@ function renderEstadisticas(rangoMeses, cantanteFiltro){
     bloque.style.paddingTop = "10px";
 
     bloque.innerHTML = `
-      <h3 style="margin-bottom:10px;">
-        ${nombre}
-      </h3>
+      <h3 style="margin-bottom:10px;">${nombre}</h3>
       <div class="contenido-cantante"></div>
     `;
 
@@ -2200,7 +6097,6 @@ function renderEstadisticas(rangoMeses, cantanteFiltro){
           border-radius:10px;
           overflow:hidden;
           cursor:pointer;">
-          <!-- Barra animada: empieza en 0%, luego se llena -->
           <div style="
             width:0%;
             background:${cat.color};
@@ -2212,27 +6108,26 @@ function renderEstadisticas(rangoMeses, cantanteFiltro){
         <div style="display:none; margin-top:6px; font-size:13px;"></div>
       `;
 
-const barra = fila.querySelector("div:nth-child(2) > div");
-const porcentajeSpan = fila.querySelector("div:first-child span:last-child"); // selecciona el <span> del %
-barra.style.width = "0%";
-porcentajeSpan.textContent = "0%";
+      const barra = fila.querySelector("div:nth-child(2) > div");
+      const porcentajeSpan = fila.querySelector("span:last-child");
 
-// Animación de la barra
-setTimeout(() => {
-  barra.style.width = porcentaje + "%";
-}, 50);
+      setTimeout(() => {
+        barra.style.width = porcentaje + "%";
+      }, 50);
 
-// Animación del número
-let valorActual = 0;
-const incremento = Math.ceil(porcentaje / 20); // ajusta la velocidad del conteo
-const intervalo = setInterval(() => {
-  valorActual += incremento;
-  if (valorActual >= porcentaje) {
-    valorActual = porcentaje;
-    clearInterval(intervalo);
-  }
-  porcentajeSpan.textContent = valorActual + "%";
-}, 25);
+      let valorActual = 0;
+      const incremento = Math.ceil(porcentaje / 20);
+
+      const intervalo = setInterval(() => {
+        valorActual += incremento;
+
+        if (valorActual >= porcentaje) {
+          valorActual = porcentaje;
+          clearInterval(intervalo);
+        }
+
+        porcentajeSpan.textContent = valorActual + "%";
+      }, 25);
 
       const listaDiv = fila.lastElementChild;
 
@@ -2254,7 +6149,6 @@ const intervalo = setInterval(() => {
     contCantante.appendChild(bloque);
   });
 }
-
 
 // ==============================
 // EVENTOS FILTRO
@@ -2646,6 +6540,1500 @@ async function mostrarWorshipPack(tipo) {
   boton.textContent = "🔽 Ocultar pack";
 }
 
+/* =====================================================
+   🎼 ABRIR LETRA + ACORDES
+
+   MODO NORMAL  → VISOR
+   MODO EDICIÓN → EDITOR
+===================================================== */
+
+function abrirLetraAcordes(id) {
+
+  const modal =
+    document.getElementById(
+      "modal-letra-acordes"
+    );
+
+  if (!modal) return;
+
+
+  const cancion =
+    cancionesCache.find(
+      c => c.id === id
+    );
+
+
+  if (!cancion) {
+
+    console.warn(
+      "No se encontró la canción:",
+      id
+    );
+
+    return;
+
+  }
+
+
+  /* =================================================
+     GUARDAR CANCIÓN SELECCIONADA
+  ================================================= */
+
+  window.cancionLetraAcordes =
+    cancion;
+
+
+  /* =================================================
+     TÍTULO
+  ================================================= */
+
+  const titulo =
+    document.getElementById(
+      "letra-acordes-titulo"
+    );
+
+
+  if (titulo) {
+
+    titulo.textContent =
+      `🎼 ${cancion.titulo || "Canción"}`;
+
+  }
+
+
+  /* =================================================
+     TONO INICIAL
+  ================================================= */
+
+  const tono =
+    document.getElementById(
+      "la-tono-actual"
+    );
+
+
+  if (tono) {
+
+    const tonoInicial =
+      cancion.letraAcordes?.tonoOriginal ||
+      cancion.acordes ||
+      "-";
+
+
+    tono.textContent =
+      tonoInicial;
+
+  }
+
+
+  /* =================================================
+     CONTENEDORES
+  ================================================= */
+
+  const editor =
+    document.getElementById(
+      "la-editor-container"
+    );
+
+
+  const visor =
+    document.getElementById(
+      "la-visor-container"
+    );
+
+
+  const controlesEditor =
+    document.getElementById(
+      "la-controles-editor"
+    );
+
+
+  if (!editor || !visor) {
+
+    console.warn(
+      "No se encontraron los contenedores del editor/visor."
+    );
+
+    return;
+
+  }
+
+
+  /* =================================================
+     MODO EDICIÓN
+  ================================================= */
+
+  if (modoEdicion) {
+
+    /* Crear/cargar editor */
+
+    crearEditorLetraAcordes();
+
+
+    editor.style.display =
+      "block";
+
+
+    visor.style.display =
+      "none";
+
+
+    /* Mostrar controles de edición */
+
+    if (controlesEditor) {
+
+      controlesEditor.style.display =
+        "flex";
+
+    }
+
+
+  }
+
+  /* =================================================
+     MODO NORMAL → VISOR
+  ================================================= */
+
+  else {
+
+    /* Crear visor */
+
+    crearVisorLetraAcordes();
+
+
+    editor.style.display =
+      "none";
+
+
+    visor.style.display =
+      "block";
+
+
+    /* Ocultar controles de edición */
+
+    if (controlesEditor) {
+
+      controlesEditor.style.display =
+        "none";
+
+    }
+
+  }
+
+
+  /* =================================================
+     OCULTAR BOTÓN ANTIGUO
+     👁️ Ver canción / ✏️ Volver a editar
+  ================================================= */
+
+  const botonVer =
+    document.getElementById(
+      "la-ver-cancion"
+    );
+
+
+  if (botonVer) {
+
+    botonVer.style.display =
+      "none";
+
+  }
+
+
+  /* =================================================
+     MOSTRAR MODAL
+  ================================================= */
+
+  modal.style.display =
+    "flex";
+
+}
+/* =====================================================
+   CREAR EDITOR
+   CARGA DATOS GUARDADOS SI EXISTEN
+===================================================== */
+
+function crearEditorLetraAcordes() {
+
+  const contenedor =
+    document.getElementById(
+      "la-editor-container"
+    );
+
+  if (!contenedor) return;
+
+
+  contenedor.innerHTML = "";
+
+
+  const cancion =
+    window.cancionLetraAcordes;
+
+
+  /* =================================================
+     SI EXISTEN DATOS GUARDADOS
+  ================================================= */
+
+  if (
+    cancion &&
+    cancion.letraAcordes &&
+    Array.isArray(
+      cancion.letraAcordes.secciones
+    ) &&
+    cancion.letraAcordes.secciones.length > 0
+  ) {
+
+    cancion.letraAcordes.secciones
+      .forEach(
+        datosSeccion => {
+
+          crearSeccionEditor(
+            contenedor,
+            datosSeccion
+          );
+
+        }
+      );
+
+
+    return;
+
+  }
+
+
+  /* =================================================
+     SI NO EXISTEN DATOS → CREAR EDITOR VACÍO
+  ================================================= */
+
+  crearSeccionEditor(
+    contenedor
+  );
+
+}
+
+/* =====================================================
+   CREAR SECCIÓN DEL EDITOR
+===================================================== */
+
+function crearSeccionEditor(
+  contenedor,
+  datos = null
+) {
+
+  const seccion =
+    document.createElement("div");
+
+  seccion.className =
+    "la-seccion-editor";
+
+  seccion.style.marginBottom =
+    "20px";
+
+
+  /* =================================================
+     NOMBRE DE LA SECCIÓN
+  ================================================= */
+
+  const nombre =
+    document.createElement("input");
+
+  nombre.type =
+    "text";
+
+  nombre.placeholder =
+    "Nombre de sección (ej. ESTROFA 1)";
+
+  nombre.className =
+    "la-seccion-nombre";
+
+  nombre.style.width =
+    "100%";
+
+  nombre.style.boxSizing =
+    "border-box";
+
+  nombre.style.marginBottom =
+    "10px";
+
+  nombre.style.fontWeight =
+    "700";
+
+
+  if (datos) {
+
+    nombre.value =
+      datos.nombre || "";
+
+  }
+
+
+  seccion.appendChild(
+    nombre
+  );
+
+
+  /* =================================================
+     BOTÓN ELIMINAR SECCIÓN
+  ================================================= */
+
+  const eliminarSeccion =
+    document.createElement("button");
+
+  eliminarSeccion.type =
+    "button";
+
+  eliminarSeccion.textContent =
+    "🗑️ Eliminar sección";
+
+  eliminarSeccion.style.marginBottom =
+    "8px";
+
+
+  eliminarSeccion.addEventListener(
+    "click",
+    function() {
+
+      seccion.remove();
+
+    }
+  );
+
+
+  seccion.appendChild(
+    eliminarSeccion
+  );
+
+
+  /* =================================================
+     CONTENEDOR DE LÍNEAS
+  ================================================= */
+
+  const lineas =
+    document.createElement("div");
+
+  lineas.className =
+    "la-lineas";
+
+
+  seccion.appendChild(
+    lineas
+  );
+
+/* =================================================
+   ➕ BOTÓN AÑADIR LÍNEA
+================================================= */
+
+const anadirLinea =
+  document.createElement("button");
+
+anadirLinea.type =
+  "button";
+
+anadirLinea.textContent =
+  "➕ Añadir línea";
+
+anadirLinea.style.marginTop =
+  "8px";
+
+anadirLinea.addEventListener(
+  "click",
+  function() {
+
+    crearLineaEditor(
+      lineas
+    );
+
+  }
+);
+
+
+seccion.appendChild(
+  anadirLinea
+);
+
+  contenedor.appendChild(
+    seccion
+  );
+
+
+  /* =================================================
+     CARGAR LÍNEAS GUARDADAS
+  ================================================= */
+
+  if (
+    datos &&
+    Array.isArray(
+      datos.lineas
+    ) &&
+    datos.lineas.length > 0
+  ) {
+
+    datos.lineas.forEach(
+      linea => {
+
+        crearLineaEditor(
+          lineas,
+          linea
+        );
+
+      }
+    );
+
+  } else {
+
+    /* Primera línea vacía */
+
+    crearLineaEditor(
+      lineas
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   🎼 CREAR UNA LÍNEA DE CANCIÓN
+===================================================== */
+
+function crearLineaEditor(
+  contenedor,
+  datos = null
+) {
+
+  const fila =
+    document.createElement("div");
+
+  fila.className =
+    "la-linea-editor";
+
+  fila.style.marginBottom =
+    "14px";
+
+  fila.style.position =
+    "relative";
+
+
+  /* ===============================
+     CONTENEDOR DE ACORDES
+  =============================== */
+
+  const acordes =
+    document.createElement("input");
+
+  acordes.type = "text";
+
+  acordes.placeholder =
+    "A        E/G#";
+
+  acordes.className =
+    "la-acordes-linea";
+
+  acordes.style.width =
+    "calc(100% - 45px)";
+
+  acordes.style.boxSizing =
+    "border-box";
+
+  acordes.style.fontFamily =
+    "monospace";
+
+  acordes.style.fontWeight =
+    "700";
+
+  acordes.style.marginBottom =
+    "5px";
+    if (datos) {
+
+  acordes.value =
+    datos.acordes || "";
+
+}
+
+  /* ===============================
+     CONTENEDOR DE LETRA
+  =============================== */
+
+  const letra =
+    document.createElement("input");
+
+  letra.type = "text";
+
+  letra.placeholder =
+    "Escribe la letra aquí";
+
+  letra.className =
+    "la-letra-linea";
+
+  letra.style.width =
+    "calc(100% - 45px)";
+
+  letra.style.boxSizing =
+    "border-box";
+    if (datos) {
+
+  letra.value =
+    datos.letra || "";
+
+}
+
+  /* ===============================
+     BOTÓN ELIMINAR
+  =============================== */
+
+  const eliminar =
+    document.createElement("button");
+
+  eliminar.type =
+    "button";
+
+  eliminar.textContent =
+    "🗑️";
+
+  eliminar.title =
+    "Eliminar línea";
+
+  eliminar.style.position =
+    "absolute";
+
+  eliminar.style.right =
+    "0";
+
+  eliminar.style.top =
+    "4px";
+
+  eliminar.style.width =
+    "38px";
+
+  eliminar.style.height =
+    "70px";
+
+  eliminar.style.padding =
+    "0";
+
+  eliminar.addEventListener(
+    "click",
+    function() {
+
+      fila.remove();
+
+    }
+  );
+
+
+  /* ===============================
+     AÑADIR ELEMENTOS
+  =============================== */
+
+  fila.appendChild(
+    acordes
+  );
+
+  fila.appendChild(
+    letra
+  );
+
+  fila.appendChild(
+    eliminar
+  );
+
+
+  contenedor.appendChild(
+    fila
+  );
+
+}
+
+/* =====================================================
+   👁️ CREAR VISOR DE CANCIÓN
+   PASO 13 — VISUAL FINAL
+===================================================== */
+
+function crearVisorLetraAcordes() {
+
+  const contenedor =
+    document.getElementById(
+      "la-visor-container"
+    );
+
+  if (!contenedor) return;
+
+
+  const cancion =
+    window.cancionLetraAcordes;
+
+  if (!cancion) return;
+
+
+  const datos =
+    cancion.letraAcordes;
+
+
+
+/* =================================================
+   SI NO HAY LETRA + ACORDES
+================================================= */
+
+if (
+  !datos ||
+  !Array.isArray(datos.secciones) ||
+  datos.secciones.length === 0
+) {
+
+  contenedor.innerHTML = `
+    <div
+      class="visor-inline"
+      style="
+        margin-top:8px;
+        padding:18px;
+        border-radius:16px;
+        background:rgba(255,255,255,0.06);
+        box-sizing:border-box;
+        text-align:center;
+      "
+    >
+
+      <div style="
+        opacity:0.75;
+        margin-bottom:${modoEdicion ? "14px" : "0"};
+      ">
+        🎼 Esta canción todavía no tiene
+        letra y acordes guardados.
+      </div>
+
+      ${modoEdicion ? `
+        <button
+          type="button"
+          class="inline-editar-letra"
+        >
+          ✏️ Añadir letra + acordes
+        </button>
+      ` : ""}
+
+    </div>
+  `;
+
+
+  /* =================================================
+     BOTÓN AÑADIR / EDITAR
+  ================================================= */
+
+  const botonEditarLetra =
+    contenedor.querySelector(
+      ".inline-editar-letra"
+    );
+
+  if (botonEditarLetra) {
+
+    botonEditarLetra.addEventListener(
+      "click",
+      function(event) {
+
+        event.stopPropagation();
+
+        abrirLetraAcordes(
+          cancion.id
+        );
+
+      }
+    );
+
+  }
+
+
+  return;
+
+}
+
+  contenedor.innerHTML = "";
+
+
+  /* =================================================
+     CONTENEDOR PRINCIPAL
+  ================================================= */
+
+  const cancionVista =
+    document.createElement("div");
+
+  cancionVista.className =
+    "la-cancion-vista";
+
+  cancionVista.style.width =
+    "100%";
+
+  cancionVista.style.boxSizing =
+    "border-box";
+
+
+  /* =================================================
+     SECCIONES
+  ================================================= */
+
+  datos.secciones.forEach(
+    seccion => {
+
+
+      /* ===============================
+         NOMBRE DE SECCIÓN
+      =============================== */
+
+      if (seccion.nombre) {
+
+        const titulo =
+          document.createElement("h4");
+
+        titulo.textContent =
+          seccion.nombre;
+
+        titulo.style.marginTop =
+          "28px";
+
+        titulo.style.marginBottom =
+          "16px";
+
+        titulo.style.fontWeight =
+          "700";
+
+        titulo.style.fontSize =
+          "16px";
+
+
+        cancionVista.appendChild(
+          titulo
+        );
+
+      }
+
+
+      /* ===============================
+         LÍNEAS
+      =============================== */
+
+      if (
+        !Array.isArray(
+          seccion.lineas
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      seccion.lineas.forEach(
+        linea => {
+
+          const bloque =
+            document.createElement(
+              "div"
+            );
+
+          bloque.className =
+            "la-bloque-linea";
+
+
+          bloque.style.marginBottom =
+            "20px";
+
+
+          /*
+             ACORDES
+          */
+
+          if (linea.acordes) {
+
+            const acordes =
+              document.createElement(
+                "div"
+              );
+
+            acordes.className =
+              "la-acorde-visor";
+
+
+            acordes.textContent =
+              linea.acordes;
+
+
+            acordes.style.fontFamily =
+              "monospace";
+
+            acordes.style.fontWeight =
+              "700";
+
+            acordes.style.fontSize =
+              "15px";
+
+            acordes.style.lineHeight =
+              "1.3";
+
+            acordes.style.whiteSpace =
+              "pre";
+
+            acordes.style.overflowX =
+              "auto";
+
+            acordes.style.paddingLeft =
+              "8px";
+
+
+            bloque.appendChild(
+              acordes
+            );
+
+          }
+
+
+          /*
+             LETRA
+          */
+
+          if (linea.letra) {
+
+            const letra =
+              document.createElement(
+                "div"
+              );
+
+
+            letra.className =
+              "la-letra-visor";
+
+
+            letra.textContent =
+              linea.letra;
+
+
+            letra.style.fontSize =
+              "16px";
+
+            letra.style.lineHeight =
+              "1.5";
+
+            letra.style.whiteSpace =
+              "pre-wrap";
+
+
+            bloque.appendChild(
+              letra
+            );
+
+          }
+
+
+          cancionVista.appendChild(
+            bloque
+          );
+
+        }
+      );
+
+    }
+  );
+
+
+  contenedor.appendChild(
+    cancionVista
+  );
+
+}
+
+/* =====================================================
+   🎼 TRANSPOSICIÓN DE ACORDES
+   PASO 5
+===================================================== */
+
+const NOTAS_TRANSPOSICION = [
+  "C",
+  "C#",
+  "D",
+  "D#",
+  "E",
+  "F",
+  "F#",
+  "G",
+  "G#",
+  "A",
+  "A#",
+  "B"
+];
+
+
+/* =====================================================
+   CONVERTIR bemoles → sostenidos
+===================================================== */
+
+function normalizarNota(nota) {
+
+  const equivalencias = {
+    "Db": "C#",
+    "Eb": "D#",
+    "Gb": "F#",
+    "Ab": "G#",
+    "Bb": "A#"
+  };
+
+  return equivalencias[nota] || nota;
+}
+
+
+/* =====================================================
+   TRANSPONER UNA NOTA
+===================================================== */
+
+function transponerNota(
+  nota,
+  pasos
+) {
+
+  const normalizada =
+    normalizarNota(nota);
+
+  const indice =
+    NOTAS_TRANSPOSICION.indexOf(
+      normalizada
+    );
+
+  if (indice === -1) {
+    return nota;
+  }
+
+  const nuevoIndice =
+    (
+      indice +
+      pasos +
+      NOTAS_TRANSPOSICION.length
+    ) %
+    NOTAS_TRANSPOSICION.length;
+
+  return NOTAS_TRANSPOSICION[
+    nuevoIndice
+  ];
+}
+
+
+/* =====================================================
+   TRANSPONER UN ACORDE
+   Ejemplos:
+
+   A       → A#
+   F#m     → F#m
+   E/G#    → F/A
+   D/F#    → D#/G
+   C#m7    → Dm7
+===================================================== */
+
+function transponerAcorde(
+  acorde,
+  pasos
+) {
+
+  if (!acorde) {
+    return acorde;
+  }
+
+
+  const match =
+    acorde.match(
+      /^([A-G](?:#|b)?)(.*)$/
+    );
+
+
+  if (!match) {
+    return acorde;
+  }
+
+
+  const nota =
+    match[1];
+
+  let resto =
+    match[2];
+
+
+  /* Transponer nota principal */
+
+  const nuevaNota =
+    transponerNota(
+      nota,
+      pasos
+    );
+
+
+  /* =================================================
+     ACORDE CON BAJO
+
+     E/G#
+     D/F#
+     C/E
+  ================================================= */
+
+  resto =
+    resto.replace(
+      /^\/([A-G](?:#|b)?)/,
+      function(_, bajo) {
+
+        return (
+          "/" +
+          transponerNota(
+            bajo,
+            pasos
+          )
+        );
+
+      }
+    );
+
+
+  return (
+    nuevaNota +
+    resto
+  );
+
+}
+
+
+/* =====================================================
+   TRANSPONER UNA LÍNEA COMPLETA DE ACORDES
+===================================================== */
+
+function transponerLineaAcordes(
+  texto,
+  pasos
+) {
+
+  if (!texto) {
+    return texto;
+  }
+
+
+  return texto
+    .split(/\s+/)
+    .map(
+      acorde =>
+        transponerAcorde(
+          acorde,
+          pasos
+        )
+    )
+    .join("        ");
+
+}
+
+
+/* =====================================================
+   TRANSPONER TODO EL EDITOR
+===================================================== */
+
+function transponerEditor(
+  pasos
+) {
+
+  const inputs =
+    document.querySelectorAll(
+      ".la-acordes-linea"
+    );
+
+
+  const visor =
+  document.getElementById(
+    "la-visor-container"
+  );
+
+const editor =
+  document.getElementById(
+    "la-editor-container"
+  );
+
+
+/* =================================================
+   MODO EDITOR
+================================================= */
+
+if (
+  editor &&
+  editor.style.display !== "none"
+) {
+
+  const inputs =
+    editor.querySelectorAll(
+      ".la-acordes-linea"
+    );
+
+
+  inputs.forEach(
+    input => {
+
+      input.value =
+        transponerLineaAcordes(
+          input.value,
+          pasos
+        );
+
+    }
+  );
+
+}
+
+
+/* =================================================
+   MODO VISOR
+================================================= */
+
+if (
+  visor &&
+  visor.style.display === "block"
+) {
+
+  const acordesVisor =
+    visor.querySelectorAll(
+      ".la-acorde-visor"
+    );
+
+
+  acordesVisor.forEach(
+    acorde => {
+
+      acorde.textContent =
+        transponerLineaAcordes(
+          acorde.textContent,
+          pasos
+        );
+
+    }
+  );
+
+}
+
+  /* Actualizar Key */
+
+  const tono =
+    document.getElementById(
+      "la-tono-actual"
+    );
+
+  if (!tono) {
+    return;
+  }
+
+
+  const notaActual =
+    normalizarNota(
+      tono.textContent
+        .replace(
+          "Key:",
+          ""
+        )
+        .trim()
+    );
+
+
+  const nuevaNota =
+    transponerNota(
+      notaActual,
+      pasos
+    );
+
+
+  tono.textContent =
+    nuevaNota;
+
+}
+
+/* =====================================================
+   💾 GUARDAR LETRA + ACORDES
+===================================================== */
+
+async function guardarLetraAcordes() {
+
+  const cancion =
+    window.cancionLetraAcordes;
+
+  if (!cancion || !cancion.id) {
+
+    alert("❌ No se ha seleccionado ninguna canción.");
+
+    return;
+
+  }
+
+
+  const secciones = [];
+
+
+  document
+    .querySelectorAll(".la-seccion-editor")
+    .forEach(seccion => {
+
+      const nombreInput =
+        seccion.querySelector(
+          ".la-seccion-nombre"
+        );
+
+      const nombre =
+        nombreInput
+          ? nombreInput.value.trim()
+          : "";
+
+
+      const lineas = [];
+
+
+      seccion
+        .querySelectorAll(".la-linea-editor")
+        .forEach(fila => {
+
+          const acordesInput =
+            fila.querySelector(
+              ".la-acordes-linea"
+            );
+
+          const letraInput =
+            fila.querySelector(
+              ".la-letra-linea"
+            );
+
+
+          const acordes =
+            acordesInput
+              ? acordesInput.value.trim()
+              : "";
+
+
+          const letra =
+            letraInput
+              ? letraInput.value.trim()
+              : "";
+
+
+          /*
+             No guardamos líneas completamente vacías
+          */
+
+          if (acordes || letra) {
+
+            lineas.push({
+              acordes,
+              letra
+            });
+
+          }
+
+        });
+
+
+      /*
+         Solo guardar secciones que tengan
+         nombre o contenido
+      */
+
+      if (
+        nombre ||
+        lineas.length > 0
+      ) {
+
+        secciones.push({
+          nombre,
+          lineas
+        });
+
+      }
+
+    });
+
+
+  const tono =
+    document
+      .getElementById(
+        "la-tono-actual"
+      )
+      ?.textContent
+      .trim() || "";
+
+
+  const letraAcordes = {
+
+    tonoOriginal:
+      cancion.letraAcordes?.tonoOriginal ||
+      tono,
+
+    secciones
+
+  };
+
+
+  try {
+
+    await updateDoc(
+      doc(
+        db,
+        "canciones",
+        cancion.id
+      ),
+      {
+        letraAcordes
+      }
+    );
+
+
+    /*
+       Actualizar la canción en memoria
+       para que no tengamos que recargar
+       toda la página
+    */
+
+    cancion.letraAcordes =
+      letraAcordes;
+
+
+    const indice =
+      cancionesCache.findIndex(
+        c => c.id === cancion.id
+      );
+
+
+    if (indice !== -1) {
+
+      cancionesCache[indice].letraAcordes =
+        letraAcordes;
+
+    }
+
+
+    alert(
+      "✅ Letra y acordes guardados"
+    );
+
+
+  } catch (error) {
+
+    console.error(
+      "Error guardando letra y acordes:",
+      error
+    );
+
+
+    alert(
+      "❌ No se pudo guardar la letra y los acordes."
+    );
+
+  }
+
+}
+
+window.guardarLetraAcordes = guardarLetraAcordes;
+
+/* =====================================================
+   💾 BOTÓN GUARDAR LETRA + ACORDES
+===================================================== */
+
+document.addEventListener(
+  "click",
+  function(event) {
+
+    if (
+      event.target.closest("#la-guardar")
+    ) {
+
+      guardarLetraAcordes();
+
+    }
+
+  }
+);
+
+/* =====================================================
+   ◀ BAJAR TONO
+===================================================== */
+
+document.addEventListener(
+  "click",
+  function(event) {
+
+    if (
+      event.target.id ===
+      "la-tono-bajar"
+    ) {
+
+      transponerEditor(-1);
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   ▶ SUBIR TONO
+===================================================== */
+
+document.addEventListener(
+  "click",
+  function(event) {
+
+    if (
+      event.target.id ===
+      "la-tono-subir"
+    ) {
+
+      transponerEditor(1);
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   ➕ AÑADIR SECCIÓN
+===================================================== */
+
+document.addEventListener(
+  "click",
+  function(event) {
+
+    if (
+      event.target.id !==
+      "la-anadir-seccion"
+    ) {
+      return;
+    }
+
+const contenedor =
+  document.getElementById(
+    "la-editor-container"
+  );
+
+if (!contenedor) return;
+
+
+crearSeccionEditor(
+  contenedor
+);
+
+  }
+);
+
+
+function cerrarLetraAcordes() {
+
+  const modal =
+    document.getElementById(
+      "modal-letra-acordes"
+    );
+
+  if (!modal) return;
+
+  modal.style.display = "none";
+
+}
+
+
+window.abrirLetraAcordes =
+  abrirLetraAcordes;
+
+window.cerrarLetraAcordes =
+  cerrarLetraAcordes;
+
 window.addEventListener('load', ()=>{
   const saved = localStorage.getItem("theme");
   if(saved === "dark") document.body.classList.add("dark");
@@ -2678,6 +8066,7 @@ window.addEventListener('load', ()=>{
   window.toggleMetronome = toggleMetronome;
   inicializarCanciones();
   escucharSeccion("semana");
+  sincronizarSemanaConListadoMensual();
   escucharSeccion("mes");
   initMetronome();
   window.toggleAnalisis = toggleAnalisis;
@@ -2714,5 +8103,124 @@ window.addEventListener('load', ()=>{
     </div>
   </div>
 </div>
+
+<!-- =====================================================
+     🎼 MODAL LETRA + ACORDES
+     PASO 1 — ESTRUCTURA VACÍA
+===================================================== -->
+
+<div
+  id="modal-letra-acordes"
+  class="modal"
+  style="display:none;"
+>
+
+  <div class="modal-content fade-apple">
+
+    <button
+      class="close-btn"
+      type="button"
+      onclick="cerrarLetraAcordes()"
+    >
+      ✖
+    </button>
+
+    <h3 id="letra-acordes-titulo">
+      🎼 Letra + acordes
+    </h3>
+
+<div id="letra-acordes-contenido">
+
+  <!-- TONO -->
+  <div class="la-tono-control">
+
+    <button
+      type="button"
+      id="la-tono-bajar"
+    >
+      ◀
+    </button>
+
+    <div class="la-tono-centro">
+      <small>Tono</small>
+      <strong id="la-tono-actual">-</strong>
+    </div>
+
+    <button
+      type="button"
+      id="la-tono-subir"
+    >
+      ▶
+    </button>
+
+  </div>
+
+
+  <!-- EDITOR -->
+  <div
+    id="la-editor-container"
+    style="margin-top:20px;"
+  >
+  </div>
+
+<!-- =================================================
+     👁️ VISOR DE CANCIÓN
+================================================= -->
+
+<div
+  id="la-visor-container"
+  style="
+    display:none;
+    margin-top:20px;
+  "
+>
+</div>
+
+  
+  </div>
+
+<!-- CONTROLES DE EDICIÓN -->
+
+<div
+  id="la-controles-editor"
+  style="
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    justify-content:center;
+    margin-top:16px;
+  "
+>
+
+  <button
+    type="button"
+    id="la-ver-cancion"
+  >
+    👁️ Ver canción
+  </button>
+
+  <button
+    type="button"
+    id="la-anadir-seccion"
+  >
+    ➕ Añadir sección
+  </button>
+
+  <button
+    type="button"
+    id="la-guardar"
+  >
+    💾 Guardar letra y acordes
+  </button>
+
+</div>
+
+</div>
+
+</div>
+
+  </div>
+
+</div>
 </body>
-</html>
+</html> 
